@@ -224,6 +224,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ── AI RESPONSE ── */
 .ai-response-box{background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-radius:12px;padding:20px;margin-top:20px;}
+.pick-option-row{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
+.pick-option-btn{flex:1;min-width:140px;padding:14px 12px;border-radius:10px;border:2px solid var(--cyan);background:rgba(0,212,255,.08);color:var(--cyan);font-size:15px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;text-align:center;}
+.pick-option-btn:hover{background:rgba(0,212,255,.18);transform:translateY(-2px);}
+.pick-option-btn:active{transform:translateY(0);}
 .ai-response-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--cyan);}
 .ai-response-body{font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text);}
 .ai-thinking{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;padding:12px 0;}
@@ -2145,6 +2149,46 @@ function bwizBack(from) {
   updateBwizProgress();
 }
 
+let _lastBrainstormReply = '';
+
+function pickBrainstormOption(n) {
+  if (!_lastBrainstormReply) return;
+  // Switch to Build section and show result directly (skip the wizard form)
+  showSection('build');
+  const resultEl  = document.getElementById('bld-result');
+  const actionsEl = document.getElementById('bld-actions');
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan for Option ' + n + '... this may take 1-2 minutes.</div>';
+  if (actionsEl) actionsEl.style.display = 'none';
+  // Scroll result into view
+  setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+
+  const prompt = `From the brainstorm ideas below, I want to build Option ${n}. Please create a complete, detailed build plan for that specific idea.
+
+The brainstorm results were:
+${_lastBrainstormReply}
+
+Build plan should include:
+1. App name (use the one suggested for Option ${n})
+2. One-paragraph plain-English description of what we are building
+3. Do I need a smart contract? (Yes/No and why)
+4. Do I need a Python backend on Railway? (Yes/No and why)
+5. Tech stack: exact tools and where to get them
+6. Step-by-step build order (6-10 numbered steps)
+7. Estimated time to build (in hours, for a complete beginner using AI tools)
+8. Biggest challenge to be aware of upfront
+
+Write this for someone who has never coded before.`;
+
+  callAI(prompt, 'build').then(reply => {
+    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Build Plan — Option ${n}</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    if (actionsEl) actionsEl.style.display = '';
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }).catch(() => {
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Please try again.</div></div>`;
+    if (actionsEl) actionsEl.style.display = '';
+  });
+}
+
 function runBrainstorm() {
   const category = document.getElementById('bwiz-category').value;
   const audience = document.getElementById('bwiz-audience').value;
@@ -2169,10 +2213,21 @@ Please suggest 3 specific, realistic app ideas I could build on Lightchain. For 
 After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`;
 
   callAI(prompt, 'brainstorm').then(reply => {
-    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🐬 OrcaAppBuilder AI Suggestions</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    _lastBrainstormReply = reply;
+    resultEl.innerHTML = `
+      <div class="ai-response-box">
+        <div class="ai-response-header">🐬 OrcaAppBuilder AI Suggestions</div>
+        <div class="ai-response-body">${escapeHtml(reply)}</div>
+      </div>
+      <p style="margin-top:20px;font-size:14px;color:var(--muted);text-align:center;">Like one of these ideas? Pick it and we\'ll build a full plan for it.</p>
+      <div class="pick-option-row">
+        <button class="pick-option-btn" onclick="pickBrainstormOption(1)">→ Build Option 1</button>
+        <button class="pick-option-btn" onclick="pickBrainstormOption(2)">→ Build Option 2</button>
+        <button class="pick-option-btn" onclick="pickBrainstormOption(3)">→ Build Option 3</button>
+      </div>`;
     actionsEl.style.display = '';
   }).catch(err => {
-    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable right now. Make sure the OrcaAppBuilder server is running on your local machine (port 8187), or that it's been deployed to Railway.</div></div>`;
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable right now. Make sure the OrcaAppBuilder server is running on your local machine (port 8187), or that it\'s been deployed to Railway.</div></div>`;
     actionsEl.style.display = '';
   });
 }
