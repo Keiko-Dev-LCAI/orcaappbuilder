@@ -72,7 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar-footer{margin-top:auto;padding:16px 22px;border-top:1px solid var(--border);}
 
 /* ── MAIN ── */
-.main{margin-left:300px;flex:1;padding:32px 40px 100px;min-width:0;}
+.main{margin-left:300px;flex:1;padding:24px 32px 60px;min-width:0;}
 
 /* ── SECTIONS ── */
 .section{display:none;}
@@ -80,11 +80,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── HOME ── */
-.hero{text-align:center;padding:16px 0 20px;}
+.hero{text-align:center;padding:16px 0 16px;}
 .hero-orca{font-size:48px;margin-bottom:8px;line-height:1;}
 .hero-title{font-size:30px;font-weight:900;background:linear-gradient(135deg,var(--cyan),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;line-height:1.2;}
 .hero-sub{font-size:14px;color:var(--muted);max-width:560px;margin:0 auto 20px;line-height:1.6;}
-.mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:800px;margin:0 auto;}
+.mode-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 12px;}
 .mode-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 12px;cursor:pointer;transition:all .2s;text-align:center;}
 .mode-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,212,255,.12);}
 .mode-card-icon{font-size:26px;margin-bottom:6px;}
@@ -99,13 +99,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mode-card.build:hover{border-color:var(--green);}
 .mode-card.troubleshoot:hover{border-color:var(--orange);}
 
-.pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;margin:14px auto 0;max-width:800px;}
-.free-banner{background:linear-gradient(135deg,rgba(0,200,100,.12),rgba(0,212,255,.10));border:2px solid rgba(0,200,100,.5);border-radius:14px;padding:14px 20px;margin:0 auto 16px;max-width:800px;text-align:center;}
-.free-banner-headline{font-size:16px;font-weight:900;color:#00c864;margin-bottom:6px;letter-spacing:-.2px;}
-.free-banner-body{font-size:13px;color:var(--text);line-height:1.55;margin-bottom:10px;}
-.free-stack{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:6px;}
-.free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:5px 10px;font-size:11px;font-weight:600;color:#00c864;}
+.pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:0;}
+.free-banner{background:linear-gradient(135deg,rgba(0,200,100,.12),rgba(0,212,255,.10));border:2px solid rgba(0,200,100,.5);border-radius:14px;padding:12px 18px;margin:0 0 12px;text-align:center;width:100%;}
+.free-banner-headline{font-size:15px;font-weight:900;color:#00c864;margin-bottom:5px;letter-spacing:-.2px;}
+.free-banner-body{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:8px;}
+.free-stack{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;color:#00c864;}
 .free-stack-item span{color:var(--muted);font-weight:400;}
+.home-bottom{display:flex;gap:12px;margin-top:12px;align-items:flex-start;}
+.tip-jar-compact{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;width:220px;flex-shrink:0;text-align:center;}
+.tip-jar-compact-title{font-size:13px;font-weight:800;margin-bottom:4px;}
+.tip-jar-compact-sub{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4;}
 .pod-title{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
 .pod-apps{display:flex;flex-wrap:wrap;gap:10px;}
 .pod-app{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);text-decoration:none;transition:all .2s;}
@@ -481,6 +485,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
         </div>
 
+      </div><!-- end .hero -->
+
+      <div class="home-bottom">
         <div class="pod-strip">
           <div class="pod-title">🐬 Apps Built by the Orca Pod — You Can Build These Too</div>
           <div class="pod-apps">
@@ -495,22 +502,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
         </div>
 
-        <div class="tip-jar">
-          <div class="tip-jar-title">☕ Support OrcaAppBuilder</div>
-          <div class="tip-jar-sub">This tool is completely free to use. If it helped you build something on Lightchain, a small tip in LCAI keeps it running. Connect your wallet above and send whatever feels right — totally optional, always appreciated.</div>
+        <div class="tip-jar-compact">
+          <div class="tip-jar-compact-title">☕ Support OrcaAppBuilder</div>
+          <div class="tip-jar-compact-sub">Free to use. Tips keep it running.</div>
           <div class="tip-btns">
             <button class="tip-btn" onclick="sendTip('1')">1 LCAI</button>
             <button class="tip-btn" onclick="sendTip('5')">5 LCAI</button>
             <button class="tip-btn" onclick="sendTip('10')">10 LCAI</button>
           </div>
           <div class="tip-custom">
-            <input type="number" id="tip-custom-amount" placeholder="Custom amount" min="0.01" step="0.01">
-            <button onclick="sendCustomTip()">Send Tip ✨</button>
+            <input type="number" id="tip-custom-amount" placeholder="Custom" min="0.01" step="0.01">
+            <button onclick="sendCustomTip()">Send ✨</button>
           </div>
           <div id="tip-status"></div>
         </div>
-
       </div>
+
     </section>
 
     <!-- ══ LEARN ══ -->
