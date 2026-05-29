@@ -1670,6 +1670,30 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div class="issue-title">Python Package Errors</div>
           <div class="issue-desc">Works locally but fails on Railway — version conflicts</div>
         </div>
+        <div class="issue-card" onclick="quickIssue('My AIVM server is failing with: Could not deserialize key data. The data may be in an incorrect format, it may be encrypted with an unsupported algorithm')">
+          <div class="issue-icon">🔐</div>
+          <div class="issue-title">"Could not deserialize key data"</div>
+          <div class="issue-desc">AIVM crashes with a key format error even though your private key looks correct</div>
+        </div>
+      </div>
+
+      <div class="card" style="background:rgba(255,152,0,.06);border-color:rgba(255,152,0,.3);margin-top:8px;">
+        <div class="card-title" style="color:var(--orange);">⚡ Known AIVM Gotcha — "Could not deserialize key data"</div>
+        <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px;">
+          This error appears even when your private key is perfectly valid. The real cause is a mismatch in the <strong style="color:var(--text);">worker's public key format</strong> — the AIVM network sometimes returns a 33-byte compressed key instead of a 65-byte uncompressed key, and hardcoded DER headers only handle one format.
+        </p>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;"><strong style="color:var(--text);">The fix:</strong> In your Python server, detect the key length before building the DER header:</p>
+        <div class="code-block" style="margin:0;">
+          <div class="code-header"><span class="code-label">Python — robust worker key loading</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>klen = len(worker_pub_bytes)
+if klen == 65:   # uncompressed: 04 + x + y
+    oid = bytes.fromhex('3056301006072a8648ce3d020106052b8104000a034200')
+elif klen == 33:  # compressed: 02/03 + x
+    oid = bytes.fromhex('3036301006072a8648ce3d020106052b8104000a032200')
+else:
+    raise ValueError(f'Unexpected key length: {klen}')
+wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pre></div>
+        </div>
       </div>
 
       <div class="card" style="margin-top:8px;">
