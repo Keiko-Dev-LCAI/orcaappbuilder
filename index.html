@@ -2152,7 +2152,7 @@ function runBrainstorm() {
   const resultEl = document.getElementById('bwiz-result');
   const actionsEl = document.getElementById('bwiz-actions');
 
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Coming up with app ideas just for you... this may take 30-60 seconds.</div>';
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Coming up with app ideas just for you... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
 
   const prompt = `I am interested in building a Lightchain dApp in the category: ${category}.
@@ -2221,7 +2221,7 @@ function bldGenerate() {
 
   if (!description) { alert('Please describe your app first.'); return; }
 
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 30-60 seconds.</div>';
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
 
   const isExisting = mode === 'existing';
@@ -2275,7 +2275,7 @@ function troubleshoot() {
 
   if (!input) { alert('Please describe your problem first.'); return; }
 
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem...</div>';
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem... this may take 1-2 minutes.</div>';
 
   const prompt = `A Lightchain dApp builder has the following problem:
 
@@ -2786,7 +2786,7 @@ function runAiReview(id) {
   const btn = document.getElementById('ai-review-btn-' + id);
   const resultEl = document.getElementById('ai-review-result-' + id);
   if (btn) btn.disabled = true;
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Analyzing your project… this may take 30–60 seconds.</div>';
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Analyzing your project… this may take 1-2 minutes.</div>';
 
   const helpLabel = {finish:'finish building', fix:'find and fix the bugs in', review:'review and audit'}[p.helpType] || 'help with';
   let prompt = `Please ${helpLabel} the following Lightchain dApp project.\n\n`;
