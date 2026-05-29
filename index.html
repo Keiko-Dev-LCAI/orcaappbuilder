@@ -1,0 +1,3091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrcaAppBuilder — Build on Lightchain AI</title>
+<style>
+:root {
+  --bg:     #080c18;
+  --bg2:    #0f1526;
+  --bg3:    #1a2238;
+  --card:   #131929;
+  --border: #1e2d4a;
+  --cyan:   #00d4ff;
+  --cyan2:  #0099cc;
+  --green:  #00e676;
+  --purple: #a855f7;
+  --orange: #ff9800;
+  --red:    #ff5252;
+  --yellow: #fbbf24;
+  --text:   #e8eaf0;
+  --muted:  #7a8499;
+  --code-bg:#0a0f1e;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── HEADER ── */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:10px;height:60px;position:fixed;top:0;left:0;right:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo-icon{font-size:26px;line-height:1;}
+.logo-text{font-size:22px;font-weight:800;color:var(--cyan);}
+.logo-text span{color:var(--text);}
+.header-tag{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);color:var(--cyan);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.health-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;}
+.health-dot.online{background:var(--green);box-shadow:0 0 6px rgba(0,230,118,.5);}
+.health-label{font-size:12px;color:var(--muted);}
+/* ── WALLET CONNECT ── */
+.wallet-btn{padding:7px 14px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;}
+.wallet-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.wallet-btn.connected{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.08);}
+/* ── TIP JAR ── */
+.tip-jar{background:var(--card);border:1px solid rgba(0,212,255,.2);border-radius:16px;padding:24px;margin:24px auto 0;max-width:560px;text-align:center;}
+.tip-jar-title{font-size:17px;font-weight:800;margin-bottom:6px;}
+.tip-jar-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+.tip-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.tip-btn{padding:9px 20px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;}
+.tip-btn:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.06);}
+.tip-custom{display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;}
+.tip-custom input{width:130px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;font-family:inherit;text-align:center;}
+.tip-custom input:focus{outline:none;border-color:var(--cyan);}
+.tip-custom button{padding:8px 18px;border-radius:8px;background:var(--cyan);color:#000;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.tip-custom button:hover{background:var(--cyan2);}
+#tip-status{font-size:12px;color:var(--muted);margin-top:12px;min-height:18px;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;padding-top:60px;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:300px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:60px;bottom:0;overflow-y:auto;display:flex;flex-direction:column;}
+.sidebar-logo{padding:20px 22px 10px;border-bottom:1px solid var(--border);}
+.sidebar-tagline{font-size:13px;color:var(--muted);line-height:1.6;padding:12px 22px 16px;}
+.nav-section{padding:16px 22px 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);}
+.nav-item{display:flex;align-items:center;gap:14px;padding:14px 22px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;font-size:16px;color:var(--muted);}
+.nav-item:hover{background:var(--bg3);color:var(--text);}
+.nav-item.active{background:rgba(0,212,255,.07);border-left-color:var(--cyan);color:var(--cyan);}
+.nav-item .nav-icon{font-size:22px;width:26px;text-align:center;flex-shrink:0;}
+.nav-item .nav-label{font-weight:700;}
+.nav-item .nav-sub{font-size:13px;color:var(--muted);display:block;margin-top:3px;line-height:1.4;}
+.nav-item.active .nav-sub{color:rgba(0,212,255,.6);}
+.sidebar-footer{margin-top:auto;padding:16px 22px;border-top:1px solid var(--border);}
+
+/* ── MAIN ── */
+.main{margin-left:300px;flex:1;padding:32px 40px 100px;min-width:0;}
+
+/* ── SECTIONS ── */
+.section{display:none;}
+.section.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HOME ── */
+.hero{text-align:center;padding:24px 0 48px;}
+.hero-orca{font-size:72px;margin-bottom:16px;line-height:1;}
+.hero-title{font-size:40px;font-weight:900;background:linear-gradient(135deg,var(--cyan),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:14px;line-height:1.15;}
+.hero-sub{font-size:17px;color:var(--muted);max-width:560px;margin:0 auto 36px;line-height:1.7;}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:680px;margin:0 auto;}
+.mode-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:all .25s;text-align:left;}
+.mode-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,212,255,.12);}
+.mode-card-icon{font-size:36px;margin-bottom:14px;}
+.mode-card-title{font-size:17px;font-weight:800;margin-bottom:8px;}
+.mode-card-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.mode-card.learn{border-color:rgba(0,212,255,.2);}
+.mode-card.brainstorm{border-color:rgba(168,85,247,.2);}
+.mode-card.build{border-color:rgba(0,230,118,.2);}
+.mode-card.troubleshoot{border-color:rgba(255,152,0,.2);}
+.mode-card.learn:hover{border-color:var(--cyan);}
+.mode-card.brainstorm:hover{border-color:var(--purple);}
+.mode-card.build:hover{border-color:var(--green);}
+.mode-card.troubleshoot:hover{border-color:var(--orange);}
+
+.pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin:0 auto 0;max-width:680px;margin-top:32px;}
+.pod-title{font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;}
+.pod-apps{display:flex;flex-wrap:wrap;gap:10px;}
+.pod-app{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text);text-decoration:none;transition:all .2s;}
+.pod-app:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* ── PAGE HEADERS ── */
+.page-header{margin-bottom:32px;}
+.page-badge{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.page-badge.cyan{color:var(--cyan);}
+.page-badge.purple{color:var(--purple);}
+.page-badge.green{color:var(--green);}
+.page-badge.orange{color:var(--orange);}
+.page-title{font-size:30px;font-weight:800;line-height:1.2;margin-bottom:10px;}
+.page-sub{font-size:15px;color:var(--muted);line-height:1.7;max-width:640px;}
+
+/* ── LEARN STEPS ── */
+.steps-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px;}
+.step-pill{padding:7px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg3);color:var(--muted);transition:all .2s;}
+.step-pill:hover{border-color:var(--cyan);color:var(--text);}
+.step-pill.active{background:rgba(0,212,255,.12);border-color:var(--cyan);color:var(--cyan);}
+.step-pill.done{background:rgba(0,230,118,.08);border-color:rgba(0,230,118,.3);color:var(--green);}
+.step-pill.done::before{content:'✓ ';}
+
+.learn-step{display:none;}
+.learn-step.active{display:block;}
+.step-header-row{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;}
+.step-num-big{width:48px;height:48px;border-radius:12px;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.25);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:var(--cyan);flex-shrink:0;}
+.step-title{font-size:24px;font-weight:800;margin-bottom:8px;}
+.step-desc{font-size:14px;color:var(--muted);line-height:1.7;}
+
+/* ── CARDS / CALLOUTS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px;}
+.card-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:12px;}
+.card p{font-size:14px;line-height:1.8;margin-bottom:10px;}
+.card p:last-child{margin-bottom:0;}
+.card ul,.card ol{padding-left:20px;font-size:14px;line-height:2;}
+.card li{margin-bottom:4px;}
+
+.callout{border-radius:10px;padding:14px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start;}
+.callout-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.callout-body{font-size:14px;line-height:1.65;}
+.callout-body strong{display:block;margin-bottom:4px;font-size:13px;font-weight:700;}
+.callout.tip{background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);}
+.callout.tip .callout-body strong{color:var(--cyan);}
+.callout.warn{background:rgba(255,152,0,.08);border:1px solid rgba(255,152,0,.25);}
+.callout.warn .callout-body strong{color:var(--orange);}
+.callout.danger{background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.25);}
+.callout.danger .callout-body strong{color:var(--red);}
+.callout.success{background:rgba(0,230,118,.07);border:1px solid rgba(0,230,118,.2);}
+.callout.success .callout-body strong{color:var(--green);}
+.callout.purple{background:rgba(168,85,247,.07);border:1px solid rgba(168,85,247,.2);}
+.callout.purple .callout-body strong{color:var(--purple);}
+
+/* ── CODE BLOCKS ── */
+.code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.code-header{background:var(--bg3);padding:8px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.code-label{font-size:12px;color:var(--muted);font-weight:600;}
+.copy-btn{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);color:var(--cyan);padding:4px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s;font-family:inherit;}
+.copy-btn:hover{background:rgba(0,212,255,.2);}
+.copy-btn.copied{background:rgba(0,230,118,.12);border-color:rgba(0,230,118,.35);color:var(--green);}
+.code-content{padding:16px;overflow-x:auto;}
+.code-content pre{font-family:'Fira Code','Courier New',monospace;font-size:13px;line-height:1.8;color:#c8d4f0;white-space:pre;}
+.inline-code{font-family:'Fira Code','Courier New',monospace;font-size:12px;background:var(--bg3);border:1px solid var(--border);padding:2px 7px;border-radius:5px;color:var(--cyan);}
+
+/* ── STEP NAV ── */
+.step-nav{display:flex;gap:12px;margin-top:32px;align-items:center;flex-wrap:wrap;}
+.btn{padding:11px 22px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;line-height:1;}
+.btn-primary{background:var(--cyan);color:#000;}
+.btn-primary:hover{background:#00b8e0;}
+.btn-primary.purple{background:var(--purple);color:#fff;}
+.btn-primary.purple:hover{background:#9333ea;}
+.btn-primary.green{background:var(--green);color:#000;}
+.btn-primary.green:hover{background:#00c853;}
+.btn-primary.orange{background:var(--orange);color:#000;}
+.btn-ghost{background:var(--bg3);border:1px solid var(--border);color:var(--text);}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+.step-counter{margin-left:auto;color:var(--muted);font-size:13px;}
+
+/* ── OS PICKER ── */
+.os-picker-bar{background:var(--card);border:2px solid rgba(0,212,255,.2);border-radius:14px;padding:18px 22px;margin-bottom:22px;}
+.os-picker-label{font-size:13px;color:var(--text);font-weight:700;margin-bottom:12px;}
+.os-picker{display:flex;gap:10px;flex-wrap:wrap;}
+.os-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:8px;font-family:inherit;}
+.os-btn:hover{border-color:var(--cyan);color:var(--text);background:var(--bg2);}
+.os-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.12);box-shadow:0 0 12px rgba(0,212,255,.15);}
+.os-please{margin-top:12px;font-size:13px;color:var(--orange);font-style:italic;}
+.os-block{display:none!important;}
+#section-learn.os-win .os-block.win{display:block!important;}
+#section-learn.os-mac .os-block.mac{display:block!important;}
+#section-learn.os-linux .os-block.linux{display:block!important;}
+#section-learn.os-win .os-block.win-mac,#section-learn.os-mac .os-block.win-mac{display:block!important;}
+#section-learn.os-win .os-please,#section-learn.os-mac .os-please,#section-learn.os-linux .os-please{display:none!important;}
+.os-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;margin-right:6px;vertical-align:middle;}
+.os-tag.win{background:rgba(0,120,215,.2);color:#4db3ff;border:1px solid rgba(0,120,215,.3);}
+.os-tag.mac{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+.os-tag.linux{background:rgba(255,152,0,.15);color:#ffb74d;border:1px solid rgba(255,152,0,.3);}
+
+/* ── WIZARD (BRAINSTORM / BUILD) ── */
+.wizard-step{display:none;}
+.wizard-step.active{display:block;}
+.wizard-progress{display:flex;gap:8px;margin-bottom:28px;}
+.wiz-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s;}
+.wiz-dot.active{background:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.4);}
+.wiz-dot.done{background:var(--green);}
+
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
+.choice-card{background:var(--bg3);border:2px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s;text-align:center;}
+.choice-card:hover{border-color:var(--cyan);background:rgba(0,212,255,.05);}
+.choice-card.selected{border-color:var(--cyan);background:rgba(0,212,255,.1);}
+.choice-card.selected-purple{border-color:var(--purple);background:rgba(168,85,247,.1);}
+.choice-card.selected-green{border-color:var(--green);background:rgba(0,230,118,.08);}
+.choice-icon{font-size:28px;margin-bottom:8px;}
+.choice-label{font-size:13px;font-weight:700;}
+.choice-sub{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;}
+
+.field-group{margin-bottom:20px;}
+.field-label{font-size:13px;font-weight:700;margin-bottom:8px;display:block;}
+.field-sub{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.5;}
+.field-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;}
+.field-input:focus{border-color:var(--cyan);}
+.field-textarea{resize:vertical;min-height:100px;}
+
+/* ── AI RESPONSE ── */
+.ai-response-box{background:var(--bg2);border:1px solid rgba(0,212,255,.25);border-radius:12px;padding:20px;margin-top:20px;}
+.ai-response-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--cyan);}
+.ai-response-body{font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text);}
+.ai-thinking{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;padding:12px 0;}
+.ai-thinking-dots{display:flex;gap:4px;}
+.ai-thinking-dots span{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bounce .8s infinite;}
+.ai-thinking-dots span:nth-child(2){animation-delay:.15s;}
+.ai-thinking-dots span:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* ── PROJECTS ── */
+.proj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .25s;position:relative;}
+.proj-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,.1);}
+.proj-status-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:12px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
+.proj-card-name{font-size:16px;font-weight:800;margin-bottom:8px;line-height:1.3;}
+.proj-card-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.proj-card-meta{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;}
+.proj-card-actions{display:flex;gap:8px;margin-top:14px;border-top:1px solid var(--border);padding-top:14px;}
+.proj-btn{padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .2s;}
+.proj-btn-open{background:var(--cyan);color:#000;}
+.proj-btn-open:hover{background:#00b8e0;}
+.proj-btn-edit{background:var(--bg3);border:1px solid var(--border);color:var(--text);}
+.proj-btn-edit:hover{border-color:var(--cyan);color:var(--cyan);}
+.proj-btn-del{background:rgba(255,82,82,.08);border:1px solid rgba(255,82,82,.2);color:var(--red);}
+.proj-btn-del:hover{background:rgba(255,82,82,.15);}
+.proj-detail-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.proj-back-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:all .2s;}
+.proj-back-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.proj-notes-area{width:100%;background:var(--code-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:14px;font-size:14px;line-height:1.7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;resize:vertical;}
+.proj-notes-area:focus{outline:none;border-color:var(--cyan);}
+
+/* ── LINKS & ACCOUNTS ── */
+.links-section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:28px 0 14px;display:flex;align-items:center;gap:8px;}
+.links-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px;}
+.resource-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px;text-decoration:none;transition:all .2s;cursor:pointer;}
+.resource-card:hover{border-color:var(--cyan);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,.1);}
+.resource-icon{font-size:24px;flex-shrink:0;line-height:1;}
+.resource-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.resource-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+.account-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:8px;}
+.account-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;}
+.account-card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.account-icon{font-size:22px;}
+.account-name{font-size:14px;font-weight:700;}
+.account-input-row{display:flex;gap:8px;align-items:center;}
+.account-url-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px;font-family:inherit;}
+.account-url-input:focus{outline:none;border-color:var(--cyan);}
+.account-url-input::placeholder{color:var(--muted);}
+.account-save-btn{background:var(--cyan);color:#000;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s;}
+.account-save-btn:hover{background:#00b8e0;}
+.account-open-btn{background:var(--bg3);border:1px solid var(--border);color:var(--cyan);padding:8px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s;text-decoration:none;display:inline-block;}
+.account-open-btn:hover{border-color:var(--cyan);background:rgba(0,212,255,.08);}
+.mylink-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.mylink-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;}
+.mylink-type{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px;}
+.mylink-type-live{background:rgba(0,230,118,.12);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.mylink-type-repo{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2);}
+.mylink-type-server{background:rgba(255,152,0,.1);color:var(--orange);border:1px solid rgba(255,152,0,.2);}
+.mylink-type-other{background:rgba(168,85,247,.1);color:var(--purple);border:1px solid rgba(168,85,247,.2);}
+.mylink-name{font-size:14px;font-weight:700;margin-bottom:6px;}
+.mylink-url{font-size:12px;color:var(--cyan);text-decoration:none;word-break:break-all;display:block;margin-bottom:10px;}
+.mylink-url:hover{text-decoration:underline;}
+
+/* ── TROUBLESHOOT ── */
+.issue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:28px;}
+.issue-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;}
+.issue-card:hover{border-color:var(--orange);background:rgba(255,152,0,.05);}
+.issue-icon{font-size:22px;margin-bottom:8px;}
+.issue-title{font-size:13px;font-weight:700;margin-bottom:4px;}
+.issue-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* ── AI CHAT PANEL ── */
+.ai-fab{position:fixed;bottom:24px;right:24px;height:54px;padding:0 22px 0 14px;border-radius:30px;background:linear-gradient(135deg,var(--cyan2),var(--cyan));border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(0,212,255,.45);transition:all .2s;z-index:200;font-family:inherit;}
+.ai-fab:hover{transform:scale(1.05);box-shadow:0 6px 32px rgba(0,212,255,.6);}
+.ai-fab-text{font-size:15px;font-weight:800;color:#000;}
+.ai-panel{position:fixed;bottom:90px;right:24px;width:500px;height:580px;min-width:320px;min-height:360px;max-width:820px;max-height:90vh;background:var(--bg2);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:200;display:none;flex-direction:column;overflow:hidden;}
+.ai-panel.open{display:flex;}
+.ai-panel.expanded{width:min(780px,calc(100vw - 48px));height:min(720px,calc(100vh - 120px));}
+.ai-panel-header{background:var(--bg3);padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0;cursor:move;user-select:none;position:relative;}
+.ai-panel-title{font-weight:700;font-size:16px;flex:1;}
+.ai-panel-expand{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--muted);cursor:pointer;font-size:14px;padding:0;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.ai-panel-expand:hover{background:rgba(0,212,255,.18);color:var(--cyan);}
+.ai-panel-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:2px 4px;line-height:1;flex-shrink:0;}
+.ai-resize-handle{position:absolute;top:0;left:0;width:28px;height:28px;cursor:nw-resize;display:flex;align-items:center;justify-content:center;color:var(--muted);opacity:.4;border-radius:16px 0 0 0;transition:opacity .15s,color .15s;z-index:10;user-select:none;font-size:12px;}
+.ai-resize-handle:hover{opacity:1;color:var(--cyan);}
+.ai-panel.dragging{user-select:none;}
+.ai-messages{padding:14px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;min-height:150px;}
+.ai-msg{padding:12px 15px;border-radius:12px;font-size:16px;line-height:1.7;max-width:88%;}
+.ai-msg.bot{background:var(--bg3);border:1px solid var(--border);align-self:flex-start;white-space:pre-wrap;}
+.ai-msg.user{background:rgba(0,212,255,.13);border:1px solid rgba(0,212,255,.2);align-self:flex-end;color:var(--cyan);}
+.ai-input-row{padding:14px;border-top:1px solid var(--border);display:flex;gap:10px;}
+.ai-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--text);font-size:15px;font-family:inherit;outline:none;resize:none;line-height:1.5;}
+.ai-input:focus{border-color:var(--cyan);}
+.ai-send{background:var(--cyan);border:none;color:#000;padding:11px 18px;border-radius:10px;cursor:pointer;font-weight:800;font-size:15px;font-family:inherit;}
+.ai-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:150;padding:0;}
+.mobile-nav-items{display:flex;}
+.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;cursor:pointer;font-size:10px;font-weight:700;color:var(--muted);transition:all .2s;border:none;background:none;font-family:inherit;}
+.mobile-nav-item.active{color:var(--cyan);}
+.mobile-nav-item .mn-icon{font-size:20px;line-height:1;}
+
+/* ── TERMS MODAL ── */
+#orca-terms-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+#orca-terms-overlay.open{display:flex;}
+.terms-modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;}
+.terms-modal h2{font-size:18px;font-weight:800;margin-bottom:4px;}
+.terms-modal .terms-sub{font-size:12px;color:var(--muted);margin-bottom:20px;}
+.terms-section{margin-bottom:16px;}
+.terms-section h3{font-size:13px;font-weight:700;color:var(--cyan);margin-bottom:6px;}
+.terms-section p{font-size:13px;color:var(--muted);line-height:1.7;}
+.terms-close{width:100%;padding:12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;}
+.terms-close:hover{border-color:var(--cyan);}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:820px){
+  .sidebar{display:none;}
+  .main{margin-left:0;padding:20px 16px 100px;}
+  .mode-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:30px;}
+  .hero-orca{font-size:56px;}
+  .mobile-nav{display:block;}
+  .ai-fab{bottom:74px;}
+  .ai-panel{width:calc(100vw - 28px);right:14px;bottom:130px;height:70vh;min-height:300px;}
+  .ai-resize-handle{display:none;}
+  .choice-grid{grid-template-columns:1fr 1fr;}
+  .issue-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .choice-grid{grid-template-columns:1fr;}
+  .issue-grid{grid-template-columns:1fr;}
+  .mode-grid{grid-template-columns:1fr;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="header">
+  <a href="#" class="logo" onclick="showSection('home');return false;">
+    <span class="logo-icon">🐬</span>
+    <span class="logo-text">OrcaApp<span>Builder</span></span>
+  </a>
+  <span class="header-tag">BUILD ON LIGHTCHAIN</span>
+  <div class="header-right">
+    <span class="health-dot" id="health-dot"></span>
+    <span class="health-label" id="health-label">AI</span>
+    <button class="wallet-btn" id="wallet-btn" onclick="connectWallet()">🔗 Connect Wallet</button>
+  </div>
+</header>
+
+<!-- ═══ LAYOUT ═══ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-tagline">Your step-by-step companion for building apps on the Lightchain AI blockchain — no coding experience needed.</div>
+
+    <div class="nav-section">Start Here</div>
+    <div class="nav-item active" onclick="showSection('home')" id="nav-home">
+      <span class="nav-icon">🏠</span>
+      <div><span class="nav-label">Home</span><span class="nav-sub">Pick your starting point</span></div>
+    </div>
+
+    <div class="nav-section">Build Your App</div>
+    <div class="nav-item" onclick="showSection('learn')" id="nav-learn">
+      <span class="nav-icon">📚</span>
+      <div><span class="nav-label">Learn</span><span class="nav-sub">Step-by-step guide, copy &amp; paste</span></div>
+    </div>
+    <div class="nav-item" onclick="showSection('brainstorm')" id="nav-brainstorm">
+      <span class="nav-icon">💡</span>
+      <div><span class="nav-label">Brainstorm</span><span class="nav-sub">AI helps you find your idea</span></div>
+    </div>
+    <div class="nav-item" onclick="showSection('build')" id="nav-build">
+      <span class="nav-icon">🔨</span>
+      <div><span class="nav-label">Build</span><span class="nav-sub">Turn your idea into a plan</span></div>
+    </div>
+    <div class="nav-item" onclick="showSection('troubleshoot')" id="nav-troubleshoot">
+      <span class="nav-icon">🔧</span>
+      <div><span class="nav-label">Troubleshoot</span><span class="nav-sub">Stuck? AI will help diagnose it</span></div>
+    </div>
+    <div class="nav-item" onclick="showSection('projects')" id="nav-projects">
+      <span class="nav-icon">📂</span>
+      <div><span class="nav-label">My Projects</span><span class="nav-sub">Save &amp; resume your work</span></div>
+    </div>
+    <div class="nav-item" onclick="showSection('links')" id="nav-links">
+      <span class="nav-icon">🔗</span>
+      <div><span class="nav-label">Links &amp; Accounts</span><span class="nav-sub">All your tools in one place</span></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="#" onclick="openTerms();return false;" style="font-size:12px;color:var(--muted);text-decoration:none;">📋 Terms &amp; Disclaimer</a>
+    </div>
+  </nav>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <main class="main">
+
+    <!-- ══ HOME ══ -->
+    <section id="section-home" class="section active">
+      <div class="hero">
+        <div class="hero-orca">🐬</div>
+        <h1 class="hero-title">Build Your First dApp<br>on Lightchain AI</h1>
+        <p class="hero-sub">No coding background? No problem. OrcaAppBuilder walks you through everything — from brainstorming your idea all the way to getting it live and listed on the Lightchain dApp Hub.</p>
+
+        <div class="mode-grid">
+          <div class="mode-card learn" onclick="showSection('learn')">
+            <div class="mode-card-icon">📚</div>
+            <div class="mode-card-title">Learn the Basics</div>
+            <div class="mode-card-desc">9 plain-English lessons covering everything from "what is a blockchain" to submitting your app to the official hub. Every command is copy-paste ready.</div>
+          </div>
+          <div class="mode-card brainstorm" onclick="showSection('brainstorm')">
+            <div class="mode-card-icon">💡</div>
+            <div class="mode-card-title">Brainstorm an Idea</div>
+            <div class="mode-card-desc">Not sure what to build? Tell the AI what you're interested in and it will help you come up with realistic app ideas that work on Lightchain.</div>
+          </div>
+          <div class="mode-card build" onclick="showSection('build')">
+            <div class="mode-card-icon">🔨</div>
+            <div class="mode-card-title">Build Your App</div>
+            <div class="mode-card-desc">Have an idea? Describe it and get a complete step-by-step build plan — what to create, how to set it up, and what code you need. Already started? Get help finishing it.</div>
+          </div>
+          <div class="mode-card troubleshoot" onclick="showSection('troubleshoot')">
+            <div class="mode-card-icon">🔧</div>
+            <div class="mode-card-title">Fix a Problem</div>
+            <div class="mode-card-desc">Something not working? Pick your issue or describe what's going wrong and the AI will walk you through fixing it step by step.</div>
+          </div>
+        </div>
+
+        <div class="pod-strip">
+          <div class="pod-title">🐬 Apps Built by the Orca Pod — You Can Build These Too</div>
+          <div class="pod-apps">
+            <a href="https://orcamail.ai" target="_blank" class="pod-app">OrcaMail 📧</a>
+            <a href="https://orcalearn.ai" target="_blank" class="pod-app">OrcaLearn 📖</a>
+            <a href="https://orcafiles.ai" target="_blank" class="pod-app">OrcaFiles 📁</a>
+            <a href="https://keiko-dev-lcai.github.io/orcaguard/" target="_blank" class="pod-app">OrcaGuard 🛡️</a>
+            <a href="https://orcamint.xyz" target="_blank" class="pod-app">OrcaMint 🎨</a>
+            <a href="https://smartcontractexplainer.xyz" target="_blank" class="pod-app">Contract Explainer 🔍</a>
+            <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" class="pod-app">Node Builder ⚡</a>
+          </div>
+        </div>
+
+        <div class="tip-jar">
+          <div class="tip-jar-title">☕ Support OrcaAppBuilder</div>
+          <div class="tip-jar-sub">This tool is completely free to use. If it helped you build something on Lightchain, a small tip in LCAI keeps it running. Connect your wallet above and send whatever feels right — totally optional, always appreciated.</div>
+          <div class="tip-btns">
+            <button class="tip-btn" onclick="sendTip('1')">1 LCAI</button>
+            <button class="tip-btn" onclick="sendTip('5')">5 LCAI</button>
+            <button class="tip-btn" onclick="sendTip('10')">10 LCAI</button>
+          </div>
+          <div class="tip-custom">
+            <input type="number" id="tip-custom-amount" placeholder="Custom amount" min="0.01" step="0.01">
+            <button onclick="sendCustomTip()">Send Tip ✨</button>
+          </div>
+          <div id="tip-status"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ══ LEARN ══ -->
+    <section id="section-learn" class="section">
+      <div class="page-header">
+        <div class="page-badge cyan">📚 STEP-BY-STEP GUIDE</div>
+        <h1 class="page-title">Learn to Build on Lightchain</h1>
+        <p class="page-sub">9 lessons that take you from "I've never built anything" to a live app on the Lightchain dApp Hub. Written in plain English — no jargon without an explanation.</p>
+      </div>
+
+      <!-- OS PICKER — persistent across all steps -->
+      <div class="os-picker-bar">
+        <div class="os-picker-label">🖥️ What computer are you using? Pick one and the instructions will adjust to match.</div>
+        <div class="os-picker">
+          <button class="os-btn" id="osbtn-win" onclick="setLearnOs('win')">🪟 Windows</button>
+          <button class="os-btn" id="osbtn-mac" onclick="setLearnOs('mac')">🍎 Mac</button>
+          <button class="os-btn" id="osbtn-linux" onclick="setLearnOs('linux')">🐧 Linux / Ubuntu</button>
+        </div>
+        <div class="os-please">👆 Tap your computer type above — instructions in each step will update automatically.</div>
+      </div>
+
+      <div class="steps-nav" id="learn-steps-nav">
+        <div class="step-pill active" onclick="showLearnStep(1)" id="spill-1">1 · What Is This?</div>
+        <div class="step-pill" onclick="showLearnStep(2)" id="spill-2">2 · Your Tools</div>
+        <div class="step-pill" onclick="showLearnStep(3)" id="spill-3">3 · Smart Contracts</div>
+        <div class="step-pill" onclick="showLearnStep(4)" id="spill-4">4 · AI (AIVM)</div>
+        <div class="step-pill" onclick="showLearnStep(5)" id="spill-5">5 · Frontend</div>
+        <div class="step-pill" onclick="showLearnStep(6)" id="spill-6">6 · Wallets &amp; Payments</div>
+        <div class="step-pill" onclick="showLearnStep(7)" id="spill-7">7 · Hosting</div>
+        <div class="step-pill" onclick="showLearnStep(8)" id="spill-8">8 · Deploy</div>
+        <div class="step-pill" onclick="showLearnStep(9)" id="spill-9">9 · Get Listed</div>
+      </div>
+
+      <!-- STEP 1 -->
+      <div class="learn-step active" id="lstep-1">
+        <div class="step-header-row">
+          <div class="step-num-big">1</div>
+          <div><div class="step-title">What Is All of This, Exactly?</div>
+          <div class="step-desc">Before writing a single line of code, let's make sure the big picture makes sense.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔵 What Is a Blockchain?</div>
+          <p>Think of a blockchain as a public notebook that thousands of computers around the world all keep a copy of. When you write something in it — like "User A paid User B" — every computer updates its copy. Nobody controls it, nobody can change what's already written, and anyone can read it.</p>
+          <p>That shared notebook is what makes apps on a blockchain special: payments, ownership records, and agreements happen automatically without a bank, company, or middleman.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚡ What Makes Lightchain AI Different?</div>
+          <p>Lightchain AI is a blockchain that also has a built-in AI network called <strong>AIVM</strong> (AI Virtual Machine). This means your app can:</p>
+          <ul>
+            <li>Accept and send payments in LCAI (Lightchain's currency) — like having a built-in cash register</li>
+            <li>Ask AI questions and get real AI responses — without needing an OpenAI account or API key</li>
+            <li>Store data or ownership records permanently on the blockchain</li>
+          </ul>
+          <p>Every AI request your app makes gets processed by a network of computers called <strong>worker nodes</strong>. Those computers earn LCAI for doing the work.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">🐬</span>
+          <div class="callout-body">
+            <strong>Real-World Example</strong>
+            OrcaMail (orcamail.ai) is a wallet-to-wallet email app built on Lightchain. Users pay a tiny amount of LCAI to send a message. No Gmail, no Google account, no middleman — just two wallets and the blockchain.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 Key Terms You'll See Everywhere</div>
+          <ul>
+            <li><strong>LCAI</strong> — the currency of Lightchain, like "crypto dollars" for this network</li>
+            <li><strong>Wallet</strong> — your account on the blockchain. An address like <span class="inline-code">0xABCD...1234</span>. Trust Wallet is what most people use.</li>
+            <li><strong>Smart Contract</strong> — a mini-program that lives on the blockchain and runs automatically (like a vending machine — you put money in, you get what you paid for)</li>
+            <li><strong>AIVM</strong> — Lightchain's built-in AI. Your app uses it like a brain.</li>
+            <li><strong>dApp</strong> — short for "decentralized app." An app that uses a blockchain instead of a traditional server.</li>
+            <li><strong>GitHub</strong> — a free website where developers store and share code. You'll use it to host your app for free.</li>
+            <li><strong>Railway</strong> — a service that runs your app's "back end" (the part users don't see) in the cloud, 24/7.</li>
+          </ul>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-body">
+            <strong>Trust Wallet Only</strong>
+            Lightchain does not have its own official wallet app. The recommended wallet is <strong>Trust Wallet</strong> (free on iOS and Android). MetaMask also works for desktop. Do NOT download any app that claims to be an "official Lightchain wallet" — those are scams.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-primary" onclick="showLearnStep(2)">Next: Your Tools →</button>
+          <span class="step-counter">1 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="learn-step" id="lstep-2">
+        <div class="step-header-row">
+          <div class="step-num-big">2</div>
+          <div><div class="step-title">Set Up Your Tools</div>
+          <div class="step-desc">You only need 3 free accounts to get started. Here's exactly what to sign up for and why.</div></div>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">✅</span>
+          <div class="callout-body">
+            <strong>Good News</strong>
+            You don't need to install complicated software to start. All three tools work in your web browser.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Tool 1 — GitHub (Free) · github.com</div>
+          <p><strong>What it is:</strong> A website where you store your code and host your app for free. Think of it like Google Docs, but for code.</p>
+          <p><strong>Why you need it:</strong> Your app will live on GitHub Pages — GitHub's free website hosting. When you push an update to GitHub, your app goes live in about 1 minute automatically.</p>
+          <p><strong>Sign up at:</strong> <a href="https://github.com" target="_blank" style="color:var(--cyan);">github.com</a> — free account is all you need.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Tool 2 — Railway (Free Trial, then ~$5/month) · railway.app</div>
+          <p><strong>What it is:</strong> A service that runs your app's server (the invisible part that processes AI requests) in the cloud, 24/7.</p>
+          <p><strong>Why you need it:</strong> If your app uses AI (AIVM), it needs a server running in the background. Railway is the simplest way to do this — just connect your GitHub repo and Railway handles the rest.</p>
+          <p><strong>Sign up at:</strong> <a href="https://railway.app" target="_blank" style="color:var(--cyan);">railway.app</a> — start with the free trial.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Tool 3 — Cloudflare (Free) · cloudflare.com</div>
+          <p><strong>What it is:</strong> A service that manages your domain name (yourapp.ai) and protects your site.</p>
+          <p><strong>Why you need it:</strong> When you're ready to register a real domain, Cloudflare Registrar has some of the cheapest prices. You'll also use Cloudflare's free DNS service to point your domain to your app.</p>
+          <p><strong>Sign up at:</strong> <a href="https://cloudflare.com" target="_blank" style="color:var(--cyan);">cloudflare.com</a> — free account is all you need to start.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <strong>Helpful Shortcut</strong>
+            Most apps in the Orca Pod were built using just GitHub + Railway. You don't need Cloudflare until you want a custom domain. Start with GitHub and Railway.
+          </div>
+        </div>
+
+        <!-- OS-SPECIFIC DESKTOP TOOLS -->
+        <div class="card">
+          <div class="card-title">💻 Two Small Things to Install on Your Computer</div>
+          <p>Everything above is browser-based. But to push your code to GitHub, you'll want two desktop tools. Pick the versions that match your computer:</p>
+        </div>
+
+        <!-- WINDOWS -->
+        <div class="os-block win card" style="border-color:rgba(0,120,215,.25);">
+          <div class="card-title"><span class="os-tag win">🪟 WINDOWS</span> Desktop Tools to Install</div>
+          <p><strong>1. GitHub Desktop</strong> — the easiest way to put your app files onto GitHub. Drag, click, done. No terminal needed.<br>
+          👉 Download: <a href="https://desktop.github.com" target="_blank" style="color:var(--cyan);">desktop.github.com</a> — free, just click the Windows installer and run it.</p>
+          <p><strong>2. VS Code</strong> — free code editor for editing your HTML files. Much better than Notepad.<br>
+          👉 Download: <a href="https://code.visualstudio.com" target="_blank" style="color:var(--cyan);">code.visualstudio.com</a> — click "Download for Windows", run the installer, accept defaults.</p>
+          <p><strong>3. Python</strong> — needed only if you're running an AI (AIVM) server locally. Skip this for now if you're just building a frontend.<br>
+          👉 Download: <a href="https://www.python.org/downloads/windows/" target="_blank" style="color:var(--cyan);">python.org/downloads/windows</a> — download the latest version, and <strong>check the box "Add Python to PATH"</strong> during install.</p>
+          <p><strong>4. Chrome Extensions (optional but helpful):</strong><br>
+          👉 <a href="https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn" target="_blank" style="color:var(--cyan);">MetaMask Chrome Extension</a> — for testing wallet features in your browser during development.<br>
+          👉 <a href="https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa" target="_blank" style="color:var(--cyan);">JSON Formatter</a> — makes API responses readable when debugging.</p>
+        </div>
+
+        <!-- MAC -->
+        <div class="os-block mac card" style="border-color:rgba(168,85,247,.25);">
+          <div class="card-title"><span class="os-tag mac">🍎 MAC</span> Desktop Tools to Install</div>
+          <p><strong>1. GitHub Desktop</strong> — easiest way to upload your files to GitHub.<br>
+          👉 Download: <a href="https://desktop.github.com" target="_blank" style="color:var(--cyan);">desktop.github.com</a> — free, download the Mac version and drag to Applications.</p>
+          <p><strong>2. VS Code</strong> — free code editor.<br>
+          👉 Download: <a href="https://code.visualstudio.com" target="_blank" style="color:var(--cyan);">code.visualstudio.com</a> — click "Download for Mac", open the zip, drag to Applications.</p>
+          <p><strong>3. Python</strong> — Mac may have Python 3 already. Check by opening Terminal and typing <span class="inline-code">python3 --version</span>. If it shows a version number, you're good. If not:<br>
+          👉 Download: <a href="https://www.python.org/downloads/mac-osx/" target="_blank" style="color:var(--cyan);">python.org/downloads/mac-osx</a></p>
+          <p><strong>4. Chrome Extensions (optional):</strong><br>
+          👉 <a href="https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa" target="_blank" style="color:var(--cyan);">JSON Formatter</a> — useful for debugging API responses.</p>
+        </div>
+
+        <!-- LINUX -->
+        <div class="os-block linux card" style="border-color:rgba(255,152,0,.25);">
+          <div class="card-title"><span class="os-tag linux">🐧 LINUX</span> Desktop Tools to Install</div>
+          <p><strong>1. Git</strong> — usually pre-installed. Check with <span class="inline-code">git --version</span>. If not:</p>
+          <div class="code-block" style="margin:8px 0 12px;">
+            <div class="code-header"><span class="code-label">Install Git (Ubuntu/Debian)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>sudo apt update && sudo apt install git -y</pre></div>
+          </div>
+          <p><strong>2. VS Code</strong> — <a href="https://code.visualstudio.com/download" target="_blank" style="color:var(--cyan);">code.visualstudio.com/download</a> — download the .deb package and install with <span class="inline-code">sudo dpkg -i code_*.deb</span></p>
+          <p><strong>3. Python 3</strong> — likely installed. Verify with <span class="inline-code">python3 --version</span>. If not: <span class="inline-code">sudo apt install python3 python3-pip -y</span></p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📱 You Also Need a Wallet</div>
+          <p>To test your app and pay for AIVM calls during development, you'll need a wallet with some LCAI in it. Here's what you need:</p>
+          <ul>
+            <li><strong>Trust Wallet</strong> — download free from the App Store or Google Play</li>
+            <li><strong>Some LCAI</strong> — buy on Uniswap (uniswap.org) or get from the Lightchain Discord community</li>
+            <li><strong>Lightchain network added to Trust Wallet:</strong> Chain ID 9200, RPC: https://rpc.mainnet.lightchain.ai, Symbol: LCAI</li>
+          </ul>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(1)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(3)">Next: Smart Contracts →</button>
+          <span class="step-counter">2 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="learn-step" id="lstep-3">
+        <div class="step-header-row">
+          <div class="step-num-big">3</div>
+          <div><div class="step-title">Smart Contracts — Your App's Cash Register</div>
+          <div class="step-desc">Not every app needs one, but if you want to collect payments or track ownership, you need a smart contract.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🤔 Do You Even Need a Smart Contract?</div>
+          <p>Honest answer: not always. Here's a quick guide:</p>
+          <ul>
+            <li><strong>Collecting LCAI payments from users →</strong> Yes, you need a contract</li>
+            <li><strong>Minting NFTs (digital collectibles) →</strong> Yes, you need a contract</li>
+            <li><strong>Just using AI chat in your app →</strong> No contract needed (server pays for AI)</li>
+            <li><strong>Free informational app →</strong> No contract needed</li>
+          </ul>
+          <p>If you're not sure, build the app first without a contract and add one later when users want to pay for things.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔧 What a Payment Gate Contract Looks Like</div>
+          <p>The simplest useful contract is a "payment gate" — users send LCAI to get access to your app. Here's the exact pattern used by the Orca Pod apps:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">PaymentGate.sol — Basic Access Contract</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract PaymentGate {
+    address public owner;
+    uint256 public price;           // price in LCAI (wei)
+    uint256 public duration = 30 days;
+    mapping(address => uint256) public accessExpiry;
+
+    constructor(uint256 _price) {
+        owner = msg.sender;
+        price = _price;
+    }
+
+    // Users call this to pay for access
+    function purchaseAccess() external payable {
+        require(msg.value >= price, "Not enough LCAI");
+        uint256 start = block.timestamp > accessExpiry[msg.sender]
+            ? block.timestamp : accessExpiry[msg.sender];
+        accessExpiry[msg.sender] = start + duration;
+    }
+
+    // Your app calls this to check if a user has paid
+    function hasAccess(address user) public view returns (bool) {
+        return accessExpiry[user] > block.timestamp;
+    }
+
+    // You call this to withdraw the collected LCAI
+    function withdraw() external {
+        require(msg.sender == owner);
+        payable(owner).transfer(address(this).balance);
+    }
+
+    function setPrice(uint256 _price) external {
+        require(msg.sender == owner);
+        price = _price;
+    }
+}</pre></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚀 How to Deploy This Contract — Two Options</div>
+          <p><strong>Option A (Recommended for beginners):</strong> Remix IDE — runs entirely in your browser, nothing to install, works on Windows, Mac, and Linux equally.</p>
+          <p><strong>Option B (Advanced):</strong> Foundry command-line tool — faster once set up, but requires a terminal and OS-specific installation.</p>
+        </div>
+
+        <!-- OPTION A: REMIX IDE - shown always -->
+        <div class="callout success">
+          <span class="callout-icon">✅</span>
+          <div class="callout-body">
+            <strong>Option A — Remix IDE (No Install Required, Works in Chrome)</strong>
+            Remix is a free, browser-based Solidity IDE made by the Ethereum Foundation. Open it in any browser and you're ready to deploy in 5 minutes.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 Deploying with Remix IDE — Step by Step</div>
+          <ol>
+            <li><strong>Open Remix:</strong> Go to <a href="https://remix.ethereum.org" target="_blank" style="color:var(--cyan);">remix.ethereum.org</a> in Chrome (no account needed)</li>
+            <li><strong>Create the file:</strong> In the left panel, click the "+" icon → name it <span class="inline-code">PaymentGate.sol</span> → paste the contract code from above</li>
+            <li><strong>Compile it:</strong> Click the "Solidity Compiler" icon (looks like an S with arrows) on the left → click <span class="inline-code">Compile PaymentGate.sol</span> → you should see a green checkmark</li>
+            <li><strong>Connect your wallet:</strong> Click the "Deploy & Run" icon (looks like an Ethereum logo) → under "Environment" choose <span class="inline-code">Injected Provider - MetaMask</span> (or WalletConnect)</li>
+            <li><strong>Add Lightchain network to your wallet:</strong> Chain ID: <span class="inline-code">9200</span>, RPC: <span class="inline-code">https://rpc.mainnet.lightchain.ai</span>, Symbol: <span class="inline-code">LCAI</span></li>
+            <li><strong>Set the price:</strong> In the Deploy section, enter the price in the constructor field. 1 LCAI = <span class="inline-code">1000000000000000000</span> (that's 1 followed by 18 zeros). For 5 LCAI enter <span class="inline-code">5000000000000000000</span></li>
+            <li><strong>Deploy:</strong> Click the orange <span class="inline-code">Deploy</span> button → confirm in your wallet → wait ~10 seconds → your contract address appears at the bottom of the page. Copy it and save it — you'll need it in your app's HTML.</li>
+          </ol>
+        </div>
+
+        <!-- OPTION B: FOUNDRY - OS specific -->
+        <div class="card" style="margin-top:8px;">
+          <div class="card-title">⚙️ Option B — Foundry (Advanced, Command Line)</div>
+          <p>Foundry is faster for repeat deployments and is what the Orca Pod apps use. Installation differs by operating system:</p>
+        </div>
+
+        <!-- Windows Foundry -->
+        <div class="os-block win">
+          <div class="callout warn">
+            <span class="callout-icon">🪟</span>
+            <div class="callout-body">
+              <strong>Windows — Use WSL2 for Foundry</strong>
+              Foundry doesn't run natively on Windows. The fix is to install WSL2 (Windows Subsystem for Linux) — a free Windows feature that runs a Linux terminal inside Windows. Takes about 10 minutes to set up once.
+            </div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-label">Step 1: Install WSL2 (run in PowerShell as Administrator)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>wsl --install</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-label">Step 2: Inside your new WSL2 terminal, install Foundry</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc
+foundryup</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-label">Step 3: Deploy your contract (inside WSL2 terminal)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>forge create PaymentGate.sol:PaymentGate \
+  --constructor-args 5000000000000000000 \
+  --private-key YOUR_WALLET_PRIVATE_KEY \
+  --rpc-url https://rpc.mainnet.lightchain.ai \
+  --chain-id 9200</pre></div>
+          </div>
+        </div>
+
+        <!-- Mac/Linux Foundry -->
+        <div class="os-block mac">
+          <div class="code-block">
+            <div class="code-header"><span class="code-label"><span class="os-tag mac">🍎 MAC</span> Install Foundry (run in Terminal)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>curl -L https://foundry.paradigm.xyz | bash
+source ~/.zshrc
+foundryup</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-label">Deploy to Lightchain</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>forge create PaymentGate.sol:PaymentGate \
+  --constructor-args 5000000000000000000 \
+  --private-key YOUR_WALLET_PRIVATE_KEY \
+  --rpc-url https://rpc.mainnet.lightchain.ai \
+  --chain-id 9200</pre></div>
+          </div>
+        </div>
+
+        <div class="os-block linux">
+          <div class="code-block">
+            <div class="code-header"><span class="code-label"><span class="os-tag linux">🐧 LINUX</span> Install Foundry</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>curl -L https://foundry.paradigm.xyz | bash
+source ~/.bashrc
+foundryup</pre></div>
+          </div>
+          <div class="code-block">
+            <div class="code-header"><span class="code-label">Deploy to Lightchain</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>forge create PaymentGate.sol:PaymentGate \
+  --constructor-args 5000000000000000000 \
+  --private-key YOUR_WALLET_PRIVATE_KEY \
+  --rpc-url https://rpc.mainnet.lightchain.ai \
+  --chain-id 9200</pre></div>
+          </div>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-body">
+            <strong>Keep Your Private Key Safe</strong>
+            Your private key is like the master password to your wallet. Never put it directly in your code files. Store it as an environment variable (a secret setting on Railway or your server) and reference it as <span class="inline-code">$PRIVATE_KEY</span> in commands.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(2)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(4)">Next: AI (AIVM) →</button>
+          <span class="step-counter">3 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="learn-step" id="lstep-4">
+        <div class="step-header-row">
+          <div class="step-num-big">4</div>
+          <div><div class="step-title">Adding AI to Your App (AIVM)</div>
+          <div class="step-desc">This is what makes Lightchain apps special. Here's how to add AI the right way — the easy way.</div></div>
+        </div>
+
+        <div class="callout danger">
+          <span class="callout-icon">🚨</span>
+          <div class="callout-body">
+            <strong>Read This First — It Will Save You Days of Frustration</strong>
+            There is NO simple "send a POST request to get an AI response" endpoint on Lightchain. If you search online or ask a generic AI assistant, they may suggest <span class="inline-code">/v1/chat/completions</span> — that does NOT exist on Lightchain. The AIVM flow has 9 steps and requires blockchain transactions. The easiest solution is to use a server-side wrapper (like the one below) so your users never see any of that complexity.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 The Easy Way: Server-Side AIVM</div>
+          <p>Your app's server (running on Railway) handles the entire AIVM flow behind the scenes. From the user's perspective, they type a question and an answer appears. Simple.</p>
+          <p>Your Python server on Railway does all 9 steps automatically and just sends the final text response back to your frontend.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📦 Exact Python Packages Required — Do Not Change These Versions</div>
+          <p>Create a file called <span class="inline-code">requirements.txt</span> in your server folder and paste this in exactly. Railway reads this file to install the right packages automatically.</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">requirements.txt — Copy this exactly</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>eth-account==0.13.7
+web3==7.6.0
+cryptography
+websocket-client
+requests</pre></div>
+        </div>
+
+        <!-- OS-specific pip install notes -->
+        <div class="os-block win card" style="border-color:rgba(0,120,215,.25);">
+          <div class="card-title"><span class="os-tag win">🪟 WINDOWS</span> Installing Python Packages Locally</div>
+          <p>If you want to test your server on your Windows PC before pushing to Railway, open <strong>Command Prompt</strong> (search "cmd" in Start menu) and run:</p>
+          <div class="code-block" style="margin:8px 0 0;">
+            <div class="code-header"><span class="code-label">Install packages — Windows Command Prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>pip install eth-account==0.13.7 web3==7.6.0 cryptography websocket-client requests</pre></div>
+          </div>
+          <p style="margin-top:10px;">If you see "pip is not recognized", try <span class="inline-code">py -m pip install ...</span> instead. And make sure you checked "Add Python to PATH" when you installed Python (see Step 2).</p>
+          <p>To run your server locally: <span class="inline-code">py server.py</span> (Windows uses <span class="inline-code">py</span>, not <span class="inline-code">python3</span>)</p>
+        </div>
+
+        <div class="os-block mac card" style="border-color:rgba(168,85,247,.25);">
+          <div class="card-title"><span class="os-tag mac">🍎 MAC</span> Installing Python Packages Locally</div>
+          <p>Open <strong>Terminal</strong> (search in Spotlight) and run:</p>
+          <div class="code-block" style="margin:8px 0 0;">
+            <div class="code-header"><span class="code-label">Install packages — Mac Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>pip3 install eth-account==0.13.7 web3==7.6.0 cryptography websocket-client requests</pre></div>
+          </div>
+          <p style="margin-top:10px;">To run your server locally: <span class="inline-code">python3 server.py</span></p>
+        </div>
+
+        <div class="os-block linux card" style="border-color:rgba(255,152,0,.25);">
+          <div class="card-title"><span class="os-tag linux">🐧 LINUX</span> Installing Python Packages Locally</div>
+          <div class="code-block" style="margin:8px 0 0;">
+            <div class="code-header"><span class="code-label">Install packages — Linux terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>pip3 install eth-account==0.13.7 web3==7.6.0 cryptography websocket-client requests</pre></div>
+          </div>
+          <p style="margin-top:10px;">To run: <span class="inline-code">python3 server.py</span></p>
+        </div>
+
+        <div class="callout danger">
+          <span class="callout-icon">🚨</span>
+          <div class="callout-body">
+            <strong>Version Warning — Confirmed From Real Experience</strong>
+            Using <span class="inline-code">eth-account==0.11.3</span> will silently fail with "Invalid SIWE signature" every single time. Using <span class="inline-code">web3==6.x</span> will conflict with eth-account 0.13.7 and fail to install. These exact versions (0.13.7 + 7.6.0) are the only tested, confirmed-working combination.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔌 The API Your Frontend Calls</div>
+          <p>Once your server is running, your frontend (HTML page) makes one simple call:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Frontend JavaScript — ask your AI</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>async function askAI(userMessage) {
+  const response = await fetch('https://your-railway-url.up.railway.app/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userMessage })
+  });
+  const data = await response.json();
+  return data.reply;  // plain text response from the AI
+}</pre></div>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <strong>Where to Get the Full Server Code</strong>
+            The OrcaAppBuilder backend (orcaapp-server.py) is a complete, working example. The <span class="inline-code">run_aivm_inference()</span> function handles the entire AIVM flow. Copy the AIVMClient pattern and change the system prompt to match your app.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💰 What AIVM Costs</div>
+          <ul>
+            <li>Each AI call costs approximately <strong>0.02 LCAI</strong> from your dApp wallet</li>
+            <li>Your dApp wallet is separate from your personal wallet — fund it with ~100 LCAI to start</li>
+            <li>The LIGHTCHAIN_PRIVATE_KEY environment variable on Railway is this dApp wallet's private key</li>
+            <li>Never use your personal Trust Wallet key as the dApp wallet key</li>
+          </ul>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(3)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(5)">Next: Frontend →</button>
+          <span class="step-counter">4 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="learn-step" id="lstep-5">
+        <div class="step-header-row">
+          <div class="step-num-big">5</div>
+          <div><div class="step-title">Building Your Frontend — The Part Users See</div>
+          <div class="step-desc">Good news: you can build a professional-looking app in a single HTML file with no build tools at all.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 Why Single-File HTML Is the Best Approach</div>
+          <p>Most Lightchain dApps are built as a single <strong>index.html</strong> file. Everything — the design, the buttons, the wallet connection logic — lives in one file. The benefits:</p>
+          <ul>
+            <li>✅ No "npm install", no build tools, no complicated setup</li>
+            <li>✅ Works on any computer — just open the file in a browser</li>
+            <li>✅ Hosted for free on GitHub Pages</li>
+            <li>✅ Updates go live in about 60 seconds after you save and push</li>
+            <li>✅ Easy to share — just one file</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏗️ Basic HTML App Structure</div>
+          <p>Every Orca Pod app follows this same skeleton:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">index.html — The basic structure</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Your App Name&lt;/title&gt;
+  &lt;!-- Load ethers.js (wallet connection library) --&gt;
+  &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"&gt;&lt;/script&gt;
+  &lt;style&gt;
+    /* Your CSS goes here */
+    body { font-family: sans-serif; background: #0a0f1e; color: #e8eaf0; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;h1&gt;My Lightchain App&lt;/h1&gt;
+  &lt;button onclick="connectWallet()"&gt;Connect Wallet&lt;/button&gt;
+  &lt;div id="address"&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    async function connectWallet() {
+      // This is the only code you need to connect Trust Wallet
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send('eth_requestAccounts', []);
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      document.getElementById('address').textContent = 'Connected: ' + address;
+    }
+  &lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre></div>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-body">
+            <strong>One Common Bug to Avoid</strong>
+            Never put a straight double-quote character ( " ) inside JavaScript strings that are already wrapped in double quotes. It will silently break your entire script and nothing will work. Use single quotes inside double-quoted strings, or the other way around: <span class="inline-code">let msg = "She said 'hello'"</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎨 Making It Look Good</div>
+          <p>You don't need to be a designer. The Orca Pod apps all use the same simple approach:</p>
+          <ul>
+            <li>Dark navy background (<span class="inline-code">#080c18</span>) — matches the Lightchain vibe</li>
+            <li>Cyan accent color (<span class="inline-code">#00d4ff</span>) for buttons and highlights</li>
+            <li>CSS variables so you only define colors once and change everything at once</li>
+            <li>CSS Grid or Flexbox for layout — no extra libraries needed</li>
+          </ul>
+          <p>If you want to use the exact same design system as this app, the full CSS is in the OrcaAppBuilder source code — feel free to copy it.</p>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(4)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(6)">Next: Wallets &amp; Payments →</button>
+          <span class="step-counter">5 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 6 -->
+      <div class="learn-step" id="lstep-6">
+        <div class="step-header-row">
+          <div class="step-num-big">6</div>
+          <div><div class="step-title">Wallets &amp; Payments</div>
+          <div class="step-desc">How to connect a user's wallet and accept LCAI payments in your app.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔌 Connecting Trust Wallet</div>
+          <p>When a user clicks "Connect Wallet" in your app, their Trust Wallet (or MetaMask) pops up asking for permission. Here's the complete, working code:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">wallet.js — Full wallet connection + network check</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>const LIGHTCHAIN_CHAIN_ID = '0x23F8'; // 9200 in hex
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('No wallet found. Please install Trust Wallet or MetaMask.');
+    return null;
+  }
+
+  try {
+    // Ask user to approve the connection
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+
+    // Make sure they're on Lightchain (not Ethereum)
+    const network = await provider.getNetwork();
+    if (network.chainId !== 9200n) {
+      // Ask wallet to switch to Lightchain
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: LIGHTCHAIN_CHAIN_ID }]
+        });
+      } catch (switchError) {
+        // If Lightchain isn't in their wallet yet, add it
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: LIGHTCHAIN_CHAIN_ID,
+            chainName: 'Lightchain AI Mainnet',
+            nativeCurrency: { name: 'LCAI', symbol: 'LCAI', decimals: 18 },
+            rpcUrls: ['https://rpc.mainnet.lightchain.ai'],
+            blockExplorerUrls: ['https://mainnet.lightscan.app']
+          }]
+        });
+      }
+    }
+
+    return { provider, signer, address };
+  } catch (error) {
+    if (error.code === 4001) {
+      alert('You declined the connection request. Click Connect Wallet again to try.');
+    }
+    return null;
+  }
+}</pre></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💸 Collecting a Payment</div>
+          <p>Once the wallet is connected, collecting payment for access is a simple contract call:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">payment.js — Collect LCAI from user</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>const CONTRACT_ADDRESS = '0xYourContractAddress';
+const CONTRACT_ABI = [
+  'function purchaseAccess() external payable',
+  'function hasAccess(address user) public view returns (bool)'
+];
+
+async function purchaseAccess(walletData) {
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, walletData.signer);
+
+  // 5 LCAI = '5000000000000000000' (18 zeros = 1 LCAI)
+  const price = ethers.parseEther('5.0');
+
+  try {
+    const tx = await contract.purchaseAccess({ value: price });
+    // Show a loading message while the transaction confirms
+    console.log('Transaction sent:', tx.hash);
+    await tx.wait(); // Wait for blockchain confirmation
+    console.log('Payment confirmed!');
+    return true;
+  } catch (error) {
+    if (error.code === 4001) {
+      alert('You cancelled the transaction in your wallet.');
+    }
+    return false;
+  }
+}</pre></div>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <strong>Dynamic Pricing Tip</strong>
+            LCAI's price in USD changes constantly. Instead of hardcoding a price in LCAI, fetch the live LCAI/USD price from DexScreener's free API and calculate how many LCAI = $1 (or whatever you charge). This way your app always charges roughly the right amount in real dollars.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(5)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(7)">Next: Hosting →</button>
+          <span class="step-counter">6 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 7 -->
+      <div class="learn-step" id="lstep-7">
+        <div class="step-header-row">
+          <div class="step-num-big">7</div>
+          <div><div class="step-title">Hosting — Where Your App Lives</div>
+          <div class="step-desc">Two options depending on what your app needs.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 Option A: GitHub Pages — For Simple Apps (Free)</div>
+          <p>If your app is a single HTML file with no Python server, GitHub Pages hosts it for free. This is perfect for apps where the AI runs server-side on Railway and your frontend just calls it.</p>
+          <ol>
+            <li>Create a new repository on GitHub (click the + button at the top)</li>
+            <li>Upload your <span class="inline-code">index.html</span> file</li>
+            <li>Go to Settings → Pages → set Source to "main branch"</li>
+            <li>Your app is live at <span class="inline-code">yourusername.github.io/yourrepo</span></li>
+          </ol>
+          <p>Every time you update your HTML file and push to GitHub, the live site updates automatically.</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚂 Option B: Railway — For Apps With a Python Server ($5/month)</div>
+          <p>If your app needs AIVM or a database, you need a Python server running somewhere. Railway is the simplest option.</p>
+          <ol>
+            <li>Create a new project on Railway (railway.app)</li>
+            <li>Click "New Service" → "GitHub Repo" → pick your repo</li>
+            <li>Railway will auto-detect Python and install your requirements.txt</li>
+            <li>Set your environment variables (LIGHTCHAIN_PRIVATE_KEY, etc.) in the Railway dashboard</li>
+            <li>Every time you push to GitHub, Railway auto-deploys in about 2 minutes</li>
+          </ol>
+        </div>
+
+        <div class="callout danger">
+          <span class="callout-icon">🚨</span>
+          <div class="callout-body">
+            <strong>Important Railway Rule</strong>
+            Never run <span class="inline-code">railway up</span> from your terminal. Railway auto-deploys from GitHub, and a manual "railway up" gets overwritten the next time you push. Always update your code by pushing to GitHub.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📁 What Files Your Railway Repo Needs</div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Your Railway repo structure</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>your-app-server/
+├── server.py          ← your Python server
+├── requirements.txt   ← package list (exact versions matter!)
+├── Procfile           ← tells Railway how to start your server
+└── railway.toml       ← optional: health check config</pre></div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Procfile — tells Railway how to start your app</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>web: python server.py</pre></div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(6)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(8)">Next: Deploy →</button>
+          <span class="step-counter">7 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 8 -->
+      <div class="learn-step" id="lstep-8">
+        <div class="step-header-row">
+          <div class="step-num-big">8</div>
+          <div><div class="step-title">Going Live — Deploying Your App</div>
+          <div class="step-desc">The exact workflow to push updates to your live app.</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌐 Deploying Frontend Updates (GitHub Pages)</div>
+          <p>Every time you edit your index.html, you push it to GitHub and the live site updates in about 60 seconds. Two ways to do this — pick the one that matches your setup:</p>
+        </div>
+
+        <!-- GitHub Desktop option (Windows + Mac) -->
+        <div class="os-block win-mac card" style="border-color:rgba(0,212,255,.2);">
+          <div class="card-title">
+            <span class="os-tag win">🪟</span><span class="os-tag mac">🍎</span> GitHub Desktop — Easiest Option (No Terminal)
+          </div>
+          <ol>
+            <li>Open <strong>GitHub Desktop</strong> (download at <a href="https://desktop.github.com" target="_blank" style="color:var(--cyan);">desktop.github.com</a> if you haven't already)</li>
+            <li>Click <strong>"Add repository"</strong> → find your app folder on your computer</li>
+            <li>Edit your <span class="inline-code">index.html</span> in VS Code and save it</li>
+            <li>Switch back to GitHub Desktop — your change appears automatically in the left panel</li>
+            <li>Type a brief note in the "Summary" box (example: <em>Update: fixed the buy button</em>)</li>
+            <li>Click the blue <strong>"Commit to main"</strong> button → then click <strong>"Push origin"</strong></li>
+            <li>Go to <span class="inline-code">yourusername.github.io/yourrepo</span> — your app is live in about 60 seconds ✅</li>
+          </ol>
+        </div>
+
+        <!-- Command line option (all OS) -->
+        <div class="card">
+          <div class="card-title">⌨️ Command Line Option (All Operating Systems)</div>
+          <p>If you prefer the terminal, run these commands from inside your project folder:</p>
+        </div>
+
+        <div class="os-block win">
+          <div class="code-block">
+            <div class="code-header"><span class="code-label"><span class="os-tag win">🪟 WINDOWS</span> Push update — Command Prompt or WSL2</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>cd C:\Users\YourName\Desktop\your-app-folder
+git add index.html
+git commit -m "Update: describe what you changed"
+git push origin main</pre></div>
+          </div>
+        </div>
+
+        <div class="os-block mac">
+          <div class="code-block">
+            <div class="code-header"><span class="code-label"><span class="os-tag mac">🍎 MAC</span> Push update — Terminal</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>cd ~/Desktop/your-app-folder
+git add index.html
+git commit -m "Update: describe what you changed"
+git push origin main</pre></div>
+          </div>
+        </div>
+
+        <div class="os-block linux">
+          <div class="code-block">
+            <div class="code-header"><span class="code-label"><span class="os-tag linux">🐧 LINUX</span> Push update</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <div class="code-content"><pre>cd ~/Desktop/your-app-folder
+git add index.html
+git commit -m "Update: describe what you changed"
+git push origin main</pre></div>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-body">
+            <strong>First Time Setup? (Command Line Only)</strong>
+            If you've never used git before, run these two commands once before your first push:
+            <span class="inline-code">git config --global user.email "you@email.com"</span> and
+            <span class="inline-code">git config --global user.name "Your Name"</span>
+            Then connect your folder to GitHub: <span class="inline-code">git remote add origin https://github.com/yourusername/yourrepo.git</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚂 Deploying Server Updates (Railway)</div>
+          <p>Railway auto-deploys from GitHub. To update your server:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">Push server update to Railway (via GitHub)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>cd ~/Desktop/your-server-folder
+git add -A
+git commit -m "Update: describe what changed"
+git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo.git main</pre></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✅ Post-Launch Checklist</div>
+          <ul>
+            <li>☐ Test your app on mobile (open on your phone)</li>
+            <li>☐ Test wallet connection with Trust Wallet</li>
+            <li>☐ Test the AI chat (make sure AIVM responses come through)</li>
+            <li>☐ Add a Terms &amp; Disclaimer to your app (important for liability)</li>
+            <li>☐ Announce in the Lightchain Discord: discord.gg/lightchain</li>
+          </ul>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(7)">← Back</button>
+          <button class="btn btn-primary" onclick="showLearnStep(9)">Next: Get Listed →</button>
+          <span class="step-counter">8 of 9</span>
+        </div>
+      </div>
+
+      <!-- STEP 9 -->
+      <div class="learn-step" id="lstep-9">
+        <div class="step-header-row">
+          <div class="step-num-big">9</div>
+          <div><div class="step-title">Get Listed on the dApp Hub</div>
+          <div class="step-desc">Submit your app to hub.lightchain.ai — the official Lightchain app store.</div></div>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">🎉</span>
+          <div class="callout-body">
+            <strong>This Is the Finish Line</strong>
+            Getting listed on the dApp Hub puts your app in front of the entire Lightchain community. It's free to submit.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 What You Need Before Submitting</div>
+          <ul>
+            <li>✅ Your app is live at a public URL</li>
+            <li>✅ Your app uses the blockchain (AIVM, LCAI payments, or a smart contract)</li>
+            <li>✅ A square logo image (any size, PNG)</li>
+            <li>✅ A thumbnail image (exactly 800×450 pixels — tip: make it in Canva for free)</li>
+            <li>✅ A GitHub account</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📝 Your Submission JSON File</div>
+          <p>Create a file called <span class="inline-code">dapp-yourapp.json</span> with this format:</p>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-label">dapp-yourapp.json — Your submission file</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+          <div class="code-content"><pre>{
+  "id": "dapp-yourapp",
+  "name": "Your App Name",
+  "tagline": "One catchy sentence about what it does",
+  "description": "2-3 sentences. What your app does, who it helps, and what makes it unique. Be specific — say what blockchain feature it uses.",
+  "tags": ["AI", "TOOLS", "MAINNET"],
+  "iconSrc": "/images/dapp-item-logo/yourapp-logo.png",
+  "imageSrc": "/images/dapp-item-thumb/yourapp-thumb.png",
+  "externalUrl": "https://yourapp.ai"
+}</pre></div>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-body">
+            <strong>Tag Rules — Maximum 3 Tags</strong>
+            You can only use 3 tags maximum, and they must come from the approved list. Approved tags include: AI, WORKERS, TOOLS, BUILDER, INFRA, ANALYTICS, MAINNET, NFT, MARKETPLACE, MINTING, DEFI, SWAP, LENDING, STAKING, DEX, BRIDGE, SOCIAL, DAO, GAMING. Do NOT use SECURITY, STORAGE, or NODE — they are not in the approved list.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔀 How to Submit (Fork &amp; PR)</div>
+          <p>A "PR" (Pull Request) is how you submit your app. It's like saying "here's my addition to your project — please review it."</p>
+          <ol>
+            <li>Go to: <a href="https://github.com/lightchain-protocol/lcai-dApp-hub" target="_blank" style="color:var(--cyan);">github.com/lightchain-protocol/lcai-dApp-hub</a></li>
+            <li>Click <strong>Fork</strong> (top right) — this makes your own copy</li>
+            <li>In your fork, upload your JSON file to <span class="inline-code">constants/additionalDapps/</span></li>
+            <li>Upload your logo to <span class="inline-code">public/images/dapp-item-logo/</span></li>
+            <li>Upload your thumbnail to <span class="inline-code">public/images/dapp-item-thumb/</span></li>
+            <li>Click <strong>Contribute → Open pull request</strong></li>
+            <li>Write a short description and submit — the Lightchain team will review it</li>
+          </ol>
+        </div>
+
+        <div class="callout success">
+          <span class="callout-icon">🐬</span>
+          <div class="callout-body">
+            <strong>You Did It!</strong>
+            You've gone from zero to a live app listed on the official Lightchain dApp Hub. Welcome to the builder community. Jump into the Lightchain Discord (discord.gg/lightchain) and announce your app with #BuildOnLightchain.
+          </div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="showLearnStep(8)">← Back</button>
+          <button class="btn btn-primary" onclick="showSection('brainstorm')">💡 Need an idea? Brainstorm →</button>
+          <span class="step-counter">9 of 9</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BRAINSTORM ══ -->
+    <section id="section-brainstorm" class="section">
+      <div class="page-header">
+        <div class="page-badge purple">💡 AI BRAINSTORM WIZARD</div>
+        <h1 class="page-title">Find Your App Idea</h1>
+        <p class="page-sub">Not sure what to build? Answer a few questions and our AI will suggest real, buildable app ideas specifically for Lightchain. No experience needed.</p>
+      </div>
+
+      <div class="wizard-progress" id="bwiz-progress">
+        <div class="wiz-dot active" id="bwiz-d1"></div>
+        <div class="wiz-dot" id="bwiz-d2"></div>
+        <div class="wiz-dot" id="bwiz-d3"></div>
+      </div>
+
+      <!-- BRAINSTORM STEP 1: Category -->
+      <div class="wizard-step active" id="bwiz-1">
+        <div class="card">
+          <div class="card-title">Step 1 of 3 — What world are you most interested in?</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Pick the one that excites you most. Don't overthink it — there are no wrong answers.</p>
+          <div class="choice-grid" id="bwiz-category-grid">
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','DeFi','selected')">
+              <div class="choice-icon">💰</div>
+              <div class="choice-label">Money &amp; Finance</div>
+              <div class="choice-sub">Payments, lending, trading, saving</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','NFTs &amp; Art','selected')">
+              <div class="choice-icon">🎨</div>
+              <div class="choice-label">Art &amp; Collectibles</div>
+              <div class="choice-sub">NFTs, digital art, creator tools</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','Community &amp; Social','selected')">
+              <div class="choice-icon">👥</div>
+              <div class="choice-label">Community &amp; Social</div>
+              <div class="choice-sub">Groups, messaging, reputation</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','AI Tools','selected')">
+              <div class="choice-icon">🤖</div>
+              <div class="choice-label">AI-Powered Tools</div>
+              <div class="choice-sub">Generators, analyzers, assistants</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','Education &amp; Learning','selected')">
+              <div class="choice-icon">📚</div>
+              <div class="choice-label">Education</div>
+              <div class="choice-sub">Courses, tutors, quizzes</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','Security &amp; Safety','selected')">
+              <div class="choice-icon">🛡️</div>
+              <div class="choice-label">Security &amp; Safety</div>
+              <div class="choice-sub">Scam protection, audits, verification</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','Productivity &amp; Files','selected')">
+              <div class="choice-icon">📁</div>
+              <div class="choice-label">Productivity</div>
+              <div class="choice-sub">File management, notes, organization</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bwiz-category','Gaming &amp; Fun','selected')">
+              <div class="choice-icon">🎮</div>
+              <div class="choice-label">Games &amp; Fun</div>
+              <div class="choice-sub">Games, competitions, rewards</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="bwiz-category" value="">
+        <div class="step-nav">
+          <button class="btn btn-primary purple" onclick="bwizNext(1)" id="bwiz-next1" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- BRAINSTORM STEP 2: Experience & Audience -->
+      <div class="wizard-step" id="bwiz-2">
+        <div class="card">
+          <div class="card-title">Step 2 of 3 — Tell us a bit more</div>
+          <div class="field-group">
+            <label class="field-label">Who would use your app?</label>
+            <div class="field-sub">Think about the person who would open it and what problem they have that day.</div>
+            <textarea class="field-input field-textarea" id="bwiz-audience" placeholder="Example: New crypto users who don't know how to spot scams. Or: Parents who want to teach their kids with AI. Or: Musicians who want to sell their art as NFTs."></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Any specific idea already in your head? (optional)</label>
+            <div class="field-sub">Even a rough half-idea is helpful. Leave blank if you have nothing yet.</div>
+            <textarea class="field-input field-textarea" id="bwiz-seed-idea" placeholder="Example: Something like a 'Shazam for crypto' that identifies a token just by pasting the contract address. Or: A tip jar app for content creators that accepts LCAI."></textarea>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="bwizBack(2)">← Back</button>
+          <button class="btn btn-primary purple" onclick="bwizNext(2)">Generate Ideas →</button>
+        </div>
+      </div>
+
+      <!-- BRAINSTORM STEP 3: AI Response -->
+      <div class="wizard-step" id="bwiz-3">
+        <div class="card">
+          <div class="card-title">Step 3 of 3 — Your Personalized App Ideas</div>
+          <p style="font-size:14px;color:var(--muted);">The AI is coming up with ideas based on what you told us...</p>
+        </div>
+        <div id="bwiz-result">
+          <div class="ai-thinking">
+            <div class="ai-thinking-dots"><span></span><span></span><span></span></div>
+            Thinking up ideas for you...
+          </div>
+        </div>
+        <div id="bwiz-actions" style="display:none;">
+          <div class="step-nav">
+            <button class="btn btn-ghost" onclick="bwizBack(3)">← Try Different Answers</button>
+            <button class="btn btn-primary green" onclick="showSection('build')">🔨 I have an idea — Let's Build It</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="saveToProject('brainstormResult', document.getElementById('bwiz-result').innerText)">📂 Save to Project</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ BUILD ══ -->
+    <section id="section-build" class="section">
+      <div class="page-header">
+        <div class="page-badge green">🔨 BUILD WIZARD</div>
+        <h1 class="page-title">Build Your App</h1>
+        <p class="page-sub">Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.</p>
+      </div>
+
+      <div class="wizard-progress" id="build-wiz-progress">
+        <div class="wiz-dot active" id="bld-d1"></div>
+        <div class="wiz-dot" id="bld-d2"></div>
+      </div>
+
+      <!-- BUILD STEP 1: What kind? -->
+      <div class="wizard-step active" id="bld-1">
+        <div class="card">
+          <div class="card-title">What's your situation?</div>
+          <div class="choice-grid" style="grid-template-columns:1fr 1fr;max-width:500px;">
+            <div class="choice-card" onclick="selectChoice(this,'bld-mode','scratch','selected-green')" style="text-align:center;">
+              <div class="choice-icon">🌱</div>
+              <div class="choice-label">Starting from scratch</div>
+              <div class="choice-sub">I have an idea and want a full plan</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bld-mode','existing','selected-green')" style="text-align:center;">
+              <div class="choice-icon">🔧</div>
+              <div class="choice-label">Already started</div>
+              <div class="choice-sub">I have code or a partial app and need help finishing</div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="bld-mode" value="">
+        <div class="step-nav">
+          <button class="btn btn-primary green" onclick="bldNext(1)" id="bld-next1" disabled>Next →</button>
+        </div>
+      </div>
+
+      <!-- BUILD STEP 2: Describe -->
+      <div class="wizard-step" id="bld-2">
+        <div class="card" id="bld-desc-card">
+          <div class="card-title" id="bld-desc-title">Describe your app idea</div>
+          <div class="field-group">
+            <label class="field-label">What is your app? What does it do?</label>
+            <div class="field-sub" id="bld-desc-hint">Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.</div>
+            <textarea class="field-input field-textarea" id="bld-description" rows="5" placeholder="Example: A tip jar app where content creators share a link, fans connect their Trust Wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Who will use it? (optional)</label>
+            <textarea class="field-input" id="bld-users" rows="2" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="bldBack(2)">← Back</button>
+          <button class="btn btn-primary green" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
+        </div>
+        <div id="bld-result" style="margin-top:24px;"></div>
+        <div id="bld-actions" style="display:none;margin-top:16px;">
+          <div class="step-nav">
+            <button class="btn btn-ghost" onclick="bldBack(2)">← Try Again</button>
+            <button class="btn btn-primary" onclick="showSection('learn')">📚 Follow the Step-by-Step Guide</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="openAiPanel('I want to start building my app. Here is my plan: ' + document.getElementById('bld-result').innerText.substring(0,300))">💬 Ask AI a Question</button>
+            <button class="btn btn-primary" style="background:var(--orange);color:#000;" onclick="saveToProject('buildPlan', document.getElementById('bld-result').innerText)">📂 Save to Project</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ TROUBLESHOOT ══ -->
+    <section id="section-troubleshoot" class="section">
+      <div class="page-header">
+        <div class="page-badge orange">🔧 TROUBLESHOOT</div>
+        <h1 class="page-title">Fix a Problem</h1>
+        <p class="page-sub">Pick a common issue below or describe your problem in plain English. The AI will walk you through exactly what's wrong and how to fix it.</p>
+      </div>
+
+      <div class="issue-grid">
+        <div class="issue-card" onclick="quickIssue('My AIVM calls are failing with an error about signatures or authentication')">
+          <div class="issue-icon">🔑</div>
+          <div class="issue-title">AIVM Not Working</div>
+          <div class="issue-desc">Getting "invalid signature" or authentication errors when trying to use AI</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('My Railway server deployed but my app is returning errors or not responding')">
+          <div class="issue-icon">🚂</div>
+          <div class="issue-title">Railway Server Down</div>
+          <div class="issue-desc">Server deployed but returning errors or not responding</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('Users cannot connect their Trust Wallet to my app, or the wallet connection is not working')">
+          <div class="issue-icon">👛</div>
+          <div class="issue-title">Wallet Won't Connect</div>
+          <div class="issue-desc">Trust Wallet connection fails or users get an error</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('My smart contract deployment failed or I cannot interact with my deployed contract')">
+          <div class="issue-icon">📜</div>
+          <div class="issue-title">Smart Contract Issue</div>
+          <div class="issue-desc">Deployment failed or contract calls return errors</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('My GitHub Pages site is not updating after I push new code, or the site is returning 404')">
+          <div class="issue-icon">🌐</div>
+          <div class="issue-title">GitHub Pages Not Updating</div>
+          <div class="issue-desc">Site not refreshing after push, or showing 404</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('My dApp Hub pull request was rejected or I am having trouble with the submission format')">
+          <div class="issue-icon">🗂️</div>
+          <div class="issue-title">Hub Submission Rejected</div>
+          <div class="issue-desc">PR rejected or submission format issues</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('LCAI payments in my app are not working — transactions fail or users cannot pay')">
+          <div class="issue-icon">💸</div>
+          <div class="issue-title">Payment Not Working</div>
+          <div class="issue-desc">LCAI transactions failing or users unable to pay</div>
+        </div>
+        <div class="issue-card" onclick="quickIssue('My Python server works locally but fails on Railway — packages not installing or wrong versions')">
+          <div class="issue-icon">🐍</div>
+          <div class="issue-title">Python Package Errors</div>
+          <div class="issue-desc">Works locally but fails on Railway — version conflicts</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:8px;">
+        <div class="card-title">📝 Describe Your Problem</div>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:14px;">Don't see your issue above? Describe it here. Paste any error messages you're seeing.</p>
+        <div class="field-group">
+          <textarea class="field-input field-textarea" id="trouble-input" rows="4" placeholder="Describe what's happening and what you've already tried. Paste any error messages here. The more detail you give, the better the diagnosis."></textarea>
+        </div>
+        <button class="btn btn-primary orange" onclick="troubleshoot()" style="margin-top:4px;">🔧 Diagnose My Problem</button>
+      </div>
+
+      <div id="trouble-result" style="margin-top:20px;"></div>
+    </section>
+
+    <!-- ══ LINKS & ACCOUNTS ══ -->
+    <section id="section-links" class="section">
+      <div class="page-header">
+        <div class="page-badge cyan">🔗 LINKS &amp; ACCOUNTS</div>
+        <h1 class="page-title">Your Tools &amp; Accounts</h1>
+        <p class="page-sub">Everything in one place — your accounts, your live apps, and quick links to all the tools you use. Saves to your browser so it's always here when you need it.</p>
+      </div>
+
+      <!-- MY ACCOUNTS -->
+      <div class="links-section-title">👤 My Accounts</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Paste your personal URLs for each service so you can get back to them in one click. Leave blank for services you don't use yet.</p>
+      <div class="account-grid" id="accounts-grid">
+        <!-- rendered by JS -->
+      </div>
+      <button class="btn btn-ghost" onclick="showAddAccountForm()" style="margin-top:8px;font-size:13px;">➕ Add Another Account</button>
+      <div id="add-account-form" style="display:none;margin-top:16px;">
+        <div class="card" style="border-color:rgba(0,212,255,.2);max-width:480px;">
+          <div class="card-title">➕ Add Custom Account</div>
+          <div class="field-group">
+            <label class="field-label">Service Name</label>
+            <input class="field-input" id="new-account-name" type="text" placeholder="e.g. My Discord, Uniswap, Coinbase..." maxlength="40">
+          </div>
+          <div class="field-group">
+            <label class="field-label">Emoji Icon (optional)</label>
+            <input class="field-input" id="new-account-icon" type="text" placeholder="e.g. 💬" maxlength="4" style="width:80px;">
+          </div>
+          <div class="field-group">
+            <label class="field-label">URL</label>
+            <input class="field-input" id="new-account-url" type="url" placeholder="https://...">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;">
+            <button class="btn btn-primary" onclick="addCustomAccount()">Save Account</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('add-account-form').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY PROJECT LINKS -->
+      <div class="links-section-title">🚀 My Project Links</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Links to your live apps, GitHub repos, and Railway dashboards. Add a link here for every project you launch.</p>
+      <div class="mylink-grid" id="mylinks-grid">
+        <!-- rendered by JS -->
+      </div>
+      <div id="mylinks-empty" style="display:none;color:var(--muted);font-size:14px;font-style:italic;margin-bottom:16px;">No project links saved yet. Add your first one below.</div>
+      <div class="card" style="max-width:520px;margin-top:8px;" id="add-mylink-card">
+        <div class="card-title">➕ Add Project Link</div>
+        <div class="field-group">
+          <label class="field-label">Project Name</label>
+          <input class="field-input" id="new-mylink-name" type="text" placeholder="e.g. OrcaVote, My NFT App..." maxlength="60">
+        </div>
+        <div class="field-group">
+          <label class="field-label">URL</label>
+          <input class="field-input" id="new-mylink-url" type="url" placeholder="https://...">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Type</label>
+          <div class="choice-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;" id="mylink-type-grid">
+            <div class="choice-card selected" onclick="selectMylinkType(this,'live')"><div class="choice-icon">🌐</div><div class="choice-title" style="font-size:11px;">Live App</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'repo')"><div class="choice-icon">📁</div><div class="choice-title" style="font-size:11px;">GitHub Repo</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'server')"><div class="choice-icon">🚂</div><div class="choice-title" style="font-size:11px;">Railway</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'other')"><div class="choice-icon">🔗</div><div class="choice-title" style="font-size:11px;">Other</div></div>
+          </div>
+          <input type="hidden" id="new-mylink-type" value="live">
+        </div>
+        <button class="btn btn-primary" onclick="addMyLink()" style="margin-top:4px;">Save Link</button>
+      </div>
+
+      <!-- TOOLS & RESOURCES -->
+      <div class="links-section-title">🛠️ Tools &amp; Resources</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Essential tools for building on Lightchain — click any card to open it.</p>
+      <div class="resource-grid">
+        <a href="https://github.com" target="_blank" class="resource-card"><div class="resource-icon">🐙</div><div><div class="resource-name">GitHub</div><div class="resource-desc">Host your code and app for free</div></div></a>
+        <a href="https://desktop.github.com" target="_blank" class="resource-card"><div class="resource-icon">💻</div><div><div class="resource-name">GitHub Desktop</div><div class="resource-desc">Push code without using a terminal</div></div></a>
+        <a href="https://railway.app" target="_blank" class="resource-card"><div class="resource-icon">🚂</div><div><div class="resource-name">Railway</div><div class="resource-desc">Host your Python AI server</div></div></a>
+        <a href="https://cloudflare.com" target="_blank" class="resource-card"><div class="resource-icon">☁️</div><div><div class="resource-name">Cloudflare</div><div class="resource-desc">Domain names and DNS management</div></div></a>
+        <a href="https://remix.ethereum.org" target="_blank" class="resource-card"><div class="resource-icon">⚗️</div><div><div class="resource-name">Remix IDE</div><div class="resource-desc">Deploy smart contracts in your browser</div></div></a>
+        <a href="https://hub.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">💡</div><div><div class="resource-name">Lightchain dApp Hub</div><div class="resource-desc">The official Lightchain app store</div></div></a>
+        <a href="https://discord.gg/lightchain" target="_blank" class="resource-card"><div class="resource-icon">💬</div><div><div class="resource-name">Lightchain Discord</div><div class="resource-desc">Community support and announcements</div></div></a>
+        <a href="https://docs.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">📖</div><div><div class="resource-name">Lightchain Docs</div><div class="resource-desc">Official developer documentation</div></div></a>
+        <a href="https://rpc.mainnet.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔵</div><div><div class="resource-name">Lightchain RPC</div><div class="resource-desc">Chain ID 9200 — mainnet endpoint</div></div></a>
+        <a href="https://code.visualstudio.com" target="_blank" class="resource-card"><div class="resource-icon">📝</div><div><div class="resource-name">VS Code</div><div class="resource-desc">Free code editor — best for HTML files</div></div></a>
+        <a href="https://www.python.org/downloads/" target="_blank" class="resource-card"><div class="resource-icon">🐍</div><div><div class="resource-name">Python</div><div class="resource-desc">Required for your AI server backend</div></div></a>
+        <a href="https://app.uniswap.org" target="_blank" class="resource-card"><div class="resource-icon">🦄</div><div><div class="resource-name">Uniswap</div><div class="resource-desc">Buy/swap LCAI tokens</div></div></a>
+        <a href="https://trustwallet.com" target="_blank" class="resource-card"><div class="resource-icon">🔐</div><div><div class="resource-name">Trust Wallet</div><div class="resource-desc">Mobile wallet for LCAI and ETH</div></div></a>
+        <a href="https://etherscan.io" target="_blank" class="resource-card"><div class="resource-icon">🔍</div><div><div class="resource-name">Etherscan</div><div class="resource-desc">Look up transactions and contracts</div></div></a>
+        <a href="https://scan.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name">Lightchain Explorer</div><div class="resource-desc">Browse Lightchain transactions</div></div></a>
+        <a href="https://coinbase.com" target="_blank" class="resource-card"><div class="resource-icon">🏦</div><div><div class="resource-name">Coinbase</div><div class="resource-desc">Buy ETH to fund your wallet</div></div></a>
+      </div>
+
+    </section>
+
+    <!-- ══ PROJECTS ══ -->
+    <section id="section-projects" class="section">
+      <div class="page-header">
+        <div class="page-badge cyan">📂 MY PROJECTS</div>
+        <h1 class="page-title">Your Saved Projects</h1>
+        <p class="page-sub">Save your app ideas, build plans, and notes here. Come back anytime to pick up where you left off. Everything saves to your browser — no account needed.</p>
+      </div>
+
+      <!-- New project form (hidden by default) -->
+      <div id="proj-new-form" style="display:none;margin-bottom:24px;">
+        <div class="card" style="border-color:rgba(0,212,255,.3);">
+          <div class="card-title">➕ New Project</div>
+          <div class="field-group">
+            <label class="field-label">Project Name *</label>
+            <input class="field-input" id="proj-name-input" type="text" placeholder="e.g. OrcaVote — community polling app" maxlength="80">
+          </div>
+          <div class="field-group">
+            <label class="field-label">What's the idea? (optional)</label>
+            <textarea class="field-input field-textarea" id="proj-desc-input" rows="3" placeholder="Brief description of what you want to build..."></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Status</label>
+            <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="proj-status-grid">
+              <div class="choice-card selected" onclick="selectProjStatus(this,'💡 Brainstorming')">
+                <div class="choice-icon">💡</div>
+                <div class="choice-title">Brainstorming</div>
+              </div>
+              <div class="choice-card" onclick="selectProjStatus(this,'🔨 Building')">
+                <div class="choice-icon">🔨</div>
+                <div class="choice-title">Building</div>
+              </div>
+              <div class="choice-card" onclick="selectProjStatus(this,'🚀 Launched')">
+                <div class="choice-icon">🚀</div>
+                <div class="choice-title">Launched</div>
+              </div>
+            </div>
+            <input type="hidden" id="proj-status-input" value="💡 Brainstorming">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button class="btn btn-primary" onclick="saveNewProject()">💾 Save Project</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('proj-new-form').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project list header -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div id="proj-count" style="font-size:14px;color:var(--muted);"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="showNewProjectForm()">➕ New Project</button>
+          <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="showImportForm()">📥 Import Project</button>
+        </div>
+      </div>
+
+      <!-- Import project form (hidden by default) -->
+      <div id="proj-import-form" style="display:none;margin-bottom:24px;">
+        <div class="card" style="border-color:rgba(168,85,247,.35);">
+          <div class="card-title">📥 Import a Project You've Already Started</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Paste in code or error messages from a project you started somewhere else (with Grok, ChatGPT, or on your own). OrcaAppBuilder's AI will read it and help you finish or fix it.</p>
+          <div class="field-group">
+            <label class="field-label">Project Name *</label>
+            <input class="field-input" id="import-name-input" type="text" placeholder="e.g. My NFT Marketplace (started in Grok)" maxlength="80">
+          </div>
+          <div class="field-group">
+            <label class="field-label">What is this app supposed to do?</label>
+            <textarea class="field-input field-textarea" id="import-desc-input" rows="2" placeholder="Brief description — what does the app do, what blockchain features does it use?"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Paste Your Code Here (optional)</label>
+            <textarea class="field-input field-textarea" id="import-code-input" rows="8" placeholder="Paste your HTML, Python server code, smart contract, or any code files here. Don't worry about formatting — just paste everything you have." style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Paste Any Error Messages (optional)</label>
+            <textarea class="field-input field-textarea" id="import-errors-input" rows="4" placeholder="Paste error messages, console logs, or describe what's going wrong." style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
+          </div>
+          <div class="field-group">
+            <label class="field-label">What kind of help do you need?</label>
+            <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="import-help-grid">
+              <div class="choice-card selected" onclick="selectImportHelp(this,'finish')"><div class="choice-icon">🏁</div><div class="choice-title">Finish It</div><div class="choice-sub">Help me complete it</div></div>
+              <div class="choice-card" onclick="selectImportHelp(this,'fix')"><div class="choice-icon">🔧</div><div class="choice-title">Fix It</div><div class="choice-sub">Something's broken</div></div>
+              <div class="choice-card" onclick="selectImportHelp(this,'review')"><div class="choice-icon">🔍</div><div class="choice-title">Review It</div><div class="choice-sub">Check for issues</div></div>
+            </div>
+            <input type="hidden" id="import-help-input" value="finish">
+          </div>
+          <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
+            <button class="btn btn-ghost" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ AI analysis requires the OrcaAppBuilder server to be running. The project will save regardless — you can run the AI review later from the project page.</p>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div id="proj-empty" style="display:none;text-align:center;padding:60px 20px;">
+        <div style="font-size:56px;margin-bottom:16px;">📂</div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:10px;">No projects yet</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">Start a new project to save your ideas and build plans. You can create as many as you like.</div>
+        <button class="btn btn-primary" onclick="showNewProjectForm()">➕ Start My First Project</button>
+      </div>
+
+      <!-- Project cards grid -->
+      <div id="proj-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;"></div>
+
+      <!-- Project detail view (shown when a project is open) -->
+      <div id="proj-detail" style="display:none;"></div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══ MOBILE BOTTOM NAV ═══ -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-items">
+    <button class="mobile-nav-item active" onclick="showSection('home')" id="mnav-home">
+      <span class="mn-icon">🏠</span>Home
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('learn')" id="mnav-learn">
+      <span class="mn-icon">📚</span>Learn
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('brainstorm')" id="mnav-brainstorm">
+      <span class="mn-icon">💡</span>Brainstorm
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('build')" id="mnav-build">
+      <span class="mn-icon">🔨</span>Build
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('troubleshoot')" id="mnav-troubleshoot">
+      <span class="mn-icon">🔧</span>Fix
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('projects')" id="mnav-projects">
+      <span class="mn-icon">📂</span>Projects
+    </button>
+    <button class="mobile-nav-item" onclick="showSection('links')" id="mnav-links">
+      <span class="mn-icon">🔗</span>Links
+    </button>
+  </div>
+</nav>
+
+<!-- ═══ AI CHAT FAB + PANEL ═══ -->
+<button class="ai-fab" id="ai-fab" onclick="toggleAiPanel()">
+  <span style="font-size:22px;">🐬</span>
+  <span class="ai-fab-text">Ask OrcaAppBuilder AI</span>
+</button>
+
+<div class="ai-panel" id="ai-panel">
+  <!-- Resize handle — drag upper-left corner to resize -->
+  <div class="ai-resize-handle" id="ai-resize-handle" title="Drag to resize">⤡</div>
+  <div class="ai-panel-header" id="ai-panel-header">
+    <span style="font-size:20px;">🐬</span>
+    <div>
+      <div class="ai-panel-title">OrcaAppBuilder AI</div>
+      <div style="font-size:12px;color:var(--muted);">Powered by Lightchain AIVM</div>
+    </div>
+    <button class="ai-panel-expand" id="ai-panel-expand" onclick="toggleAiPanelExpand()" title="Expand / Collapse">⤢</button>
+    <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
+  </div>
+  <div class="ai-messages" id="ai-messages">
+    <div class="ai-msg bot">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "What do I need to get listed on the hub?"</div>
+  </div>
+  <div class="ai-input-row">
+    <textarea class="ai-input" id="ai-input" placeholder="Ask anything about building on Lightchain..." rows="1" onkeydown="aiKeydown(event)"></textarea>
+    <button class="ai-send" id="ai-send" onclick="sendAiMessage()">Send</button>
+  </div>
+</div>
+
+<!-- ═══ TERMS MODAL ═══ -->
+<div id="orca-terms-overlay" onclick="if(event.target===this)closeTerms()">
+  <div class="terms-modal">
+    <h2>📋 Terms &amp; Disclaimer</h2>
+    <p class="terms-sub">OrcaAppBuilder — dApp Builder Companion · orcaapp.ai</p>
+
+    <div class="terms-section">
+      <h3>1. Educational Purpose Only</h3>
+      <p>OrcaAppBuilder provides educational guidance and AI-generated suggestions for building decentralized applications. Nothing in this app constitutes professional legal, financial, or technical advice. All code examples are provided as starting points — review and test everything before deploying to production.</p>
+    </div>
+    <div class="terms-section">
+      <h3>2. AI-Generated Content</h3>
+      <p>Responses from the AI are generated by Lightchain AIVM and may contain errors, outdated information, or suggestions that don't work in all situations. Always verify AI-generated code before using it in a real application.</p>
+    </div>
+    <div class="terms-section">
+      <h3>3. No Refunds</h3>
+      <p>Any LCAI sent through this platform — including voluntary tips, AI usage fees, or any other on-chain transfers — is non-refundable. All blockchain transactions are permanent and irreversible by nature. By confirming any LCAI transfer in your wallet, you explicitly acknowledge this.</p>
+    </div>
+    <div class="terms-section">
+      <h3>4. No Liability for Your App</h3>
+      <p>OrcaAppBuilder is not responsible for any apps you build using this guidance, including any bugs, security vulnerabilities, financial losses, or user disputes that arise from your application. You are solely responsible for your own dApp.</p>
+    </div>
+    <div class="terms-section">
+      <h3>5. Third-Party Services</h3>
+      <p>This app references third-party services (GitHub, Railway, Cloudflare, Lightchain). OrcaAppBuilder has no affiliation with and no control over these services. Their terms and pricing may change at any time.</p>
+    </div>
+    <div class="terms-section">
+      <h3>6. Service Availability</h3>
+      <p>OrcaAppBuilder may be unavailable at any time without notice. AI features depend on the Lightchain AIVM network, which is a third-party decentralized network outside of our control. We make no guarantees about uptime or response quality.</p>
+    </div>
+    <div class="terms-section">
+      <h3>7. Your Data</h3>
+      <p>Questions you ask the AI are sent to the Lightchain AIVM network for processing. We do not store your questions or personal information on our servers. This app does not use cookies or tracking.</p>
+    </div>
+    <div class="terms-section">
+      <h3>8. Pricing May Change</h3>
+      <p>OrcaAppBuilder reserves the right to introduce, change, or remove any fees, suggested tip amounts, or pricing structures at any time without prior notice. Continued use of the platform after any pricing change constitutes acceptance of the updated terms.</p>
+    </div>
+    <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px;">You must acknowledge these terms before using OrcaAppBuilder.</p>
+    <button class="terms-close" onclick="closeTerms()" style="background:var(--cyan);color:#000;border-color:var(--cyan);font-size:15px;padding:14px;margin-top:8px;">✅ I Understand &amp; Agree — Enter OrcaAppBuilder</button>
+  </div>
+</div>
+
+<!-- ═══ JAVASCRIPT ═══ -->
+<script>
+// ── CONFIG ──
+const API_BASE = 'http://localhost:8187'; // Change to Railway URL when deployed
+
+// ── SECTION NAVIGATION ──
+const SECTIONS  = ['home','learn','brainstorm','build','troubleshoot','projects','links'];
+
+function showSection(name) {
+  SECTIONS.forEach(s => {
+    document.getElementById('section-' + s).classList.toggle('active', s === name);
+    const nav  = document.getElementById('nav-' + s);
+    const mnav = document.getElementById('mnav-' + s);
+    if (nav)  nav.classList.toggle('active', s === name);
+    if (mnav) mnav.classList.toggle('active', s === name);
+  });
+  if (name === 'projects') renderProjects();
+  window.scrollTo(0, 0);
+}
+
+// ── OS PICKER ──
+let learnOs = '';
+function setLearnOs(os) {
+  learnOs = os;
+  const sec = document.getElementById('section-learn');
+  sec.classList.remove('os-win','os-mac','os-linux');
+  sec.classList.add('os-' + os);
+  // Update button highlights
+  ['win','mac','linux'].forEach(o => {
+    const btn = document.getElementById('osbtn-' + o);
+    if (btn) btn.classList.toggle('active', o === os);
+  });
+}
+
+// ── LEARN STEPS ──
+let currentLearnStep = 1;
+const TOTAL_LEARN_STEPS = 9;
+const completedSteps = new Set();
+
+function showLearnStep(n) {
+  // Mark previous as done
+  if (currentLearnStep !== n) completedSteps.add(currentLearnStep);
+
+  for (let i = 1; i <= TOTAL_LEARN_STEPS; i++) {
+    const step = document.getElementById('lstep-' + i);
+    const pill = document.getElementById('spill-' + i);
+    if (step) step.classList.toggle('active', i === n);
+    if (pill) {
+      pill.classList.toggle('active', i === n);
+      pill.classList.toggle('done', completedSteps.has(i) && i !== n);
+    }
+  }
+  currentLearnStep = n;
+  window.scrollTo(0, 0);
+}
+
+// ── COPY BUTTONS ──
+function copyCode(btn) {
+  const pre = btn.closest('.code-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── CHOICE CARDS ──
+function selectChoice(el, inputId, value, cls) {
+  const grid = el.closest('.choice-grid') || el.parentElement;
+  grid.querySelectorAll('.choice-card').forEach(c => {
+    c.classList.remove('selected','selected-purple','selected-green');
+  });
+  el.classList.add(cls);
+  document.getElementById(inputId).value = value;
+
+  // Enable next button
+  const nextBtn = document.getElementById('bwiz-next1') || document.getElementById('bld-next1');
+  if (nextBtn) nextBtn.disabled = false;
+
+  // For build wizard
+  const bldNext1 = document.getElementById('bld-next1');
+  if (bldNext1 && inputId === 'bld-mode') {
+    bldNext1.disabled = false;
+    // Update hint text based on mode
+    const hint = document.getElementById('bld-desc-hint');
+    const title = document.getElementById('bld-desc-title');
+    if (value === 'existing') {
+      if (title) title.textContent = 'Tell us about your existing app';
+      if (hint) hint.textContent = 'Describe what you have built so far, what is working, what is not working, and what you need help with next. Paste any relevant code or error messages.';
+    }
+  }
+}
+
+// ── BRAINSTORM WIZARD ──
+let bwizCurrentStep = 1;
+
+function updateBwizProgress() {
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById('bwiz-d' + i);
+    if (dot) {
+      dot.classList.toggle('active', i === bwizCurrentStep);
+      dot.classList.toggle('done', i < bwizCurrentStep);
+    }
+  }
+}
+
+function bwizNext(from) {
+  if (from === 1) {
+    const cat = document.getElementById('bwiz-category').value;
+    if (!cat) { alert('Please pick a category first.'); return; }
+    document.getElementById('bwiz-1').classList.remove('active');
+    document.getElementById('bwiz-2').classList.add('active');
+    bwizCurrentStep = 2;
+    updateBwizProgress();
+  } else if (from === 2) {
+    const audience = document.getElementById('bwiz-audience').value.trim();
+    if (!audience) { alert('Please describe who would use your app. Even a rough answer helps!'); return; }
+    document.getElementById('bwiz-2').classList.remove('active');
+    document.getElementById('bwiz-3').classList.add('active');
+    bwizCurrentStep = 3;
+    updateBwizProgress();
+    runBrainstorm();
+  }
+}
+
+function bwizBack(from) {
+  if (from === 2) {
+    document.getElementById('bwiz-2').classList.remove('active');
+    document.getElementById('bwiz-1').classList.add('active');
+    bwizCurrentStep = 1;
+  } else if (from === 3) {
+    document.getElementById('bwiz-3').classList.remove('active');
+    document.getElementById('bwiz-2').classList.add('active');
+    bwizCurrentStep = 2;
+  }
+  updateBwizProgress();
+}
+
+function runBrainstorm() {
+  const category = document.getElementById('bwiz-category').value;
+  const audience = document.getElementById('bwiz-audience').value;
+  const seed     = document.getElementById('bwiz-seed-idea').value;
+  const resultEl = document.getElementById('bwiz-result');
+  const actionsEl = document.getElementById('bwiz-actions');
+
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Coming up with app ideas just for you... this may take 30-60 seconds.</div>';
+  actionsEl.style.display = 'none';
+
+  const prompt = `I am interested in building a Lightchain dApp in the category: ${category}.
+The people who would use my app: ${audience}.
+${seed ? 'Rough idea I already have: ' + seed : 'I do not have a specific idea yet.'}
+
+Please suggest 3 specific, realistic app ideas I could build on Lightchain. For each idea:
+1. Give it a catchy name
+2. One sentence: what it does
+3. One sentence: who it helps
+4. What Lightchain feature it uses (AIVM, smart contract, LCAI payments, etc.)
+5. Difficulty: Easy / Medium / Hard
+
+After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`;
+
+  callAI(prompt, 'brainstorm').then(reply => {
+    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🐬 OrcaAppBuilder AI Suggestions</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    actionsEl.style.display = '';
+  }).catch(err => {
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable right now. Make sure the OrcaAppBuilder server is running on your local machine (port 8187), or that it's been deployed to Railway.</div></div>`;
+    actionsEl.style.display = '';
+  });
+}
+
+// ── BUILD WIZARD ──
+let bldCurrentStep = 1;
+
+function updateBldProgress() {
+  for (let i = 1; i <= 2; i++) {
+    const dot = document.getElementById('bld-d' + i);
+    if (dot) {
+      dot.classList.toggle('active', i === bldCurrentStep);
+      dot.classList.toggle('done', i < bldCurrentStep);
+    }
+  }
+}
+
+function bldNext(from) {
+  if (from === 1) {
+    const mode = document.getElementById('bld-mode').value;
+    if (!mode) { alert('Please pick your situation first.'); return; }
+    document.getElementById('bld-1').classList.remove('active');
+    document.getElementById('bld-2').classList.add('active');
+    bldCurrentStep = 2;
+    updateBldProgress();
+  }
+}
+
+function bldBack(from) {
+  if (from === 2) {
+    document.getElementById('bld-2').classList.remove('active');
+    document.getElementById('bld-1').classList.add('active');
+    bldCurrentStep = 1;
+    updateBldProgress();
+    document.getElementById('bld-result').innerHTML = '';
+    document.getElementById('bld-actions').style.display = 'none';
+  }
+}
+
+function bldGenerate() {
+  const mode = document.getElementById('bld-mode').value;
+  const description = document.getElementById('bld-description').value.trim();
+  const users = document.getElementById('bld-users').value.trim();
+  const resultEl = document.getElementById('bld-result');
+  const actionsEl = document.getElementById('bld-actions');
+
+  if (!description) { alert('Please describe your app first.'); return; }
+
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 30-60 seconds.</div>';
+  actionsEl.style.display = 'none';
+
+  const isExisting = mode === 'existing';
+  const prompt = isExisting
+    ? `I have already started building a Lightchain dApp. Here is what I have so far and what I need help with:
+
+${description}
+${users ? 'Target users: ' + users : ''}
+
+Please:
+1. Summarize what I have built in plain English
+2. Identify the 3 most important things I still need to complete
+3. Flag any potential problems or mistakes in my current approach
+4. Give me a prioritized list of next steps (what to do first, second, third)
+5. Suggest one specific improvement that would make the biggest difference`
+    : `I want to build this Lightchain dApp:
+
+${description}
+${users ? 'Target users: ' + users : ''}
+
+Please create a complete build plan. Include:
+1. App name suggestion (if I did not give one)
+2. One-paragraph plain-English description of what we are building
+3. Do I need a smart contract? (Yes/No and why)
+4. Do I need a Python backend on Railway? (Yes/No and why)
+5. Tech stack: list the exact tools and where to get them
+6. Step-by-step build order (numbered list, 6-10 steps maximum)
+7. Estimated time to build (in hours, for a complete beginner using AI tools)
+8. Biggest challenge I should be aware of upfront
+
+Write this for someone who has never coded before.`;
+
+  callAI(prompt, 'build').then(reply => {
+    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Your Build Plan</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    actionsEl.style.display = '';
+  }).catch(() => {
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
+    actionsEl.style.display = '';
+  });
+}
+
+// ── TROUBLESHOOT ──
+function quickIssue(description) {
+  document.getElementById('trouble-input').value = description;
+  troubleshoot();
+}
+
+function troubleshoot() {
+  const input   = document.getElementById('trouble-input').value.trim();
+  const resultEl = document.getElementById('trouble-result');
+
+  if (!input) { alert('Please describe your problem first.'); return; }
+
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem...</div>';
+
+  const prompt = `A Lightchain dApp builder has the following problem:
+
+"${input}"
+
+Please:
+1. Explain in plain English what the problem likely is (one paragraph, no jargon)
+2. Give the most likely cause(s) — up to 3
+3. Step-by-step fix (numbered, copy-paste commands where relevant)
+4. How to verify the fix worked
+5. If this is a version/package issue, state the exact correct versions
+
+Be direct. Assume the person is not a developer. Do not ask follow-up questions — give your best answer based on what they've told you.`;
+
+  callAI(prompt, 'troubleshoot').then(reply => {
+    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔧 Diagnosis &amp; Fix</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+  }).catch(() => {
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The OrcaAppBuilder AI server is not running. Start it locally on port 8187 or deploy to Railway.</div></div>`;
+  });
+}
+
+// ── AI CHAT PANEL ──
+let aiPanelOpen = false;
+let aiWaiting   = false;
+
+function toggleAiPanel() {
+  aiPanelOpen = !aiPanelOpen;
+  const panel = document.getElementById('ai-panel');
+  panel.classList.toggle('open', aiPanelOpen);
+  if (aiPanelOpen) {
+    setTimeout(() => document.getElementById('ai-input').focus(), 100);
+    makePanelDraggable();
+  }
+}
+
+function openAiPanel(prefill) {
+  if (!aiPanelOpen) toggleAiPanel();
+  if (prefill) {
+    document.getElementById('ai-input').value = prefill;
+  }
+}
+
+function aiKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAiMessage();
+  }
+}
+
+function sendAiMessage() {
+  if (aiWaiting) return;
+  const input = document.getElementById('ai-input');
+  const msg   = input.value.trim();
+  if (!msg) return;
+
+  addAiMessage('user', msg);
+  input.value = '';
+  input.style.height = 'auto';
+  aiWaiting = true;
+  document.getElementById('ai-send').disabled = true;
+
+  const thinking = addAiMessage('bot', '⏳ Thinking...');
+
+  callAI(msg, 'chat').then(reply => {
+    thinking.textContent = reply;
+  }).catch(() => {
+    thinking.textContent = '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+  }).finally(() => {
+    aiWaiting = false;
+    document.getElementById('ai-send').disabled = false;
+  });
+}
+
+function addAiMessage(role, text) {
+  const el = document.createElement('div');
+  el.className = 'ai-msg ' + role;
+  el.textContent = text;
+  const msgs = document.getElementById('ai-messages');
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+// ── DRAGGABLE PANEL ──
+let _panelInteractionSetup = false;
+
+function makePanelDraggable() {
+  if (_panelInteractionSetup) return;
+  _panelInteractionSetup = true;
+
+  const panel  = document.getElementById('ai-panel');
+  const header = document.getElementById('ai-panel-header');
+  const handle = document.getElementById('ai-resize-handle');
+  if (!panel || !header) return;
+
+  // ── MOVE (drag header) ──
+  let moving = false, mStartX, mStartY, mInitLeft, mInitTop;
+
+  function startMove(clientX, clientY) {
+    moving = true;
+    mStartX = clientX; mStartY = clientY;
+    const rect = panel.getBoundingClientRect();
+    mInitLeft = rect.left; mInitTop = rect.top;
+    panel.style.right = 'auto'; panel.style.bottom = 'auto';
+    panel.style.left = mInitLeft + 'px'; panel.style.top = mInitTop + 'px';
+    panel.classList.add('dragging');
+  }
+  function doMove(clientX, clientY) {
+    if (!moving) return;
+    const newLeft = Math.max(0, Math.min(window.innerWidth  - panel.offsetWidth,  mInitLeft + (clientX - mStartX)));
+    const newTop  = Math.max(0, Math.min(window.innerHeight - panel.offsetHeight, mInitTop  + (clientY - mStartY)));
+    panel.style.left = newLeft + 'px';
+    panel.style.top  = newTop  + 'px';
+  }
+  function endMove() { moving = false; panel.classList.remove('dragging'); }
+
+  header.addEventListener('mousedown', e => {
+    if (e.target.closest('button')) return;
+    startMove(e.clientX, e.clientY); e.preventDefault();
+  });
+  header.addEventListener('touchstart', e => {
+    if (e.target.closest('button')) return;
+    const t = e.touches[0]; startMove(t.clientX, t.clientY);
+  }, {passive:true});
+
+  // ── RESIZE (drag upper-left corner) ──
+  let resizing = false, rStartX, rStartY, rInitW, rInitH;
+
+  if (handle) {
+    function startResize(clientX, clientY) {
+      resizing = true;
+      rStartX = clientX; rStartY = clientY;
+      rInitW = panel.offsetWidth; rInitH = panel.offsetHeight;
+      panel.classList.add('dragging');
+    }
+    function doResize(clientX, clientY) {
+      if (!resizing) return;
+      const newW = Math.min(820, Math.max(320, rInitW - (clientX - rStartX)));
+      const newH = Math.min(window.innerHeight * 0.9, Math.max(360, rInitH - (clientY - rStartY)));
+      panel.style.width  = newW + 'px';
+      panel.style.height = newH + 'px';
+    }
+    function endResize() { resizing = false; panel.classList.remove('dragging'); }
+
+    handle.addEventListener('mousedown', e => { startResize(e.clientX, e.clientY); e.preventDefault(); e.stopPropagation(); });
+    handle.addEventListener('touchstart', e => {
+      const t = e.touches[0]; startResize(t.clientX, t.clientY); e.stopPropagation();
+    }, {passive:true});
+
+    document.addEventListener('touchmove', e => {
+      if (resizing) { const t = e.touches[0]; doResize(t.clientX, t.clientY); e.preventDefault(); }
+    }, {passive:false});
+    document.addEventListener('touchend', endResize);
+  }
+
+  // Shared mouse listeners
+  document.addEventListener('mousemove', e => { doMove(e.clientX, e.clientY); if (handle) doResize(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', () => { endMove(); if (handle) { resizing = false; panel.classList.remove('dragging'); } });
+
+  // Touch move/end for header drag
+  document.addEventListener('touchmove', e => {
+    if (moving) { const t = e.touches[0]; doMove(t.clientX, t.clientY); }
+  }, {passive:true});
+  document.addEventListener('touchend', endMove);
+}
+
+function toggleAiPanelExpand() {
+  const panel = document.getElementById('ai-panel');
+  const btn   = document.getElementById('ai-panel-expand');
+  const isExp = panel.classList.toggle('expanded');
+  if (btn) btn.textContent = isExp ? '⤡' : '⤢';
+  if (btn) btn.title = isExp ? 'Collapse' : 'Expand';
+  // Reset any manual sizing when toggling
+  panel.style.width = ''; panel.style.height = '';
+  panel.style.left = ''; panel.style.top = '';
+  panel.style.right = '24px'; panel.style.bottom = '90px';
+}
+
+// ── API CALL ──
+async function callAI(message, mode = 'chat') {
+  const res = await fetch(API_BASE + '/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, mode }),
+    signal: AbortSignal.timeout(95000)
+  });
+  if (!res.ok) throw new Error('Server error ' + res.status);
+  const data = await res.json();
+  return data.reply || 'No response received.';
+}
+
+// ── UTILS ──
+function escapeHtml(str) {
+  return str
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── TERMS ──
+function openTerms()  { document.getElementById('orca-terms-overlay').classList.add('open'); }
+function closeTerms() {
+  document.getElementById('orca-terms-overlay').classList.remove('open');
+  try { localStorage.setItem('orcaappbuilder_terms_accepted','1'); } catch(e){}
+}
+function checkTermsOnLoad() {
+  try {
+    if (!localStorage.getItem('orcaappbuilder_terms_accepted')) openTerms();
+  } catch(e) { openTerms(); }
+}
+
+// ── HEALTH CHECK ──
+function checkHealth() {
+  fetch(API_BASE + '/api/health', { signal: AbortSignal.timeout(5000) })
+    .then(r => r.json())
+    .then(d => {
+      const dot   = document.getElementById('health-dot');
+      const label = document.getElementById('health-label');
+      if (d.status === 'ok') {
+        dot.className = 'health-dot online';
+        label.textContent = 'AI Online';
+        label.style.color = 'var(--green)';
+      }
+    })
+    .catch(() => {
+      const label = document.getElementById('health-label');
+      label.textContent = 'AI Offline';
+    });
+}
+
+// ── INIT ──
+checkHealth();
+setInterval(checkHealth, 30000);
+checkTermsOnLoad();
+
+// ── PROJECTS ──
+const PROJ_STORAGE_KEY = 'orcaappbuilder_projects';
+
+function getProjects() {
+  try { return JSON.parse(localStorage.getItem(PROJ_STORAGE_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function saveProjects(list) {
+  localStorage.setItem(PROJ_STORAGE_KEY, JSON.stringify(list));
+}
+function genProjId() {
+  return 'proj_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
+}
+function fmtDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'});
+}
+
+function renderProjects() {
+  const list = getProjects();
+  const grid = document.getElementById('proj-list');
+  const empty = document.getElementById('proj-empty');
+  const count = document.getElementById('proj-count');
+  const detail = document.getElementById('proj-detail');
+  detail.style.display = 'none';
+  grid.style.display = '';
+
+  if (list.length === 0) {
+    empty.style.display = 'block';
+    grid.style.display = 'none';
+    count.textContent = '';
+    return;
+  }
+  empty.style.display = 'none';
+  count.textContent = list.length + ' project' + (list.length !== 1 ? 's' : '') + ' saved in your browser';
+
+  grid.innerHTML = list.map(p => `
+    <div class="proj-card" id="pcard-${p.id}">
+      <div class="proj-status-badge">${p.status || '💡 Brainstorming'}</div>
+      <div class="proj-card-name">${escHtml(p.name)}</div>
+      ${p.desc ? `<div class="proj-card-desc">${escHtml(p.desc.slice(0,120))}${p.desc.length>120?'…':''}</div>` : ''}
+      <div class="proj-card-meta">
+        <span>Created ${fmtDate(p.createdAt)}</span>
+        <span>Updated ${fmtDate(p.updatedAt)}</span>
+      </div>
+      <div class="proj-card-actions">
+        <button class="proj-btn proj-btn-open" onclick="openProject('${p.id}')">📂 Open</button>
+        <button class="proj-btn proj-btn-del" onclick="deleteProject(event,'${p.id}')">🗑 Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showNewProjectForm() {
+  document.getElementById('proj-new-form').style.display = 'block';
+  document.getElementById('proj-name-input').value = '';
+  document.getElementById('proj-desc-input').value = '';
+  document.getElementById('proj-status-input').value = '💡 Brainstorming';
+  document.querySelectorAll('#proj-status-grid .choice-card').forEach((c,i) => {
+    c.classList.toggle('selected', i === 0);
+  });
+  document.getElementById('proj-name-input').focus();
+  document.getElementById('proj-new-form').scrollIntoView({behavior:'smooth'});
+}
+
+function selectProjStatus(el, value) {
+  document.querySelectorAll('#proj-status-grid .choice-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('proj-status-input').value = value;
+}
+
+function saveNewProject() {
+  const name = document.getElementById('proj-name-input').value.trim();
+  if (!name) { document.getElementById('proj-name-input').focus(); return; }
+  const desc = document.getElementById('proj-desc-input').value.trim();
+  const status = document.getElementById('proj-status-input').value;
+  const now = Date.now();
+  const proj = { id: genProjId(), name, desc, status, notes: '', brainstormResult: '', buildPlan: '', createdAt: now, updatedAt: now };
+  const list = getProjects();
+  list.unshift(proj);
+  saveProjects(list);
+  document.getElementById('proj-new-form').style.display = 'none';
+  renderProjects();
+  openProject(proj.id);
+}
+
+function openProject(id) {
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  const grid = document.getElementById('proj-list');
+  const detail = document.getElementById('proj-detail');
+  grid.style.display = 'none';
+  document.getElementById('proj-empty').style.display = 'none';
+  document.getElementById('proj-new-form').style.display = 'none';
+  document.getElementById('proj-count').textContent = '';
+
+  detail.style.display = 'block';
+  detail.innerHTML = `
+    <div class="proj-detail-header">
+      <button class="proj-back-btn" onclick="renderProjects()">← Back to Projects</button>
+      <div style="flex:1;">
+        <div class="proj-status-badge">${p.status}</div>
+        <div style="font-size:22px;font-weight:900;">${escHtml(p.name)}</div>
+      </div>
+    </div>
+
+    ${p.desc ? `<div class="card" style="margin-bottom:16px;"><div class="card-title">💡 Idea</div><p>${escHtml(p.desc)}</p></div>` : ''}
+
+    ${p.brainstormResult ? `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="display:flex;justify-content:space-between;">
+        <span>🤖 AI Brainstorm Result</span>
+        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:11px;padding:4px 8px;">Clear</button>
+      </div>
+      <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.brainstormResult)}</div>
+    </div>` : ''}
+
+    ${p.buildPlan ? `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="display:flex;justify-content:space-between;">
+        <span>🔨 AI Build Plan</span>
+        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:11px;padding:4px 8px;">Clear</button>
+      </div>
+      <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.buildPlan)}</div>
+    </div>` : ''}
+
+    <div class="card">
+      <div class="card-title">📝 My Notes</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Jot down links, decisions, questions, anything you want to remember.</p>
+      <textarea class="proj-notes-area" id="proj-notes-${id}" rows="8" placeholder="Your notes go here...">${escHtml(p.notes || '')}</textarea>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-primary" onclick="saveProjNotes('${id}')">💾 Save Notes</button>
+        <span id="proj-saved-msg-${id}" style="font-size:13px;color:var(--green);opacity:0;transition:opacity .3s;">✓ Saved!</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">🔄 Update Status</div>
+      <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;" id="proj-edit-status-${id}">
+        <div class="choice-card ${p.status==='💡 Brainstorming'?'selected':''}" onclick="updateProjStatus('${id}',this,'💡 Brainstorming')"><div class="choice-icon">💡</div><div class="choice-title">Brainstorming</div></div>
+        <div class="choice-card ${p.status==='🔨 Building'?'selected':''}" onclick="updateProjStatus('${id}',this,'🔨 Building')"><div class="choice-icon">🔨</div><div class="choice-title">Building</div></div>
+        <div class="choice-card ${p.status==='🚀 Launched'?'selected':''}" onclick="updateProjStatus('${id}',this,'🚀 Launched')"><div class="choice-icon">🚀</div><div class="choice-title">Launched</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function saveProjNotes(id) {
+  const notes = document.getElementById('proj-notes-' + id).value;
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  p.notes = notes;
+  p.updatedAt = Date.now();
+  saveProjects(list);
+  const msg = document.getElementById('proj-saved-msg-' + id);
+  if (msg) { msg.style.opacity = '1'; setTimeout(() => msg.style.opacity = '0', 1800); }
+}
+
+function updateProjStatus(id, el, status) {
+  el.closest('.choice-grid').querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  p.status = status;
+  p.updatedAt = Date.now();
+  saveProjects(list);
+  el.closest('.section').querySelector('.proj-status-badge').textContent = status;
+}
+
+function clearProjField(id, field, btn) {
+  if (!confirm('Clear this saved AI result?')) return;
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  p[field] = '';
+  p.updatedAt = Date.now();
+  saveProjects(list);
+  btn.closest('.card').remove();
+}
+
+function deleteProject(evt, id) {
+  evt.stopPropagation();
+  if (!confirm('Delete this project? This cannot be undone.')) return;
+  const list = getProjects().filter(x => x.id !== id);
+  saveProjects(list);
+  renderProjects();
+}
+
+// Save brainstorm/build results to an open project
+function saveToProject(field, content) {
+  const list = getProjects();
+  if (list.length === 0) {
+    if (!confirm('You have no projects yet. Create one first?')) return;
+    showSection('projects');
+    showNewProjectForm();
+    return;
+  }
+  const names = list.map((p,i) => `${i+1}. ${p.name}`).join('\n');
+  const choice = prompt('Save to which project?\n\n' + names + '\n\nEnter the number:');
+  const idx = parseInt(choice) - 1;
+  if (isNaN(idx) || idx < 0 || idx >= list.length) return;
+  list[idx][field] = content;
+  list[idx].updatedAt = Date.now();
+  saveProjects(list);
+  alert('✅ Saved to "' + list[idx].name + '"');
+}
+
+// ── IMPORT PROJECT ──
+function showImportForm() {
+  document.getElementById('proj-import-form').style.display = 'block';
+  document.getElementById('proj-new-form').style.display = 'none';
+  document.getElementById('import-name-input').focus();
+  document.getElementById('proj-import-form').scrollIntoView({behavior:'smooth'});
+}
+
+function selectImportHelp(el, value) {
+  document.querySelectorAll('#import-help-grid .choice-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('import-help-input').value = value;
+}
+
+function saveImportedProject() {
+  const name = document.getElementById('import-name-input').value.trim();
+  if (!name) { document.getElementById('import-name-input').focus(); return; }
+  const desc    = document.getElementById('import-desc-input').value.trim();
+  const code    = document.getElementById('import-code-input').value.trim();
+  const errors  = document.getElementById('import-errors-input').value.trim();
+  const helpType = document.getElementById('import-help-input').value;
+  const now = Date.now();
+  const proj = {
+    id: genProjId(), name, desc, status: '🔧 Imported',
+    notes: '', brainstormResult: '', buildPlan: '',
+    importedCode: code, importedErrors: errors, helpType,
+    aiReview: '', createdAt: now, updatedAt: now
+  };
+  const list = getProjects();
+  list.unshift(proj);
+  saveProjects(list);
+  document.getElementById('proj-import-form').style.display = 'none';
+  renderProjects();
+  openProject(proj.id);
+}
+
+function runAiReview(id) {
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  const btn = document.getElementById('ai-review-btn-' + id);
+  const resultEl = document.getElementById('ai-review-result-' + id);
+  if (btn) btn.disabled = true;
+  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Analyzing your project… this may take 30–60 seconds.</div>';
+
+  const helpLabel = {finish:'finish building', fix:'find and fix the bugs in', review:'review and audit'}[p.helpType] || 'help with';
+  let prompt = `Please ${helpLabel} the following Lightchain dApp project.\n\n`;
+  if (p.desc)            prompt += `What it's supposed to do: ${p.desc}\n\n`;
+  if (p.importedCode)    prompt += `CODE:\n${p.importedCode.slice(0, 6000)}\n\n`;
+  if (p.importedErrors)  prompt += `ERRORS / PROBLEMS:\n${p.importedErrors}\n\n`;
+  prompt += `Please:\n1. Identify what is complete and what is missing\n2. List specific problems you see\n3. Give me exact fixes or next steps in plain English\n4. If there is code to fix, show the corrected version`;
+
+  callAI(prompt, 'troubleshoot').then(reply => {
+    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🐬 AI Review</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    if (btn) btn.disabled = false;
+    // Auto-save review to project
+    const list2 = getProjects();
+    const p2 = list2.find(x => x.id === id);
+    if (p2) { p2.aiReview = reply; p2.updatedAt = Date.now(); saveProjects(list2); }
+  }).catch(() => {
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The server isn't running right now. Deploy it to Railway and try again.</div></div>`;
+    if (btn) btn.disabled = false;
+  });
+}
+
+// Patch openProject to handle imported projects
+const _openProjectOrig = openProject;
+function openProject(id) {
+  const list = getProjects();
+  const p = list.find(x => x.id === id);
+  if (!p) return;
+  const grid = document.getElementById('proj-list');
+  const detail = document.getElementById('proj-detail');
+  grid.style.display = 'none';
+  document.getElementById('proj-empty').style.display = 'none';
+  document.getElementById('proj-new-form').style.display = 'none';
+  document.getElementById('proj-import-form').style.display = 'none';
+  document.getElementById('proj-count').textContent = '';
+
+  const importSection = (p.importedCode || p.importedErrors) ? `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>📥 Imported Project</span>
+        <button class="btn btn-primary" style="padding:8px 16px;font-size:13px;background:var(--purple);color:#fff;" id="ai-review-btn-${id}" onclick="runAiReview('${id}')">🐬 Run AI Review</button>
+      </div>
+      ${p.desc ? `<p style="font-size:14px;margin-bottom:12px;">${escHtml(p.desc)}</p>` : ''}
+      ${p.importedCode ? `<details style="margin-bottom:10px;"><summary style="cursor:pointer;font-size:13px;color:var(--muted);font-weight:700;">📄 View Pasted Code</summary><pre style="font-family:'Fira Code',monospace;font-size:12px;line-height:1.6;color:#c8d4f0;white-space:pre-wrap;margin-top:10px;padding:12px;background:var(--code-bg);border-radius:8px;overflow-x:auto;">${escHtml(p.importedCode)}</pre></details>` : ''}
+      ${p.importedErrors ? `<details><summary style="cursor:pointer;font-size:13px;color:var(--muted);font-weight:700;">⚠️ View Error Messages</summary><pre style="font-size:12px;color:var(--red);white-space:pre-wrap;margin-top:10px;padding:12px;background:rgba(255,82,82,.05);border-radius:8px;">${escHtml(p.importedErrors)}</pre></details>` : ''}
+      <div id="ai-review-result-${id}" style="margin-top:14px;">
+        ${p.aiReview ? `<div class="ai-response-box"><div class="ai-response-header">🐬 AI Review (saved)</div><div class="ai-response-body">${escapeHtml(p.aiReview)}</div></div>` : ''}
+      </div>
+    </div>` : '';
+
+  detail.style.display = 'block';
+  detail.innerHTML = `
+    <div class="proj-detail-header">
+      <button class="proj-back-btn" onclick="renderProjects()">← Back to Projects</button>
+      <div style="flex:1;">
+        <div class="proj-status-badge">${p.status}</div>
+        <div style="font-size:22px;font-weight:900;">${escHtml(p.name)}</div>
+      </div>
+    </div>
+    ${importSection}
+    ${p.desc && !p.importedCode ? `<div class="card" style="margin-bottom:16px;"><div class="card-title">💡 Idea</div><p>${escHtml(p.desc)}</p></div>` : ''}
+    ${p.brainstormResult ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🤖 AI Brainstorm Result</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:11px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.brainstormResult)}</div></div>` : ''}
+    ${p.buildPlan ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🔨 AI Build Plan</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:11px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.buildPlan)}</div></div>` : ''}
+    <div class="card">
+      <div class="card-title">📝 My Notes</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Jot down links, decisions, questions, anything you want to remember.</p>
+      <textarea class="proj-notes-area" id="proj-notes-${id}" rows="8" placeholder="Your notes go here...">${escHtml(p.notes || '')}</textarea>
+      <div style="margin-top:10px;display:flex;gap:10px;align-items:center;">
+        <button class="btn btn-primary" onclick="saveProjNotes('${id}')">💾 Save Notes</button>
+        <span id="proj-saved-msg-${id}" style="font-size:13px;color:var(--green);opacity:0;transition:opacity .3s;">✓ Saved!</span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">🔄 Update Status</div>
+      <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;" id="proj-edit-status-${id}">
+        <div class="choice-card ${p.status==='💡 Brainstorming'?'selected':''}" onclick="updateProjStatus('${id}',this,'💡 Brainstorming')"><div class="choice-icon">💡</div><div class="choice-title">Brainstorming</div></div>
+        <div class="choice-card ${p.status==='🔨 Building'?'selected':''}" onclick="updateProjStatus('${id}',this,'🔨 Building')"><div class="choice-icon">🔨</div><div class="choice-title">Building</div></div>
+        <div class="choice-card ${p.status==='🚀 Launched'?'selected':''}" onclick="updateProjStatus('${id}',this,'🚀 Launched')"><div class="choice-icon">🚀</div><div class="choice-title">Launched</div></div>
+      </div>
+    </div>
+  `;
+}
+
+// ── LINKS & ACCOUNTS ──
+const LINKS_KEY   = 'orcaappbuilder_links';
+const ACCTS_KEY   = 'orcaappbuilder_accounts';
+
+const DEFAULT_ACCOUNTS = [
+  {id:'github',    icon:'🐙', name:'GitHub',           placeholder:'https://github.com/yourusername',       url:''},
+  {id:'railway',   icon:'🚂', name:'Railway',           placeholder:'https://railway.app/dashboard',          url:''},
+  {id:'cloudflare',icon:'☁️', name:'Cloudflare',        placeholder:'https://dash.cloudflare.com',            url:''},
+  {id:'discord',   icon:'💬', name:'Lightchain Discord',placeholder:'https://discord.gg/lightchain',          url:''},
+  {id:'ghpages',   icon:'🌐', name:'GitHub Pages Site', placeholder:'https://yourusername.github.io',         url:''},
+  {id:'uniswap',   icon:'🦄', name:'Uniswap',           placeholder:'https://app.uniswap.org',                url:''},
+  {id:'coinbase',  icon:'🏦', name:'Coinbase',           placeholder:'https://coinbase.com',                   url:''},
+  {id:'trustwallet',icon:'🔐',name:'Trust Wallet',      placeholder:'https://trustwallet.com/browser-extension',url:''},
+];
+
+function getAccounts() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(ACCTS_KEY) || 'null');
+    if (!saved) return DEFAULT_ACCOUNTS.map(a => ({...a}));
+    // Merge saved URLs into defaults (in case we added new defaults)
+    const map = {};
+    saved.forEach(a => map[a.id] = a.url);
+    const merged = DEFAULT_ACCOUNTS.map(a => ({...a, url: map[a.id] || a.url}));
+    // Append any custom accounts (id not in defaults)
+    const defaultIds = new Set(DEFAULT_ACCOUNTS.map(a => a.id));
+    saved.filter(a => !defaultIds.has(a.id)).forEach(a => merged.push(a));
+    return merged;
+  } catch(e) { return DEFAULT_ACCOUNTS.map(a => ({...a})); }
+}
+function saveAccounts(list) { localStorage.setItem(ACCTS_KEY, JSON.stringify(list)); }
+
+function getMyLinks() {
+  try { return JSON.parse(localStorage.getItem(LINKS_KEY) || '[]'); }
+  catch(e) { return []; }
+}
+function saveMyLinks(list) { localStorage.setItem(LINKS_KEY, JSON.stringify(list)); }
+
+function renderLinks() {
+  renderAccountsGrid();
+  renderMyLinksGrid();
+}
+
+function renderAccountsGrid() {
+  const accounts = getAccounts();
+  const grid = document.getElementById('accounts-grid');
+  if (!grid) return;
+  grid.innerHTML = accounts.map(a => `
+    <div class="account-card" id="acct-card-${a.id}">
+      <div class="account-card-header">
+        <span class="account-icon">${a.icon || '🔗'}</span>
+        <span class="account-name">${escHtml(a.name)}</span>
+      </div>
+      <div class="account-input-row">
+        <input class="account-url-input" id="acct-url-${a.id}" type="url" value="${escHtml(a.url)}" placeholder="${escHtml(a.placeholder || 'https://')}">
+        <button class="account-save-btn" onclick="saveAccountUrl('${a.id}')">Save</button>
+        ${a.url ? `<a class="account-open-btn" href="${escHtml(a.url)}" target="_blank" rel="noopener">↗</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function saveAccountUrl(id) {
+  const input = document.getElementById('acct-url-' + id);
+  if (!input) return;
+  const url = input.value.trim();
+  const accounts = getAccounts();
+  const a = accounts.find(x => x.id === id);
+  if (a) a.url = url;
+  saveAccounts(accounts);
+  renderAccountsGrid();
+}
+
+function showAddAccountForm() {
+  document.getElementById('add-account-form').style.display = 'block';
+  document.getElementById('new-account-name').focus();
+}
+
+function addCustomAccount() {
+  const name = document.getElementById('new-account-name').value.trim();
+  const url  = document.getElementById('new-account-url').value.trim();
+  const icon = document.getElementById('new-account-icon').value.trim() || '🔗';
+  if (!name) { document.getElementById('new-account-name').focus(); return; }
+  const accounts = getAccounts();
+  accounts.push({ id: 'custom_' + Date.now(), icon, name, placeholder: 'https://', url });
+  saveAccounts(accounts);
+  document.getElementById('add-account-form').style.display = 'none';
+  document.getElementById('new-account-name').value = '';
+  document.getElementById('new-account-url').value = '';
+  document.getElementById('new-account-icon').value = '';
+  renderAccountsGrid();
+}
+
+function renderMyLinksGrid() {
+  const links = getMyLinks();
+  const grid  = document.getElementById('mylinks-grid');
+  const empty = document.getElementById('mylinks-empty');
+  if (!grid) return;
+  if (links.length === 0) {
+    grid.innerHTML = '';
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  const typeLabel = {live:'🌐 Live App', repo:'📁 GitHub Repo', server:'🚂 Railway', other:'🔗 Other'};
+  const typeCls   = {live:'mylink-type-live', repo:'mylink-type-repo', server:'mylink-type-server', other:'mylink-type-other'};
+  grid.innerHTML = links.map((l,i) => `
+    <div class="mylink-card">
+      <div class="mylink-type ${typeCls[l.type]||'mylink-type-other'}">${typeLabel[l.type]||'🔗 Link'}</div>
+      <div class="mylink-name">${escHtml(l.name)}</div>
+      <a class="mylink-url" href="${escHtml(l.url)}" target="_blank" rel="noopener">${escHtml(l.url)}</a>
+      <div style="display:flex;gap:8px;">
+        <a class="proj-btn proj-btn-open" style="text-decoration:none;font-size:12px;padding:6px 12px;" href="${escHtml(l.url)}" target="_blank" rel="noopener">↗ Open</a>
+        <button class="proj-btn proj-btn-del" onclick="deleteMyLink(${i})">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectMylinkType(el, value) {
+  document.querySelectorAll('#mylink-type-grid .choice-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('new-mylink-type').value = value;
+}
+
+function addMyLink() {
+  const name = document.getElementById('new-mylink-name').value.trim();
+  const url  = document.getElementById('new-mylink-url').value.trim();
+  const type = document.getElementById('new-mylink-type').value;
+  if (!name || !url) { alert('Please enter both a name and a URL.'); return; }
+  const links = getMyLinks();
+  links.push({name, url, type});
+  saveMyLinks(links);
+  document.getElementById('new-mylink-name').value = '';
+  document.getElementById('new-mylink-url').value = '';
+  renderMyLinksGrid();
+}
+
+function deleteMyLink(idx) {
+  if (!confirm('Remove this link?')) return;
+  const links = getMyLinks();
+  links.splice(idx, 1);
+  saveMyLinks(links);
+  renderMyLinksGrid();
+}
+
+// Hook into showSection
+const _showSectionBase = showSection;
+showSection = function(name) {
+  _showSectionBase(name);
+  if (name === 'links') renderLinks();
+};
+
+// ── WALLET CONNECT ──
+const LIGHTCHAIN_CHAIN_ID = '0x23F8'; // 9200 decimal
+const LIGHTCHAIN_PARAMS = {
+  chainId: LIGHTCHAIN_CHAIN_ID,
+  chainName: 'Lightchain AI Mainnet',
+  nativeCurrency: { name: 'LCAI', symbol: 'LCAI', decimals: 18 },
+  rpcUrls: ['https://rpc.mainnet.lightchain.ai'],
+  blockExplorerUrls: ['https://scan.lightchain.ai']
+};
+const TIP_ADDRESS = '0x6518fD26a7aD2Fe1bA80De5f279Ee59F55C0A9bA';
+
+let walletProvider = null;
+let walletSigner   = null;
+let walletAddress  = null;
+
+async function connectWallet() {
+  if (!window.ethereum) {
+    alert('No wallet detected. Open this app inside Trust Wallet\'s built-in browser, or install a browser wallet extension to continue.');
+    return;
+  }
+  const btn = document.getElementById('wallet-btn');
+  try {
+    btn.textContent = 'Connecting…';
+    btn.disabled = true;
+    walletProvider = new ethers.BrowserProvider(window.ethereum);
+    await walletProvider.send('eth_requestAccounts', []);
+    await switchToLightchain();
+    walletSigner  = await walletProvider.getSigner();
+    walletAddress = await walletSigner.getAddress();
+    updateWalletUI(walletAddress);
+  } catch(e) {
+    console.error('Wallet connect error:', e);
+    btn.textContent = '🔗 Connect Wallet';
+    btn.disabled = false;
+    if (e.code !== 4001) alert('Could not connect wallet: ' + (e.message || e));
+  }
+}
+
+async function switchToLightchain() {
+  try {
+    await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: LIGHTCHAIN_CHAIN_ID }] });
+  } catch(switchErr) {
+    if (switchErr.code === 4902) {
+      await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [LIGHTCHAIN_PARAMS] });
+    } else {
+      throw switchErr;
+    }
+  }
+}
+
+function updateWalletUI(address) {
+  const btn = document.getElementById('wallet-btn');
+  const short = address.slice(0,6) + '…' + address.slice(-4);
+  btn.textContent = '✅ ' + short;
+  btn.classList.add('connected');
+  btn.disabled = false;
+  btn.onclick = null;
+}
+
+// ── TIP JAR ──
+async function sendTip(amountStr) {
+  await doSendTip(String(amountStr));
+}
+
+async function sendCustomTip() {
+  const val = (document.getElementById('tip-custom-amount').value || '').trim();
+  if (!val || isNaN(parseFloat(val)) || parseFloat(val) <= 0) {
+    alert('Please enter a valid tip amount.');
+    return;
+  }
+  await doSendTip(val);
+}
+
+async function doSendTip(amountStr) {
+  const status = document.getElementById('tip-status');
+  status.style.color = 'var(--muted)';
+  if (!walletSigner) {
+    status.textContent = 'Connecting wallet first…';
+    await connectWallet();
+    if (!walletSigner) {
+      status.textContent = 'Wallet not connected. Connect above and try again.';
+      status.style.color = 'var(--yellow)';
+      return;
+    }
+  }
+  try {
+    status.textContent = '⏳ Confirm the transaction in your wallet…';
+    const tx = await walletSigner.sendTransaction({
+      to: TIP_ADDRESS,
+      value: ethers.parseEther(amountStr)
+    });
+    status.textContent = '📡 Broadcasting… ' + tx.hash.slice(0,14) + '…';
+    await tx.wait(1);
+    status.textContent = '🎉 Thank you! ' + amountStr + ' LCAI sent — you’re amazing!';
+    status.style.color = 'var(--green)';
+    document.getElementById('tip-custom-amount').value = '';
+  } catch(e) {
+    if (e.code === 4001) {
+      status.textContent = 'Tip cancelled.';
+    } else {
+      status.textContent = 'Transaction failed: ' + (e.shortMessage || e.message || 'unknown error');
+      status.style.color = 'var(--red)';
+    }
+  }
+}
+
+</script>
+</body>
+</html>
