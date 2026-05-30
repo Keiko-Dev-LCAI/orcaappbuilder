@@ -2262,9 +2262,21 @@ function runBrainstorm() {
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Coming up with app ideas just for you... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
 
-  const prompt = `I am interested in building a Lightchain dApp in the category: ${category}.
-The people who would use my app: ${audience}.
-${seed ? 'Rough idea I already have: ' + seed : 'I do not have a specific idea yet.'}
+  const prompt = seed
+    ? `I want to build a Lightchain dApp based on this idea: ${seed}.
+${audience ? 'Target users: ' + audience : ''}
+${category && category !== 'Any' ? 'General category: ' + category : ''}
+
+Please suggest 3 specific, realistic ways I could build this on Lightchain. For each variation:
+1. Give it a catchy name
+2. One sentence: what it does
+3. One sentence: who it helps
+4. What Lightchain feature it uses (AIVM, smart contract, LCAI payments, etc.)
+5. Difficulty: Easy / Medium / Hard
+
+After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`
+    : `I am interested in building a Lightchain dApp in the category: ${category}.
+${audience ? 'The people who would use my app: ' + audience : ''}
 
 Please suggest 3 specific, realistic app ideas I could build on Lightchain. For each idea:
 1. Give it a catchy name
@@ -2275,9 +2287,18 @@ Please suggest 3 specific, realistic app ideas I could build on Lightchain. For 
 
 After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`;
 
+  const summaryLines = [];
+  if (seed) summaryLines.push(`<strong>Your idea:</strong> ${escapeHtml(seed)}`);
+  if (category) summaryLines.push(`<strong>Category:</strong> ${escapeHtml(category)}`);
+  if (audience) summaryLines.push(`<strong>Audience:</strong> ${escapeHtml(audience)}`);
+  const summaryHtml = summaryLines.length
+    ? `<div style="background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:var(--muted);line-height:1.8">${summaryLines.join(' &nbsp;·&nbsp; ')}</div>`
+    : '';
+
   callAI(prompt, 'brainstorm').then(reply => {
     _lastBrainstormReply = reply;
     resultEl.innerHTML = `
+      ${summaryHtml}
       <div class="ai-response-box">
         <div class="ai-response-header">🐬 OrcaAppBuilder AI Suggestions</div>
         <div class="ai-response-body">${escapeHtml(reply)}</div>
