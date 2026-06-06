@@ -376,6 +376,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .mobile-nav{display:block;}
   .header-tag{display:none;}
   .health-label{display:none;}
+  .health-dot{display:none;}
+  .wallet-btn{padding:0;width:40px;height:40px;border-radius:50%;font-size:0;display:flex;align-items:center;justify-content:center;}
+  .wallet-btn::before{content:'🔗';font-size:18px;}
+  .wallet-btn.connected::before{content:'✅';font-size:18px;}
   .ai-fab{bottom:74px;}
   .ai-panel{width:calc(100vw - 28px);right:14px;bottom:130px;height:70vh;min-height:300px;}
   .ai-resize-handle{display:none;}
