@@ -2103,6 +2103,11 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
 // ── CONFIG ──
 const API_BASE = 'https://web-production-aaaba.up.railway.app';
 
+// Session ID — generated once per page load so the AI remembers this conversation
+const SESSION_ID = (typeof crypto !== 'undefined' && crypto.randomUUID)
+  ? crypto.randomUUID()
+  : Math.random().toString(36).slice(2) + Date.now().toString(36);
+
 // ── SECTION NAVIGATION ──
 const SECTIONS  = ['home','learn','brainstorm','build','troubleshoot','projects','links'];
 
@@ -2622,7 +2627,7 @@ async function callAI(message, mode = 'chat') {
   const res = await fetch(API_BASE + '/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, mode }),
+    body: JSON.stringify({ message, mode, session_id: SESSION_ID }),
     signal: AbortSignal.timeout(15000)
   });
   if (!res.ok) throw new Error('Server error ' + res.status);
