@@ -527,6 +527,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <a href="https://keiko-dev-lcai.github.io/topten" target="_blank" class="pod-app">Top Ten Presales 🏆</a>
             <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" class="pod-app">Node Builder ⚡</a>
             <a href="https://keiko-dev-lcai.github.io/orcaguard/" target="_blank" class="pod-app">OrcaGuard 🛡️</a>
+            <a href="https://keiko-dev-lcai.github.io/keiko-chat" target="_blank" class="pod-app">Keiko Chat 💬</a>
+            <a href="https://chat.lightchain.ai" target="_blank" class="pod-app">Lightchain Chat ⚡</a>
           </div>
           <div class="upload-callout">
             <div class="upload-callout-text">
@@ -1042,6 +1044,20 @@ requests</pre></div>
             <li>The LIGHTCHAIN_PRIVATE_KEY environment variable on Railway is this dApp wallet's private key</li>
             <li>Never use your personal wallet's private key as the dApp wallet key</li>
           </ul>
+        </div>
+
+        <div class="callout info" style="border-color:rgba(0,212,255,0.35);background:rgba(0,212,255,0.06)">
+          <span class="callout-icon">💬</span>
+          <div class="callout-body">
+            <strong>Official reference: lcai-chat-v2</strong><br>
+            Lightchain's production chat app is open source:
+            <a href="https://github.com/lightchain-protocol/lcai-chat-v2" target="_blank" style="color:var(--cyan)">github.com/lightchain-protocol/lcai-chat-v2</a>
+            — live at <a href="https://chat.lightchain.ai" target="_blank" style="color:var(--cyan)">chat.lightchain.ai</a>.<br><br>
+            It shows the <strong>full browser protocol</strong>: wallet SIWE sign-in → gateway JWT → on-chain session → encrypted relay WebSocket → streaming AI. Stack: Next.js 15, Wagmi, Vercel AI SDK, PostgreSQL.<br><br>
+            <strong>Keiko Chat</strong> is a community fork you can study and deploy:
+            <a href="https://github.com/Keiko-Dev-LCAI/keiko-chat" target="_blank" style="color:var(--cyan)">Keiko-Dev-LCAI/keiko-chat</a>.<br><br>
+            For beginners building simple dApps (like OrcaLearn), use the <strong>server-side Python pattern</strong> above — one <span class="inline-code">/api/chat</span> call from your HTML. For a full ChatGPT-style product, fork lcai-chat-v2.
+          </div>
         </div>
 
         <div class="step-nav">
@@ -1892,6 +1908,9 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
         <a href="https://scan.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name">Lightchain Explorer</div><div class="resource-desc">Browse Lightchain transactions</div></div></a>
         <a href="https://coinbase.com" target="_blank" class="resource-card"><div class="resource-icon">🏦</div><div><div class="resource-name">Coinbase</div><div class="resource-desc">Buy ETH to fund your wallet</div></div></a>
         <a href="https://lightnode.app/playground" target="_blank" class="resource-card"><div class="resource-icon">🧪</div><div><div class="resource-name">AIVM Playground</div><div class="resource-desc">Test a real encrypted AI inference in your browser</div></div></a>
+        <a href="https://github.com/lightchain-protocol/lcai-chat-v2" target="_blank" class="resource-card"><div class="resource-icon">⚡</div><div><div class="resource-name">lcai-chat-v2</div><div class="resource-desc">Official Lightchain chat source (chat.lightchain.ai)</div></div></a>
+        <a href="https://chat.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🤖</div><div><div class="resource-name">Lightchain Chat</div><div class="resource-desc">Production wallet-native AI chat on mainnet</div></div></a>
+        <a href="https://github.com/Keiko-Dev-LCAI/keiko-chat" target="_blank" class="resource-card"><div class="resource-icon">🐬</div><div><div class="resource-name">Keiko Chat</div><div class="resource-desc">Community fork — study or deploy your own chat</div></div></a>
       </div>
 
     </section>
