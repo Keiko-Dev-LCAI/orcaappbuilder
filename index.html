@@ -70,6 +70,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .nav-item .nav-sub{font-size:18px;color:var(--muted);display:block;margin-top:3px;line-height:1.4;}
 .nav-item.active .nav-sub{color:rgba(0,212,255,.6);}
 .sidebar-footer{margin-top:auto;padding:18px 22px;border-top:1px solid var(--border);}
+.android-install-btn{display:block;text-align:center;background:var(--cyan);color:#000;font-weight:800;font-size:16px;padding:12px 14px;border-radius:10px;text-decoration:none;margin-bottom:10px;}
+.android-install-btn:hover{opacity:.9;}
+.android-install-hint{font-size:13px;color:var(--muted);line-height:1.5;}
 
 /* ── MAIN ── */
 .main{margin-left:300px;flex:1;padding:32px 40px 80px;min-width:0;}
@@ -456,7 +459,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
 
     <div class="sidebar-footer">
-      <a href="#" onclick="openTerms();return false;" style="font-size:12px;color:var(--muted);text-decoration:none;">📋 Terms &amp; Disclaimer</a>
+      <a class="android-install-btn" href="OrcaAppBuilder.apk" download>📲 Download Android App</a>
+      <div class="android-install-hint">Download → open file → tap Install. Allow unknown apps if your phone asks.</div>
+      <a href="#" onclick="openTerms();return false;" style="font-size:12px;color:var(--muted);text-decoration:none;display:block;margin-top:12px;">📋 Terms &amp; Disclaimer</a>
     </div>
   </nav>
 
