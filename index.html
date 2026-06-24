@@ -141,7 +141,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
 .lc-results-area{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.lc-results-scroll{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;}
+#lc-verdict{flex-shrink:0;}
+.lc-results-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:6px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;}
+.lc-results-scroll::-webkit-scrollbar{width:8px;}
+.lc-results-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px;}
+.lc-results-scroll::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28);}
 .fix-step-compact.done{opacity:.55;}
 .lc-next-step{border:2px solid rgba(0,212,255,.45);border-radius:12px;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,230,118,.06));padding:14px 16px;margin-bottom:10px;flex-shrink:0;}
 .lc-next-step-head{font-size:11px;font-weight:800;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
@@ -2713,6 +2717,19 @@ function renderNextStepPanel(scan) {
   return html;
 }
 
+function scrollFixStepIntoView(row) {
+  const container = document.querySelector('.lc-results-scroll');
+  if (!container || !row) return;
+  const cr = container.getBoundingClientRect();
+  const rr = row.getBoundingClientRect();
+  const pad = 10;
+  if (rr.bottom > cr.bottom - pad) {
+    container.scrollTop += rr.bottom - cr.bottom + pad;
+  } else if (rr.top < cr.top + pad) {
+    container.scrollTop -= cr.top - rr.top + pad;
+  }
+}
+
 function updateFixStepHighlights(scan) {
   const next = findNextFixStep(scan);
   document.querySelectorAll('.fix-step-compact').forEach(row => row.classList.remove('current'));
@@ -2722,7 +2739,7 @@ function updateFixStepHighlights(scan) {
   row.classList.add('current');
   const details = row.closest('details');
   if (details && !details.open) details.open = true;
-  row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  scrollFixStepIntoView(row);
 }
 
 function pbEsc(id) {
