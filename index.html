@@ -83,8 +83,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── HOME ── */
-#section-home.section.active{display:flex;flex-direction:column;min-height:0;}
-.home-dashboard{display:flex;flex-direction:column;gap:10px;flex:1;min-height:0;}
+#section-home.section.active{display:flex;flex-direction:column;}
+.home-dashboard{display:flex;flex-direction:column;gap:10px;}
 .hero{text-align:center;padding:8px 0 4px;flex-shrink:0;}
 .hero-orca{font-size:40px;margin-bottom:4px;line-height:1;}
 .hero-title{font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--cyan),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;line-height:1.15;}
@@ -147,14 +147,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fix-step-help{font-size:12px;}
 .fix-step-help button{background:none;border:none;color:var(--cyan);cursor:pointer;font-size:12px;font-weight:700;padding:0;font-family:inherit;text-decoration:underline;}
 
-.pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;}
+.pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;flex:1;min-width:0;display:flex;flex-direction:column;}
 .free-banner{background:linear-gradient(135deg,rgba(0,200,100,.12),rgba(0,212,255,.10));border:1px solid rgba(0,200,100,.45);border-radius:10px;padding:8px 14px;margin:0;text-align:center;width:100%;flex-shrink:0;}
 .free-banner-headline{font-size:14px;font-weight:900;color:#00c864;margin-bottom:4px;letter-spacing:-.2px;}
 .free-banner-body{font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:6px;}
 .free-stack{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
 .free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#00c864;}
 .free-stack-item span{color:var(--muted);font-weight:400;}
-.home-bottom{display:flex;gap:12px;margin-top:0;align-items:stretch;flex:1;min-height:0;}
+.home-bottom{display:flex;gap:12px;margin-top:4px;align-items:flex-start;}
 .tip-jar-compact{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;width:200px;flex-shrink:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
 .tip-jar-compact-title{font-size:13px;font-weight:800;margin-bottom:4px;}
 .tip-jar-compact-sub{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.3;}
@@ -162,19 +162,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tip-jar-compact .tip-btn{padding:6px 10px;font-size:11px;}
 .tip-jar-compact .tip-custom input{width:70px;padding:5px 8px;font-size:11px;}
 .tip-jar-compact .tip-custom button{padding:5px 10px;font-size:11px;}
-.pod-title{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;flex-shrink:0;}
-.pod-apps{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin;flex:1;align-items:center;}
-.pod-app{flex-shrink:0;}
-.home-pod-details summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--muted);list-style:none;display:flex;align-items:center;gap:6px;}
-.home-pod-details summary::-webkit-details-marker{display:none;}
-.home-pod-details[open] .pod-apps-wrap{margin-top:8px;}
+.pod-title{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.pod-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.pod-hub-link{display:block;margin-top:10px;font-size:12px;font-weight:700;color:var(--cyan);text-decoration:none;text-align:center;}
+.pod-hub-link:hover{text-decoration:underline;}
 .upload-callout{margin-top:8px;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
 .upload-callout-text{font-size:16px;color:var(--text);line-height:1.5;}
 .upload-callout-text strong{color:var(--cyan);display:block;margin-bottom:2px;font-size:16px;}
 .upload-callout-btn{padding:10px 20px;border-radius:8px;border:1px solid rgba(0,212,255,.4);background:rgba(0,212,255,.1);color:var(--cyan);font-size:15px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .2s;text-decoration:none;}
 .upload-callout-btn:hover{background:rgba(0,212,255,.2);}
-.pod-app{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);text-decoration:none;transition:all .2s;white-space:nowrap;}
-.pod-app:hover{border-color:var(--cyan);color:var(--cyan);}
+.pod-app{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px 10px;font-size:14px;font-weight:700;color:var(--text);text-decoration:none;transition:all .2s;text-align:center;line-height:1.35;min-height:56px;display:flex;align-items:center;justify-content:center;}
+.pod-app:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.06);}
 
 /* ── PAGE HEADERS ── */
 .page-header{margin-bottom:36px;}
@@ -419,13 +417,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
 
-/* Home fits one screen on desktop */
+/* Home desktop */
 @media(min-width:821px){
-  .main:has(#section-home.active){padding:12px 20px 16px;height:calc(100vh - 68px);overflow:hidden;box-sizing:border-box;}
-  #section-home.section.active{height:100%;overflow:hidden;}
-  .home-dashboard{height:100%;}
+  .main:has(#section-home.active){padding:12px 20px 16px;}
   .free-banner-body{display:none;}
-  .home-bottom .upload-callout{display:none;}
 }
 /* ── RESPONSIVE ── */
 @media(max-width:820px){
@@ -436,6 +431,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .hero-orca{font-size:36px;}
   .hero-sub{font-size:14px;}
   .home-bottom{flex-direction:column;}
+  .pod-apps{grid-template-columns:repeat(2,1fr);}
   .tip-jar-compact{width:100%;}
   .upload-callout{flex-direction:column;align-items:flex-start;}
   .mobile-nav{display:block;}
@@ -584,27 +580,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
       <div class="home-bottom">
         <div class="pod-strip">
-          <div class="pod-title">🐬 Example apps — scroll →</div>
+          <div class="pod-title">🐬 Example apps you can build too</div>
           <div class="pod-apps">
-            <a href="https://orcamail.ai" target="_blank" class="pod-app">OrcaMail 📧</a>
-            <a href="https://orcafiles.ai" target="_blank" class="pod-app">OrcaFiles 📁</a>
-            <a href="https://smartcontractexplainer.xyz" target="_blank" class="pod-app">Contract Explainer 🔍</a>
-            <a href="https://orcamint.xyz" target="_blank" class="pod-app">OrcaMint 🎨</a>
-            <a href="https://emojisandstickers.xyz" target="_blank" class="pod-app">Emojis &amp; Stickers 😄</a>
-            <a href="https://keiko-dev-lcai.github.io/lighttube" target="_blank" class="pod-app">LightTube 🎬</a>
-            <a href="https://keiko-dev-lcai.github.io/lighttunes" target="_blank" class="pod-app">LightTunes 🎵</a>
-            <a href="https://keiko-dev-lcai.github.io/orcavault" target="_blank" class="pod-app">OrcaVault 🗄️</a>
-            <a href="https://keiko-dev-lcai.github.io/orcalearn-app" target="_blank" class="pod-app">OrcaLearn 📖</a>
-            <a href="https://keiko-dev-lcai.github.io/orcatax" target="_blank" class="pod-app">OrcaTax 📊</a>
-            <a href="https://keiko-dev-lcai.github.io/myice" target="_blank" class="pod-app">MyICE 🆘</a>
-            <a href="https://keiko-dev-lcai.github.io/lightdex" target="_blank" class="pod-app">LightDex 💱</a>
-            <a href="https://keiko-dev-lcai.github.io/lightmall" target="_blank" class="pod-app">LightMall 🛍️</a>
-            <a href="https://keiko-dev-lcai.github.io/topten" target="_blank" class="pod-app">Top Ten Presales 🏆</a>
-            <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" class="pod-app">Node Builder ⚡</a>
-            <a href="https://keiko-dev-lcai.github.io/orcaguard/" target="_blank" class="pod-app">OrcaGuard 🛡️</a>
-            <a href="https://keiko-dev-lcai.github.io/keiko-chat" target="_blank" class="pod-app">Keiko Chat 💬</a>
-            <a href="https://chat.lightchain.ai" target="_blank" class="pod-app">Lightchain Chat ⚡</a>
+            <a href="https://orcamail.ai" target="_blank" rel="noopener" class="pod-app">OrcaMail 📧</a>
+            <a href="https://orcafiles.ai" target="_blank" rel="noopener" class="pod-app">OrcaFiles 📁</a>
+            <a href="https://keiko-dev-lcai.github.io/orcalearn-app" target="_blank" rel="noopener" class="pod-app">OrcaLearn 📖</a>
+            <a href="https://keiko-dev-lcai.github.io/orcaguard/" target="_blank" rel="noopener" class="pod-app">OrcaGuard 🛡️</a>
+            <a href="https://orcamint.xyz" target="_blank" rel="noopener" class="pod-app">OrcaMint 🎨</a>
+            <a href="https://smartcontractexplainer.xyz" target="_blank" rel="noopener" class="pod-app">Contract Explainer 🔍</a>
+            <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" rel="noopener" class="pod-app">Node Builder ⚡</a>
+            <a href="https://keiko-dev-lcai.github.io/myice" target="_blank" rel="noopener" class="pod-app">MyICE 🆘</a>
+            <a href="https://keiko-dev-lcai.github.io/keiko-chat" target="_blank" rel="noopener" class="pod-app">Keiko Chat 💬</a>
+            <a href="https://chat.lightchain.ai" target="_blank" rel="noopener" class="pod-app">Lightchain Chat ⚡</a>
+            <a href="https://keiko-dev-lcai.github.io/lightdex" target="_blank" rel="noopener" class="pod-app">LightDex 💱</a>
+            <a href="https://keiko-dev-lcai.github.io/orcavault" target="_blank" rel="noopener" class="pod-app">OrcaVault 🗄️</a>
           </div>
+          <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" class="pod-hub-link">See all apps on the dApp Hub →</a>
         </div>
 
         <div class="tip-jar-compact">
