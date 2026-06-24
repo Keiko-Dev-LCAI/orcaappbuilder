@@ -2634,6 +2634,23 @@ Write this for someone who has never coded before.`;
 
 // ── LAUNCH CHECK ──
 let _lastLaunchScan = null;
+let _fixStepsDone = {};
+
+(function purgeLegacyFixStepStorage() {
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith('lc_done_')) localStorage.removeItem(k);
+    });
+  } catch (e) {}
+})();
+
+function fixStepId(playbookId, stepNum) {
+  return `${playbookId}_${stepNum}`;
+}
+
+function resetFixStepProgress() {
+  _fixStepsDone = {};
+}
 
 function launchVerdictClass(hint) {
   if (!hint) return 'warnings';
@@ -2662,13 +2679,8 @@ function renderLaunchVerdict(scan) {
   return html;
 }
 
-function fixStepKey(playbookId, stepNum) {
-  const url = (document.getElementById('lc-url').value.trim() || 'app').slice(0, 80);
-  return `lc_done_${playbookId}_${stepNum}_${url}`;
-}
-
 function isFixStepDone(playbookId, stepNum) {
-  try { return !!localStorage.getItem(fixStepKey(playbookId, stepNum)); } catch (e) { return false; }
+  return !!_fixStepsDone[fixStepId(playbookId, stepNum)];
 }
 
 function findNextFixStep(scan) {
@@ -2738,11 +2750,9 @@ function markFixStepDone(playbookId, stepNum) {
 }
 
 function toggleFixStep(playbookId, stepNum, el) {
-  const key = fixStepKey(playbookId, stepNum);
-  try {
-    if (el.checked) localStorage.setItem(key, '1');
-    else localStorage.removeItem(key);
-  } catch (e) {}
+  const id = fixStepId(playbookId, stepNum);
+  if (el.checked) _fixStepsDone[id] = true;
+  else delete _fixStepsDone[id];
   const row = el.closest('.fix-step, .fix-step-compact');
   if (row) row.classList.toggle('done', el.checked);
   updateNextStepPanel();
@@ -2873,6 +2883,7 @@ async function runLaunchCheck() {
     return;
   }
 
+  resetFixStepProgress();
   resultsArea.style.display = 'flex';
   verdictEl.innerHTML = '<div class="ai-thinking" style="padding:8px;"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Scanning...</div>';
   fixEl.innerHTML = '';
