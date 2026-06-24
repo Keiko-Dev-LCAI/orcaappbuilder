@@ -87,7 +87,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hero-orca{font-size:56px;margin-bottom:10px;line-height:1;}
 .hero-title{font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--cyan),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.2;}
 .hero-sub{font-size:18px;color:var(--muted);max-width:640px;margin:0 auto 24px;line-height:1.6;}
-.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:0 0 20px;}
+.mode-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin:0 0 20px;}
 .mode-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 18px;cursor:pointer;transition:all .2s;text-align:center;}
 .mode-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,212,255,.12);}
 .mode-card-icon{font-size:36px;margin-bottom:10px;}
@@ -97,10 +97,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .mode-card.brainstorm{border-color:rgba(168,85,247,.2);}
 .mode-card.build{border-color:rgba(0,230,118,.2);}
 .mode-card.troubleshoot{border-color:rgba(255,152,0,.2);}
+.mode-card.launch{border-color:rgba(251,191,36,.35);}
 .mode-card.learn:hover{border-color:var(--cyan);}
 .mode-card.brainstorm:hover{border-color:var(--purple);}
 .mode-card.build:hover{border-color:var(--green);}
 .mode-card.troubleshoot:hover{border-color:var(--orange);}
+.mode-card.launch:hover{border-color:var(--yellow);}
+.launch-scan-summary{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0;}
+.launch-pill{padding:8px 14px;border-radius:999px;font-size:13px;font-weight:800;border:1px solid var(--border);}
+.launch-pill.critical{background:rgba(255,82,82,.12);border-color:rgba(255,82,82,.45);color:#ff8a80;}
+.launch-pill.warning{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.4);color:var(--yellow);}
+.launch-pill.ok{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.35);color:var(--green);}
+.launch-finding{display:flex;gap:12px;padding:14px 16px;border-radius:10px;border:1px solid var(--border);background:var(--card);margin-bottom:10px;align-items:flex-start;}
+.launch-finding.critical{border-color:rgba(255,82,82,.45);background:rgba(255,82,82,.07);}
+.launch-finding.warning{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.06);}
+.launch-finding.ok{border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.06);}
+.launch-finding.info{border-color:rgba(0,212,255,.25);background:rgba(0,212,255,.05);}
+.launch-sev{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:4px 8px;border-radius:4px;flex-shrink:0;margin-top:2px;}
+.launch-sev.critical{background:rgba(255,82,82,.2);color:#ff8a80;}
+.launch-sev.warning{background:rgba(251,191,36,.2);color:var(--yellow);}
+.launch-sev.ok{background:rgba(0,230,118,.2);color:var(--green);}
+.launch-sev.info{background:rgba(0,212,255,.15);color:var(--cyan);}
+.launch-finding-body{flex:1;min-width:0;}
+.launch-finding-title{font-weight:800;font-size:14px;margin-bottom:4px;}
+.launch-finding-detail{font-size:13px;color:var(--muted);line-height:1.55;}
+.launch-finding-src{font-size:11px;color:var(--muted);margin-top:6px;opacity:.85;}
+.launch-snippet{font-family:monospace;font-size:11px;color:var(--text);background:var(--code-bg);padding:6px 8px;border-radius:6px;margin-top:6px;word-break:break-all;}
 
 .pod-strip{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 18px;flex:1;min-width:0;}
 .free-banner{background:linear-gradient(135deg,rgba(0,200,100,.12),rgba(0,212,255,.10));border:2px solid rgba(0,200,100,.5);border-radius:14px;padding:12px 18px;margin:0 0 12px;text-align:center;width:100%;}
@@ -445,6 +467,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <span class="nav-icon">🔨</span>
       <div><span class="nav-label">Build</span><span class="nav-sub">Turn your idea into a plan</span></div>
     </div>
+    <div class="nav-item" onclick="showSection('launchcheck')" id="nav-launchcheck">
+      <span class="nav-icon">🚀</span>
+      <div><span class="nav-label">Launch Check</span><span class="nav-sub">Scan before you announce in Discord</span></div>
+    </div>
     <div class="nav-item" onclick="showSection('troubleshoot')" id="nav-troubleshoot">
       <span class="nav-icon">🔧</span>
       <div><span class="nav-label">Troubleshoot</span><span class="nav-sub">Stuck? AI will help diagnose it</span></div>
@@ -502,6 +528,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <div class="mode-card-icon">🔨</div>
             <div class="mode-card-title">Build Your App</div>
             <div class="mode-card-desc">Describe your idea and get a complete step-by-step build plan.</div>
+          </div>
+          <div class="mode-card launch" onclick="showSection('launchcheck')">
+            <div class="mode-card-icon">🚀</div>
+            <div class="mode-card-title">Launch Check</div>
+            <div class="mode-card-desc">About to post "it's complete"? Scan your live URL first — catches localhost bugs.</div>
           </div>
           <div class="mode-card troubleshoot" onclick="showSection('troubleshoot')">
             <div class="mode-card-icon">🔧</div>
@@ -1438,15 +1469,28 @@ git commit -m "Update: describe what changed"
 git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo.git main</pre></div>
         </div>
 
+        <div class="callout danger">
+          <span class="callout-icon">🚨</span>
+          <div class="callout-body">
+            <strong>Two deployments, not one</strong>
+            If your app uses AI or any server API, you need <em>both</em> a public frontend URL <em>and</em> a public backend URL (usually Railway). Search your code for <span class="inline-code">localhost</span> — if you find it, your app is not ready for strangers yet.
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-title">✅ Post-Launch Checklist</div>
           <ul>
-            <li>☐ Test your app on mobile (open on your phone)</li>
-            <li>☐ Test wallet connection with at least one wallet (MetaMask, Trust Wallet, or Coinbase Wallet)</li>
-            <li>☐ Test the AI chat (make sure AIVM responses come through)</li>
-            <li>☐ Add a Terms &amp; Disclaimer to your app (important for liability)</li>
-            <li>☐ Announce in the Lightchain Discord: discord.gg/lightchain</li>
+            <li>☐ <strong>Run OrcaAppBuilder Launch Check</strong> — paste your live URL before announcing</li>
+            <li>☐ Backend deployed to Railway (if your app has <span class="inline-code">/api/</span> routes or AIVM)</li>
+            <li>☐ No <span class="inline-code">localhost</span> or <span class="inline-code">127.0.0.1</span> left in frontend code</li>
+            <li>☐ Test from a friend's phone or incognito — <em>not</em> the same PC running your local server</li>
+            <li>☐ Test wallet connection (MetaMask, Trust Wallet, or Coinbase Wallet)</li>
+            <li>☐ Test the full flow including AI/API responses</li>
+            <li>☐ If users pay LCAI, verify they get the feature after payment</li>
+            <li>☐ Add a Terms &amp; Disclaimer to your app</li>
+            <li>☐ Announce in Discord only after the above pass</li>
           </ul>
+          <button class="btn btn-primary" style="background:var(--yellow);color:#000;margin-top:12px;" onclick="showSection('launchcheck')">🚀 Run Launch Check Now</button>
         </div>
 
         <div class="step-nav">
@@ -1475,7 +1519,8 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         <div class="card">
           <div class="card-title">📋 What You Need Before Submitting</div>
           <ul>
-            <li>✅ Your app is live at a public URL</li>
+            <li>✅ Your app is live at a public URL — and works for people who are <em>not</em> on your PC</li>
+            <li>✅ Launch Check passed (no localhost backend, API responds from Railway HTTPS URL)</li>
             <li>✅ Your app uses the blockchain (AIVM, LCAI payments, or a smart contract)</li>
             <li>✅ A square logo image (any size, PNG)</li>
             <li>✅ A thumbnail image (exactly 800×450 pixels — tip: make it in Canva for free)</li>
@@ -1714,6 +1759,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div class="step-nav">
             <button class="btn btn-ghost" onclick="bldBack(2)">← Try Again</button>
             <button class="btn btn-primary" onclick="showSection('learn')">📚 Follow the Step-by-Step Guide</button>
+            <button class="btn btn-primary" style="background:var(--yellow);color:#000;" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
             <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="openAiPanel('I want to start building my app. Here is my plan: ' + document.getElementById('bld-result').innerText.substring(0,300))">💬 Ask AI a Question</button>
             <button class="btn btn-primary" style="background:var(--orange);color:#000;" onclick="saveToProject('buildPlan', document.getElementById('bld-result').innerText)">📂 Save to Project</button>
           </div>
@@ -1736,6 +1782,46 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
     Thank you!
     -->
+
+    <!-- ══ LAUNCH CHECK ══ -->
+    <section id="section-launchcheck" class="section">
+      <div class="page-header">
+        <div class="page-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
+        <h1 class="page-title">Is Your App Really Ready?</h1>
+        <p class="page-sub">Before you post "it's complete" in Discord — run this. We scan your live URL and code for the #1 beginner mistake: a frontend on Vercel/GitHub Pages that still calls <span class="inline-code">localhost</span> for the backend.</p>
+      </div>
+
+      <div class="callout danger">
+        <span class="callout-icon">🚨</span>
+        <div class="callout-body">
+          <strong>Frontend live ≠ App works for everyone</strong>
+          If your site is on Vercel but your API is <span class="inline-code">http://localhost:3001</span>, it only works on <em>your</em> PC while <em>your</em> local server is running. Visitors' browsers try <em>their</em> localhost — and fail. Deploy the backend to Railway, then point your frontend at that HTTPS URL.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Step 1 — What to scan</div>
+        <div class="field-group">
+          <label class="field-label">Live app URL (recommended)</label>
+          <div class="field-sub">Your Vercel, GitHub Pages, or custom domain — we fetch the page and JS bundles automatically.</div>
+          <input class="field-input" id="lc-url" type="url" placeholder="https://your-app.vercel.app">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Paste code (optional but helpful)</label>
+          <div class="field-sub">Paste your <span class="inline-code">fetch(...)</span> calls, <span class="inline-code">App.js</span>, or server routes if you have them.</div>
+          <textarea class="field-input field-textarea" id="lc-code" rows="6" placeholder="Paste frontend API calls or backend server code here..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Notes (optional)</label>
+          <textarea class="field-input" id="lc-notes" rows="2" placeholder="e.g. I deployed frontend to Vercel. Backend runs on my PC with npm start."></textarea>
+        </div>
+        <button class="btn btn-primary" style="background:var(--yellow);color:#000;" onclick="runLaunchCheck()">🔍 Run Launch Check + AI Review</button>
+        <p style="font-size:12px;color:var(--muted);margin-top:10px;">Instant automated scan, then AI verdict (~1–2 min). Needs AI online.</p>
+      </div>
+
+      <div id="lc-scan-result" style="margin-top:20px;"></div>
+      <div id="lc-ai-result" style="margin-top:20px;"></div>
+    </section>
 
     <!-- ══ TROUBLESHOOT ══ -->
     <section id="section-troubleshoot" class="section">
@@ -1780,6 +1866,11 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div class="issue-icon">💸</div>
           <div class="issue-title">Payment Not Working</div>
           <div class="issue-desc">LCAI transactions failing or users unable to pay</div>
+        </div>
+        <div class="issue-card" onclick="showSection('launchcheck')">
+          <div class="issue-icon">🚀</div>
+          <div class="issue-title">Works on My PC Only</div>
+          <div class="issue-desc">App works for me but friends get errors — likely localhost backend</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My Python server works locally but fails on Railway — packages not installing or wrong versions')">
           <div class="issue-icon">🐍</div>
@@ -2139,7 +2230,7 @@ const SESSION_ID = (typeof crypto !== 'undefined' && crypto.randomUUID)
   : Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 // ── SECTION NAVIGATION ──
-const SECTIONS  = ['home','learn','brainstorm','build','troubleshoot','projects','links'];
+const SECTIONS  = ['home','learn','brainstorm','build','launchcheck','troubleshoot','projects','links'];
 
 function showSection(name) {
   SECTIONS.forEach(s => {
@@ -2458,6 +2549,100 @@ Write this for someone who has never coded before.`;
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
     actionsEl.style.display = '';
   });
+}
+
+// ── LAUNCH CHECK ──
+function renderLaunchFindings(scan) {
+  if (!scan || !scan.findings) return '';
+  const crit = scan.critical_count || 0;
+  const warn = scan.warning_count || 0;
+  let html = '<div class="card"><div class="card-title">📊 Automated Scan Results</div>';
+  html += '<div class="launch-scan-summary">';
+  html += `<span class="launch-pill ${crit ? 'critical' : 'ok'}">${crit} critical</span>`;
+  html += `<span class="launch-pill ${warn ? 'warning' : 'ok'}">${warn} warnings</span>`;
+  html += `<span class="launch-pill ok">Hint: ${escapeHtml(scan.verdict_hint || '—')}</span>`;
+  html += '</div>';
+  if (scan.sources_scanned && scan.sources_scanned.length) {
+    html += '<p style="font-size:12px;color:var(--muted);margin-bottom:12px;">Scanned: ' +
+      scan.sources_scanned.map(s => escapeHtml(s.type + (s.url ? ' — ' + s.url : '') + (s.bytes ? ' (' + s.bytes + ' bytes)' : ''))).join(' · ') +
+      '</p>';
+  }
+  for (const f of scan.findings) {
+    const sev = f.severity || 'info';
+    html += `<div class="launch-finding ${sev}">`;
+    html += `<span class="launch-sev ${sev}">${sev}</span>`;
+    html += '<div class="launch-finding-body">';
+    html += `<div class="launch-finding-title">${escapeHtml(f.title || '')}</div>`;
+    html += `<div class="launch-finding-detail">${escapeHtml(f.detail || '')}</div>`;
+    if (f.source) html += `<div class="launch-finding-src">${escapeHtml(f.source)}</div>`;
+    if (f.snippet) html += `<div class="launch-snippet">${escapeHtml(f.snippet)}</div>`;
+    html += '</div></div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+function buildLaunchCheckPrompt(scan) {
+  const findingsText = (scan.findings || []).map(f =>
+    `[${(f.severity || '').toUpperCase()}] ${f.title}: ${f.detail} (source: ${f.source}) snippet: ${f.snippet || 'n/a'}`
+  ).join('\n');
+  return `LAUNCH CHECK REQUEST — review whether this dApp is truly ready for public users.
+
+LIVE URL: ${document.getElementById('lc-url').value.trim() || '(none)'}
+BUILDER NOTES: ${document.getElementById('lc-notes').value.trim() || '(none)'}
+
+AUTOMATED SCAN VERDICT HINT: ${scan.verdict_hint || 'unknown'}
+CRITICAL ISSUES: ${scan.critical_count || 0}
+WARNINGS: ${scan.warning_count || 0}
+
+AUTOMATED FINDINGS (treat as ground truth):
+${findingsText || '(no findings)'}
+
+Please give the full LAUNCHCHECK review format from your instructions. Explain clearly whether this app would work for a random Discord user clicking the link — not just the builder on their own PC.`;
+}
+
+async function runLaunchCheck() {
+  const url   = document.getElementById('lc-url').value.trim();
+  const code  = document.getElementById('lc-code').value.trim();
+  const notes = document.getElementById('lc-notes').value.trim();
+  const scanEl = document.getElementById('lc-scan-result');
+  const aiEl   = document.getElementById('lc-ai-result');
+
+  if (!url && !code) {
+    alert('Enter your live URL and/or paste code to scan.');
+    return;
+  }
+
+  scanEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Scanning your app...</div>';
+  aiEl.innerHTML = '';
+
+  let scan;
+  try {
+    const res = await fetch(API_BASE + '/api/launchcheck/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, code, notes }),
+      signal: AbortSignal.timeout(60000)
+    });
+    scan = await res.json();
+    if (!res.ok || !scan.ok) {
+      scanEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Scan failed</strong>${escapeHtml(scan.error || 'Could not scan — try pasting your code instead.')}</div></div>`;
+      return;
+    }
+  } catch (e) {
+    scanEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>Scan unavailable</strong>Could not reach the server. Deploy the latest orcaapp-server to Railway, or paste code and try again.</div></div>`;
+    return;
+  }
+
+  scanEl.innerHTML = renderLaunchFindings(scan);
+
+  aiEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> AI reviewing results... 1–2 minutes.</div>';
+  try {
+    const reply = await callAI(buildLaunchCheckPrompt(scan), 'launchcheck');
+    aiEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🚀 Launch Check — AI Verdict</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+  } catch (e) {
+    aiEl.innerHTML = `<div class="callout warn"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI review unavailable</strong>Automated scan above still applies. Fix critical items before announcing. Error: ${escapeHtml(e.message || 'timeout')}</div></div>`;
+  }
 }
 
 // ── TROUBLESHOOT ──
