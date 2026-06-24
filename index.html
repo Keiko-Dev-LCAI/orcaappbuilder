@@ -143,6 +143,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lc-results-area{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:8px;margin-top:8px;}
 .lc-results-scroll{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;}
 .fix-step-compact.done{opacity:.55;}
+.lc-next-step{border:2px solid rgba(0,212,255,.45);border-radius:12px;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,230,118,.06));padding:14px 16px;margin-bottom:10px;flex-shrink:0;}
+.lc-next-step-head{font-size:11px;font-weight:800;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.lc-next-step-title{font-size:15px;font-weight:900;margin-bottom:8px;line-height:1.35;}
+.lc-next-step-do{font-size:13px;line-height:1.55;color:var(--text);margin-bottom:8px;}
+.lc-next-step-check{font-size:12px;color:var(--green);font-weight:700;line-height:1.45;margin-bottom:10px;}
+.lc-next-step-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.lc-next-step .btn{padding:8px 14px;font-size:12px;}
+.lc-next-step-done{font-size:14px;font-weight:800;color:var(--green);}
+.fix-step-compact.current{background:rgba(0,212,255,.1);box-shadow:inset 3px 0 0 var(--cyan);}
 .launch-verdict-banner{padding:12px 16px;margin-bottom:0;}
 .launch-verdict-title{font-size:16px;margin-bottom:4px;}
 .fix-playbook-details{border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:6px;}
@@ -2658,6 +2667,76 @@ function fixStepKey(playbookId, stepNum) {
   return `lc_done_${playbookId}_${stepNum}_${url}`;
 }
 
+function isFixStepDone(playbookId, stepNum) {
+  try { return !!localStorage.getItem(fixStepKey(playbookId, stepNum)); } catch (e) { return false; }
+}
+
+function findNextFixStep(scan) {
+  for (const pb of (scan && scan.fix_plan) || []) {
+    for (const step of pb.steps || []) {
+      if (!isFixStepDone(pb.id, step.num)) return { playbook: pb, step };
+    }
+  }
+  return null;
+}
+
+function renderNextStepPanel(scan) {
+  const next = findNextFixStep(scan);
+  if (!next) {
+    return '<div class="lc-next-step" id="lc-next-step"><div class="lc-next-step-done">✅ All fix steps checked off!</div><p style="font-size:12px;color:var(--muted);margin:6px 0 0;">Test from a friend\'s phone, then run Launch Check again.</p></div>';
+  }
+  const { playbook: pb, step } = next;
+  const pi = ((scan.fix_plan || []).indexOf(pb)) + 1;
+  let html = '<div class="lc-next-step" id="lc-next-step">';
+  html += '<div class="lc-next-step-head">👉 Your next step</div>';
+  html += `<div class="lc-next-step-title">Fix ${pi}, Step ${step.num}: ${escapeHtml(step.title || '')}</div>`;
+  html += `<div class="lc-next-step-do">${escapeHtml(step.do || '')}</div>`;
+  if (step.check) {
+    html += `<div class="lc-next-step-check">✓ You'll know it worked when: ${escapeHtml(step.check)}</div>`;
+  }
+  html += '<div class="lc-next-step-actions">';
+  html += `<button type="button" class="btn btn-ghost" onclick="helpOnFixStep('${pb.id}',${step.num})">Need help?</button>`;
+  html += `<button type="button" class="btn btn-primary green" onclick="markFixStepDone('${pb.id}',${step.num})">Done — show next step →</button>`;
+  html += '</div></div>';
+  return html;
+}
+
+function updateFixStepHighlights(scan) {
+  const next = findNextFixStep(scan);
+  document.querySelectorAll('.fix-step-compact').forEach(row => row.classList.remove('current'));
+  if (!next) return;
+  const row = document.querySelector(`.fix-step-compact[data-pb="${pbEsc(next.playbook.id)}"][data-step="${next.step.num}"]`);
+  if (!row) return;
+  row.classList.add('current');
+  const details = row.closest('details');
+  if (details && !details.open) details.open = true;
+  row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+function pbEsc(id) {
+  return String(id).replace(/"/g, '\\"');
+}
+
+function updateNextStepPanel() {
+  const scan = _lastLaunchScan;
+  if (!scan) return;
+  const wrap = document.getElementById('lc-next-step-wrap');
+  if (wrap) wrap.innerHTML = renderNextStepPanel(scan);
+  updateFixStepHighlights(scan);
+}
+
+function markFixStepDone(playbookId, stepNum) {
+  const row = document.querySelector(`.fix-step-compact[data-pb="${pbEsc(playbookId)}"][data-step="${stepNum}"]`);
+  if (!row) return;
+  const cb = row.querySelector('.fix-step-check');
+  if (cb && !cb.checked) {
+    cb.checked = true;
+    toggleFixStep(playbookId, stepNum, cb);
+  } else {
+    updateNextStepPanel();
+  }
+}
+
 function toggleFixStep(playbookId, stepNum, el) {
   const key = fixStepKey(playbookId, stepNum);
   try {
@@ -2666,6 +2745,7 @@ function toggleFixStep(playbookId, stepNum, el) {
   } catch (e) {}
   const row = el.closest('.fix-step, .fix-step-compact');
   if (row) row.classList.toggle('done', el.checked);
+  updateNextStepPanel();
 }
 
 function renderFixPlan(scan) {
@@ -2676,16 +2756,19 @@ function renderFixPlan(scan) {
     }
     return '';
   }
-  let html = '<p style="font-size:12px;color:var(--muted);margin:0 0 6px;">Fix plan — check off steps, expand for details:</p>';
+  const next = findNextFixStep(scan);
+  let html = '<div id="lc-next-step-wrap">' + renderNextStepPanel(scan) + '</div>';
+  html += '<p style="font-size:12px;color:var(--muted);margin:0 0 6px;">Full checklist — check off steps as you go (highlighted row = your current step):</p>';
   plan.forEach((pb, pi) => {
     const stepCount = (pb.steps || []).length;
-    html += `<details class="fix-playbook-details"${pi === 0 ? ' open' : ''}>`;
+    const openFirst = pi === 0 || (next && next.playbook.id === pb.id);
+    html += `<details class="fix-playbook-details"${openFirst ? ' open' : ''}>`;
     html += `<summary>${escapeHtml((pb.emoji || '📋') + ' Fix ' + (pi + 1) + ': ' + (pb.title || '') + ' (' + stepCount + ' steps)')}</summary>`;
     if (pb.why) html += `<p style="font-size:11px;color:var(--muted);padding:8px 12px 0;margin:0;line-height:1.4;">${escapeHtml(pb.why)}</p>`;
     (pb.steps || []).forEach(step => {
-      let checked = false;
-      try { checked = !!localStorage.getItem(fixStepKey(pb.id, step.num)); } catch (e) {}
-      html += `<div class="fix-step-compact${checked ? ' done' : ''}">`;
+      const checked = isFixStepDone(pb.id, step.num);
+      const isCurrent = next && next.playbook.id === pb.id && next.step.num === step.num;
+      html += `<div class="fix-step-compact${checked ? ' done' : ''}${isCurrent ? ' current' : ''}" data-pb="${escapeHtml(pb.id)}" data-step="${step.num}">`;
       html += `<input type="checkbox" class="fix-step-check" ${checked ? 'checked' : ''} onchange="toggleFixStep('${pb.id}',${step.num},this)">`;
       html += `<span class="fix-step-title">${step.num}. ${escapeHtml(step.title || '')}</span>`;
       html += `<span class="fix-step-help"><button type="button" onclick="helpOnFixStep('${pb.id}',${step.num})">Help</button></span>`;
