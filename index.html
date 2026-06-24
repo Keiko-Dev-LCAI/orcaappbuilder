@@ -490,7 +490,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="nav-item" onclick="showSection('launchcheck')" id="nav-launchcheck">
       <span class="nav-icon">🚀</span>
-      <div><span class="nav-label">Launch Check</span><span class="nav-sub">Scan before you announce in Discord</span></div>
+      <div><span class="nav-label">Launch Check</span><span class="nav-sub">Any app URL — free scan + fix steps</span></div>
     </div>
     <div class="nav-item" onclick="showSection('troubleshoot')" id="nav-troubleshoot">
       <span class="nav-icon">🔧</span>
@@ -521,6 +521,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="hero-orca">🐬</div>
         <h1 class="hero-title">Build Your First dApp<br>on Lightchain AI</h1>
         <p class="hero-sub">No coding background? No problem. OrcaAppBuilder walks you through everything — from brainstorming your idea all the way to getting it live and listed on the Lightchain dApp Hub.</p>
+
+        <div class="upload-callout" style="margin-bottom:16px;cursor:pointer;" onclick="showSection('launchcheck')">
+          <div class="upload-callout-text">
+            <strong>🚀 Free Launch Check — paste any app link</strong>
+            Yours, a friend's, or any hub listing. We scan it and tell you what to fix — no OrcaAppBuilder required.
+          </div>
+          <span class="upload-callout-btn">Try Launch Check →</span>
+        </div>
 
         <div class="free-banner">
           <div class="free-banner-headline">💚 It Costs You Nothing to Build and Launch</div>
@@ -553,7 +561,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="mode-card launch" onclick="showSection('launchcheck')">
             <div class="mode-card-icon">🚀</div>
             <div class="mode-card-title">Launch Check</div>
-            <div class="mode-card-desc">About to post "it's complete"? Get a step-by-step fix plan — plain English, no jargon.</div>
+            <div class="mode-card-desc">Paste ANY live app link — yours or a friend's. Free scan + fix steps. No OrcaAppBuilder required.</div>
           </div>
           <div class="mode-card troubleshoot" onclick="showSection('troubleshoot')">
             <div class="mode-card-icon">🔧</div>
@@ -1808,33 +1816,50 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <section id="section-launchcheck" class="section">
       <div class="page-header">
         <div class="page-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
-        <h1 class="page-title">Is Your App Really Ready?</h1>
-        <p class="page-sub">Paste your live link. We scan it, tell you what's wrong in plain English, then walk you through every fix — step by step, no nerd talk.</p>
+        <h1 class="page-title">Free App Check — Any Live Link</h1>
+        <p class="page-sub">Paste any public app URL — yours, a friend's, a hub listing. You do <em>not</em> need to have built it with OrcaAppBuilder. We scan the live site, explain what's broken, and walk you through fixes.</p>
+      </div>
+
+      <div class="callout success">
+        <span class="callout-icon">🌍</span>
+        <div class="callout-body">
+          <strong>Open to everyone in the community</strong>
+          Checking a friend's app before they post in Discord? Helping someone debug a hub listing? Just curious if a link actually works? Paste the URL — no account, no code upload required. Works on Vercel, GitHub Pages, and custom domains.
+        </div>
       </div>
 
       <div class="callout tip">
         <span class="callout-icon">🐬</span>
         <div class="callout-body">
           <strong>How this works</strong>
-          ① Paste your live URL → ② We scan automatically → ③ You get a checkbox fix plan → ④ AI coaches you through anything confusing → ⑤ Run again until you're truly ready for Discord.
+          ① Paste any live URL → ② We read the public page automatically → ③ You get a checkbox fix plan → ④ AI explains what to fix in plain English → ⑤ Scan again when done.
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Step 1 — Paste your live app link</div>
+        <div class="card-title">Step 1 — Paste the app link</div>
         <div class="field-group">
-          <label class="field-label">Live app URL (recommended)</label>
-          <div class="field-sub">Your Vercel, GitHub Pages, or custom domain — we fetch the page and JS bundles automatically.</div>
-          <input class="field-input" id="lc-url" type="url" placeholder="https://your-app.vercel.app">
+          <label class="field-label">Live app URL</label>
+          <div class="field-sub">Any public https link. We fetch the page and JavaScript automatically — nothing to install.</div>
+          <input class="field-input" id="lc-url" type="url" placeholder="https://any-app.vercel.app">
         </div>
         <div class="field-group">
-          <label class="field-label">Paste code (optional but helpful)</label>
-          <div class="field-sub">Paste your <span class="inline-code">fetch(...)</span> calls, <span class="inline-code">App.js</span>, or server routes if you have them.</div>
-          <textarea class="field-input field-textarea" id="lc-code" rows="6" placeholder="Paste frontend API calls or backend server code here..."></textarea>
+          <label class="field-label">Who are you checking this for? (optional)</label>
+          <select class="field-input" id="lc-who" style="cursor:pointer;">
+            <option value="mine">My own app</option>
+            <option value="friend">A friend's app — I want to help them fix it</option>
+            <option value="community">Someone posted this in Discord / the hub</option>
+            <option value="curious">Just checking if a link works</option>
+          </select>
         </div>
         <div class="field-group">
-          <label class="field-label">Notes (optional)</label>
-          <textarea class="field-input" id="lc-notes" rows="2" placeholder="e.g. I deployed frontend to Vercel. Backend runs on my PC with npm start."></textarea>
+          <label class="field-label">Paste code (optional — only if you have it)</label>
+          <div class="field-sub">Not required. URL alone is enough for most scans.</div>
+          <textarea class="field-input field-textarea" id="lc-code" rows="4" placeholder="Optional: paste fetch() calls or server code if the URL scan misses something..."></textarea>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Extra notes (optional)</label>
+          <textarea class="field-input" id="lc-notes" rows="2" placeholder="e.g. Friend says it works on their PC but not for me. They use Vercel + a local Node server."></textarea>
         </div>
         <button class="btn btn-primary" style="background:var(--yellow);color:#000;" onclick="runLaunchCheck()">🔍 Scan My App &amp; Show Fix Steps</button>
         <p style="font-size:12px;color:var(--muted);margin-top:10px;">Instant scan + step-by-step fix plan. AI coach follows (~1–2 min).</p>
@@ -2596,8 +2621,12 @@ function launchVerdictLabel(hint) {
 
 function renderLaunchVerdict(scan) {
   const cls = launchVerdictClass(scan.verdict_hint);
+  const profile = scan.app_profile || {};
   let html = `<div class="launch-verdict-banner ${cls}">`;
   html += `<div class="launch-verdict-title">${launchVerdictLabel(scan.verdict_hint)}</div>`;
+  if (profile.detected_summary) {
+    html += `<div style="font-size:13px;color:var(--muted);margin-bottom:8px;">Detected: <strong style="color:var(--text);">${escapeHtml(profile.detected_summary)}</strong></div>`;
+  }
   html += `<div class="launch-verdict-body">${escapeHtml(scan.plain_summary || 'Scan complete.')}</div>`;
   html += '</div>';
   return html;
@@ -2711,10 +2740,18 @@ function buildLaunchCheckPrompt(scan) {
     const steps = (pb.steps || []).map(s => `  Step ${s.num}: ${s.title} — Do: ${s.do} — Success: ${s.check || 'n/a'}`).join('\n');
     return `Fix ${i + 1}: ${pb.title}\nWhy: ${pb.why || ''}\n${steps}`;
   }).join('\n\n');
-  return `LAUNCH CHECK — personalize the fix plan for this beginner builder.
+  const who = document.getElementById('lc-who');
+  const whoVal = who ? who.value : 'mine';
+  const whoLabels = {mine:'checking their own app', friend:'helping a friend fix their app', community:'checking a community/hub app for someone else', curious:'just verifying if a link works'};
+  const profile = scan.app_profile || {};
+  return `LAUNCH CHECK — personalize the fix plan. User does NOT need OrcaAppBuilder — this works on any pasted URL.
 
 LIVE URL: ${document.getElementById('lc-url').value.trim() || '(none)'}
-BUILDER NOTES: ${document.getElementById('lc-notes').value.trim() || '(none)'}
+WHO: ${whoLabels[whoVal] || whoVal}
+NOTES: ${document.getElementById('lc-notes').value.trim() || '(none)'}
+
+APP PROFILE (auto-detected from live site): ${profile.detected_summary || 'unknown'}
+Lightchain dApp: ${profile.is_lightchain ? 'yes' : 'no'} | Wallet: ${profile.has_wallet ? 'yes' : 'no'} | LCAI payments: ${profile.has_lcai_payments ? 'yes' : 'no'} | Hosting: ${profile.hosting || 'unknown'}
 
 VERDICT: ${scan.verdict_hint || 'unknown'}
 PLAIN SUMMARY: ${scan.plain_summary || ''}
@@ -2739,7 +2776,7 @@ async function runLaunchCheck() {
   const rerunEl   = document.getElementById('lc-rerun');
 
   if (!url && !code) {
-    alert('Paste your live app URL (or your code) so we can scan it.');
+    alert('Paste any live app URL — that\'s all we need to scan it.');
     return;
   }
 
