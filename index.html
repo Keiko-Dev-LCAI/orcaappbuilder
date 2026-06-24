@@ -132,7 +132,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .launch-verdict-banner.warnings{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);}
 .launch-verdict-banner.ready{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.4);}
 .launch-verdict-title{font-size:20px;font-weight:900;margin-bottom:8px;}
-.launch-verdict-body{font-size:15px;color:var(--text);line-height:1.65;}
+.launch-verdict-body{font-size:14px;color:var(--text);line-height:1.5;}
+#section-launchcheck.section.active{display:flex;flex-direction:column;overflow:hidden;}
+.lc-compact-head{margin-bottom:8px;flex-shrink:0;}
+.lc-compact-head .page-title{font-size:22px;margin-bottom:4px;}
+.lc-compact-head .page-sub{font-size:13px;margin-bottom:0;line-height:1.4;}
+.lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
+.lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
+.lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
+.lc-results-area{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.lc-results-scroll{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:6px;}
+.fix-step-compact.done{opacity:.55;}
+.launch-verdict-banner{padding:12px 16px;margin-bottom:0;}
+.launch-verdict-title{font-size:16px;margin-bottom:4px;}
+.fix-playbook-details{border:1px solid var(--border);border-radius:10px;background:var(--card);margin-bottom:6px;}
+.fix-playbook-details summary{padding:10px 14px;cursor:pointer;font-weight:800;font-size:13px;list-style:none;}
+.fix-playbook-details summary::-webkit-details-marker{display:none;}
+.fix-playbook-details[open] summary{border-bottom:1px solid var(--border);background:var(--bg2);}
+.fix-step-compact{display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
+.fix-step-compact:last-child{border-bottom:none;}
+.fix-step-compact .fix-step-title{flex:1;font-weight:600;}
+.fix-step-compact .fix-step-help button{font-size:11px;}
+.lc-ai-details{border:1px solid var(--border);border-radius:10px;background:var(--card);}
+.lc-ai-details summary{padding:10px 14px;cursor:pointer;font-weight:800;font-size:13px;color:var(--cyan);}
+.lc-ai-details .ai-response-box{border:none;margin:0;}
+.lc-ai-details .ai-response-body{font-size:13px;max-height:200px;overflow-y:auto;}
+.lc-optional details summary{font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;padding:6px 0;}
 .fix-playbook{border:1px solid var(--border);border-radius:14px;margin-bottom:16px;overflow:hidden;background:var(--card);}
 .fix-playbook-header{padding:16px 18px;background:var(--bg2);border-bottom:1px solid var(--border);}
 .fix-playbook-title{font-size:17px;font-weight:900;margin-bottom:6px;}
@@ -428,6 +453,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .nav-section{padding:8px 12px 2px;}
   .android-install-hint{display:none;}
   .main:has(#section-home.active){padding:12px 20px 16px;}
+  .main:has(#section-launchcheck.active){padding:10px 20px 12px;height:calc(100vh - 68px);overflow:hidden;box-sizing:border-box;}
+  #section-launchcheck.section.active{height:100%;}
   .free-banner-body{display:none;}
 }
 @media(min-width:821px) and (max-height:820px){
@@ -1524,7 +1551,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
             <li>☐ Test the full flow including AI/API responses</li>
             <li>☐ If users pay LCAI, verify they get the feature after payment</li>
             <li>☐ Add a Terms &amp; Disclaimer to your app</li>
-            <li>☐ Announce in Discord only after the above pass</li>
+            <li>☐ Share publicly or list on the hub only after the above pass</li>
           </ul>
           <button class="btn btn-primary" style="background:var(--yellow);color:#000;margin-top:12px;" onclick="showSection('launchcheck')">🚀 Run Launch Check Now</button>
         </div>
@@ -1821,63 +1848,50 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
     <!-- ══ LAUNCH CHECK ══ -->
     <section id="section-launchcheck" class="section">
-      <div class="page-header">
+      <div class="page-header lc-compact-head">
         <div class="page-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
-        <h1 class="page-title">Free App Check — Any Live Link</h1>
-        <p class="page-sub">Paste any public app URL — yours, a friend's, a hub listing. You do <em>not</em> need to have built it with OrcaAppBuilder. We scan the live site, explain what's broken, and walk you through fixes.</p>
+        <h1 class="page-title">Is this Lightchain app ready to go live?</h1>
+        <p class="page-sub">Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.</p>
       </div>
 
-      <div class="callout success">
-        <span class="callout-icon">🌍</span>
-        <div class="callout-body">
-          <strong>Open to everyone in the community</strong>
-          Checking a friend's app before they post in Discord? Helping someone debug a hub listing? Just curious if a link actually works? Paste the URL — no account, no code upload required. Works on Vercel, GitHub Pages, and custom domains.
+      <div class="card" style="padding:12px 14px;margin-bottom:0;">
+        <div class="lc-form-row">
+          <div class="field-group">
+            <label class="field-label">Live app URL</label>
+            <input class="field-input" id="lc-url" type="url" placeholder="https://your-app.vercel.app">
+          </div>
+          <div class="field-group narrow">
+            <label class="field-label">Checking for</label>
+            <select class="field-input" id="lc-who" style="cursor:pointer;">
+              <option value="mine">My app</option>
+              <option value="friend">A friend's app</option>
+              <option value="community">Hub / community app</option>
+              <option value="curious">Just testing</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="background:var(--yellow);color:#000;margin-bottom:0;" onclick="runLaunchCheck()">🔍 Scan</button>
+          <button class="btn btn-ghost" id="lc-rerun-btn" style="display:none;margin-bottom:0;" onclick="runLaunchCheck()">🔄 Rescan</button>
+        </div>
+        <div class="lc-optional" style="margin-top:6px;">
+          <details>
+            <summary>More options (code paste, notes)</summary>
+            <div class="field-group" style="margin-top:8px;">
+              <textarea class="field-input field-textarea" id="lc-code" rows="2" placeholder="Optional: paste code if URL scan misses something..."></textarea>
+            </div>
+            <div class="field-group">
+              <input class="field-input" id="lc-notes" type="text" placeholder="Optional notes...">
+            </div>
+          </details>
         </div>
       </div>
 
-      <div class="callout tip">
-        <span class="callout-icon">🐬</span>
-        <div class="callout-body">
-          <strong>How this works</strong>
-          ① Paste any live URL → ② We read the public page automatically → ③ You get a checkbox fix plan → ④ AI explains what to fix in plain English → ⑤ Scan again when done.
+      <div class="lc-results-area" id="lc-results-area" style="display:none;">
+        <div id="lc-verdict"></div>
+        <div class="lc-results-scroll">
+          <div id="lc-fix-plan"></div>
+          <div id="lc-scan-result"></div>
+          <div id="lc-ai-result"></div>
         </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Step 1 — Paste the app link</div>
-        <div class="field-group">
-          <label class="field-label">Live app URL</label>
-          <div class="field-sub">Any public https link. We fetch the page and JavaScript automatically — nothing to install.</div>
-          <input class="field-input" id="lc-url" type="url" placeholder="https://any-app.vercel.app">
-        </div>
-        <div class="field-group">
-          <label class="field-label">Who are you checking this for? (optional)</label>
-          <select class="field-input" id="lc-who" style="cursor:pointer;">
-            <option value="mine">My own app</option>
-            <option value="friend">A friend's app — I want to help them fix it</option>
-            <option value="community">Someone posted this in Discord / the hub</option>
-            <option value="curious">Just checking if a link works</option>
-          </select>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Paste code (optional — only if you have it)</label>
-          <div class="field-sub">Not required. URL alone is enough for most scans.</div>
-          <textarea class="field-input field-textarea" id="lc-code" rows="4" placeholder="Optional: paste fetch() calls or server code if the URL scan misses something..."></textarea>
-        </div>
-        <div class="field-group">
-          <label class="field-label">Extra notes (optional)</label>
-          <textarea class="field-input" id="lc-notes" rows="2" placeholder="e.g. Friend says it works on their PC but not for me. They use Vercel + a local Node server."></textarea>
-        </div>
-        <button class="btn btn-primary" style="background:var(--yellow);color:#000;" onclick="runLaunchCheck()">🔍 Scan My App &amp; Show Fix Steps</button>
-        <p style="font-size:12px;color:var(--muted);margin-top:10px;">Instant scan + step-by-step fix plan. AI coach follows (~1–2 min).</p>
-      </div>
-
-      <div id="lc-verdict" style="margin-top:20px;"></div>
-      <div id="lc-fix-plan" style="margin-top:20px;"></div>
-      <div id="lc-scan-result" style="margin-top:20px;"></div>
-      <div id="lc-ai-result" style="margin-top:20px;"></div>
-      <div id="lc-rerun" style="margin-top:16px;display:none;text-align:center;">
-        <button class="btn btn-primary green" onclick="runLaunchCheck()">🔄 I fixed it — Scan again</button>
       </div>
     </section>
 
@@ -2621,9 +2635,9 @@ function launchVerdictClass(hint) {
 
 function launchVerdictLabel(hint) {
   if (!hint) return 'Check results';
-  if (hint.includes('NOT READY')) return '⛔ Not ready for Discord yet';
+  if (hint.includes('NOT READY')) return '⛔ Not ready to go live';
   if (hint.includes('WARNING')) return '⚠️ Almost ready — fix warnings first';
-  return '✅ Looking good — verify on a phone';
+  return '✅ Looking good — test from another device';
 }
 
 function renderLaunchVerdict(scan) {
@@ -2650,7 +2664,7 @@ function toggleFixStep(playbookId, stepNum, el) {
     if (el.checked) localStorage.setItem(key, '1');
     else localStorage.removeItem(key);
   } catch (e) {}
-  const row = el.closest('.fix-step');
+  const row = el.closest('.fix-step, .fix-step-compact');
   if (row) row.classList.toggle('done', el.checked);
 }
 
@@ -2658,39 +2672,27 @@ function renderFixPlan(scan) {
   const plan = scan.fix_plan || [];
   if (!plan.length) {
     if ((scan.critical_count || 0) === 0) {
-      return '<div class="card"><div class="card-title">✅ No major fixes needed</div><p style="font-size:14px;color:var(--muted);line-height:1.6;">Still test from a friend\'s phone, then run Launch Check one more time before Discord.</p></div>';
+      return '<p style="font-size:13px;color:var(--muted);">No major fixes found — still test from another phone, then rescan.</p>';
     }
     return '';
   }
-  let html = '<div class="card" style="padding:0;overflow:hidden;border-color:rgba(251,191,36,.35);">';
-  html += '<div style="padding:18px 20px;background:rgba(251,191,36,.08);border-bottom:1px solid var(--border);">';
-  html += '<div class="card-title" style="margin:0;">📋 Your fix plan — check off each step</div>';
-  html += '<p style="font-size:14px;color:var(--muted);margin-top:8px;line-height:1.55;">Do these in order. Click a checkbox when you finish a step. Stuck on any step? Hit <strong style="color:var(--cyan);">Help me with this step</strong> and the AI will walk you through it.</p>';
-  html += '</div>';
-
+  let html = '<p style="font-size:12px;color:var(--muted);margin:0 0 6px;">Fix plan — check off steps, expand for details:</p>';
   plan.forEach((pb, pi) => {
-    html += '<div class="fix-playbook" style="margin:0;border:none;border-radius:0;border-bottom:1px solid var(--border);">';
-    html += '<div class="fix-playbook-header">';
-    html += `<div class="fix-playbook-title">${escapeHtml((pb.emoji || '') + ' Fix ' + (pi + 1) + ': ' + (pb.title || ''))}</div>`;
-    if (pb.why) html += `<div class="fix-playbook-why">${escapeHtml(pb.why)}</div>`;
-    html += '</div>';
+    const stepCount = (pb.steps || []).length;
+    html += `<details class="fix-playbook-details"${pi === 0 ? ' open' : ''}>`;
+    html += `<summary>${escapeHtml((pb.emoji || '📋') + ' Fix ' + (pi + 1) + ': ' + (pb.title || '') + ' (' + stepCount + ' steps)')}</summary>`;
+    if (pb.why) html += `<p style="font-size:11px;color:var(--muted);padding:8px 12px 0;margin:0;line-height:1.4;">${escapeHtml(pb.why)}</p>`;
     (pb.steps || []).forEach(step => {
-      const key = fixStepKey(pb.id, step.num);
       let checked = false;
-      try { checked = !!localStorage.getItem(key); } catch (e) {}
-      html += `<div class="fix-step${checked ? ' done' : ''}">`;
+      try { checked = !!localStorage.getItem(fixStepKey(pb.id, step.num)); } catch (e) {}
+      html += `<div class="fix-step-compact${checked ? ' done' : ''}">`;
       html += `<input type="checkbox" class="fix-step-check" ${checked ? 'checked' : ''} onchange="toggleFixStep('${pb.id}',${step.num},this)">`;
-      html += `<div class="fix-step-num">${step.num}</div>`;
-      html += '<div class="fix-step-body">';
-      html += `<div class="fix-step-title">${escapeHtml(step.title || '')}</div>`;
-      html += `<div class="fix-step-do"><strong>Do this:</strong> ${escapeHtml(step.do || '')}</div>`;
-      if (step.check) html += `<div class="fix-step-check-label">✓ You'll know it worked when: ${escapeHtml(step.check)}</div>`;
-      html += `<div class="fix-step-help"><button type="button" onclick="helpOnFixStep('${pb.id}',${step.num})">🐬 Help me with this step</button></div>`;
-      html += '</div></div>';
+      html += `<span class="fix-step-title">${step.num}. ${escapeHtml(step.title || '')}</span>`;
+      html += `<span class="fix-step-help"><button type="button" onclick="helpOnFixStep('${pb.id}',${step.num})">Help</button></span>`;
+      html += '</div>';
     });
-    html += '</div>';
+    html += '</details>';
   });
-  html += '</div>';
   return html;
 }
 
@@ -2776,22 +2778,24 @@ async function runLaunchCheck() {
   const url   = document.getElementById('lc-url').value.trim();
   const code  = document.getElementById('lc-code').value.trim();
   const notes = document.getElementById('lc-notes').value.trim();
+  const resultsArea = document.getElementById('lc-results-area');
   const verdictEl = document.getElementById('lc-verdict');
   const fixEl     = document.getElementById('lc-fix-plan');
   const scanEl    = document.getElementById('lc-scan-result');
   const aiEl      = document.getElementById('lc-ai-result');
-  const rerunEl   = document.getElementById('lc-rerun');
+  const rerunBtn  = document.getElementById('lc-rerun-btn');
 
   if (!url && !code) {
     alert('Paste any live app URL — that\'s all we need to scan it.');
     return;
   }
 
-  verdictEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Scanning your app...</div>';
+  resultsArea.style.display = 'flex';
+  verdictEl.innerHTML = '<div class="ai-thinking" style="padding:8px;"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Scanning...</div>';
   fixEl.innerHTML = '';
   scanEl.innerHTML = '';
   aiEl.innerHTML = '';
-  rerunEl.style.display = 'none';
+  if (rerunBtn) rerunBtn.style.display = 'none';
 
   let scan;
   try {
@@ -2815,14 +2819,14 @@ async function runLaunchCheck() {
   verdictEl.innerHTML = renderLaunchVerdict(scan);
   fixEl.innerHTML = renderFixPlan(scan);
   scanEl.innerHTML = renderLaunchFindings(scan);
-  rerunEl.style.display = 'block';
+  if (rerunBtn) rerunBtn.style.display = 'inline-block';
 
-  aiEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> 🐬 AI coach is reading your fix plan... ~1–2 minutes.</div>';
+  aiEl.innerHTML = '<details class="lc-ai-details"><summary>🐬 AI coach loading...</summary><div class="ai-thinking" style="padding:12px;"><div class="ai-thinking-dots"><span></span><span></span><span></span></div></div></details>';
   try {
     const reply = await callAI(buildLaunchCheckPrompt(scan), 'launchcheck');
-    aiEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🐬 Your personal fix coach</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
+    aiEl.innerHTML = `<details class="lc-ai-details"><summary>🐬 AI coach — tap to read full walkthrough</summary><div class="ai-response-box"><div class="ai-response-body">${escapeHtml(reply)}</div></div></details>`;
   } catch (e) {
-    aiEl.innerHTML = `<div class="callout warn"><span class="callout-icon">💡</span><div class="callout-body"><strong>AI coach offline</strong> — the fix plan above still works! Check off each step. Use <em>Help me with this step</em> buttons when AI is back, or go to Troubleshoot.</div></div>`;
+    aiEl.innerHTML = `<details class="lc-ai-details"><summary>🐬 AI coach offline — use Help on each step</summary><p style="padding:12px;font-size:12px;color:var(--muted);">Fix plan above still works.</p></details>`;
   }
 }
 
