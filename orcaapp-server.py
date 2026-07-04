@@ -1281,11 +1281,24 @@ def _get_aivm_client():
         _aivm_client = AIVMClient(PRIVATE_KEY)
     return _aivm_client
 
-def run_aivm_inference(user_message: str, mode: str = 'chat', history: list = None) -> str:
+LANG_HINTS = {
+    'en': 'Reply entirely in English.',
+    'es': 'Responde enteramente en español.',
+    'fr': 'Répondez entièrement en français.',
+    'pt': 'Responda inteiramente em português.',
+    'de': 'Antworte vollständig auf Deutsch.',
+    'ja': 'すべて日本語で返信してください。',
+    'zh': '请完全使用简体中文回复。',
+    'id': 'Balas seluruhnya dalam Bahasa Indonesia.',
+}
+
+
+def run_aivm_inference(user_message: str, mode: str = 'chat', history: list = None, lang: str = 'en') -> str:
     """Run one inference through Lightchain AIVM. Returns plain text reply.
 
     history: optional list of {"role": "user"|"assistant", "content": "..."} dicts
              representing the prior conversation turns to include as context.
+    lang: UI language code — prepends [LANGUAGE: ...] so AIVM replies in that language.
     """
     try:
         mode_context = {
@@ -1294,6 +1307,9 @@ def run_aivm_inference(user_message: str, mode: str = 'chat', history: list = No
             'troubleshoot': '\n[MODE: TROUBLESHOOT — diagnose and fix a problem]',
             'launchcheck':  '\n[MODE: LAUNCHCHECK — final pre-launch review using automated scan results]',
         }.get(mode, '')
+
+        lang_hint = LANG_HINTS.get(lang, LANG_HINTS['en'])
+        lang_block = f'\n[LANGUAGE: {lang_hint}]' if lang_hint else ''
 
         # Build conversation history block if prior turns exist
         history_block = ''
@@ -1304,7 +1320,7 @@ def run_aivm_inference(user_message: str, mode: str = 'chat', history: list = No
                 lines.append(f'{label}: {turn.get("content", "")}')
             history_block = '\n\n[PRIOR CONVERSATION — for context only]\n' + '\n'.join(lines) + '\n[END PRIOR CONVERSATION]\n'
 
-        full_prompt = f'{SYSTEM_PROMPT}{mode_context}{history_block}\n\nUser: {user_message}'
+        full_prompt = f'{SYSTEM_PROMPT}{mode_context}{lang_block}{history_block}\n\nUser: {user_message}'
         client = _get_aivm_client()
         reply  = client.run_inference(full_prompt)
         return reply if reply else 'I received your message but the response was empty. Please try again.'
@@ -1535,7 +1551,7 @@ _sessions: dict = {}
 _sessions_lock = threading.Lock()
 
 
-def _start_job(message: str, mode: str, session_id: str = None) -> str:
+def _start_job(message: str, mode: str, session_id: str = None, lang: str = 'en') -> str:
     """Launch AIVM inference in background; return job_id immediately.
 
     session_id: if provided, loads prior conversation turns as context and
@@ -1560,7 +1576,7 @@ def _start_job(message: str, mode: str, session_id: str = None) -> str:
 
     def _worker():
         try:
-            reply = run_aivm_inference(message, mode, history)
+            reply = run_aivm_inference(message, mode, history, lang)
             with _jobs_lock:
                 if job_id in _jobs:
                     _jobs[job_id]['status'] = 'done'
@@ -2055,6 +2071,9 @@ class OrcaAppHandler(BaseHTTPRequestHandler):
             message    = (data.get('message') or data.get('prompt') or '').strip()
             mode       = (data.get('mode') or 'chat').strip().lower()
             session_id = (data.get('session_id') or '').strip() or None
+            lang       = (data.get('lang') or 'en').strip().lower()
+            if lang not in LANG_HINTS:
+                lang = 'en'
 
             if not message:
                 self.send_json(400, {'error': 'message required'})
@@ -2065,7 +2084,7 @@ class OrcaAppHandler(BaseHTTPRequestHandler):
 
             # Start AIVM in background; return job_id immediately
             # (avoids Railway 60s HTTP timeout on long AIVM calls)
-            job_id = _start_job(message, mode, session_id)
+            job_id = _start_job(message, mode, session_id, lang)
             print(f'[JOB {job_id}] started — mode={mode}, session={session_id}, msg={message[:60]}')
             self.send_json(202, {'job_id': job_id, 'status': 'pending'})
 
