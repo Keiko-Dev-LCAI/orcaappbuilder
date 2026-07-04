@@ -504,6 +504,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .issue-grid{grid-template-columns:1fr;}
   .mode-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ── LANGUAGE PICKER ── */
+.lang-section { padding: 10px 14px 12px; border-top: 1px solid var(--border); flex-shrink: 0; }
+.lang-section-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.lang-section-sub { font-size: 11px; color: var(--muted); margin-bottom: 8px; line-height: 1.35; }
+.lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.lang-btn { padding: 8px 6px; border-radius: 8px; border: 2px solid var(--border);
+  background: var(--bg3); color: var(--text); font-size: 11px; cursor: pointer; font-family: inherit; }
+.lang-btn.active { border-color: var(--cyan); background: rgba(0,212,255,.12); color: var(--cyan); }
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script type="module">
@@ -521,7 +531,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <span class="logo-icon">🐬</span>
     <span class="logo-text">OrcaApp<span>Builder</span></span>
   </a>
-  <span class="header-tag">BUILD ON LIGHTCHAIN</span>
+  <span class="header-tag" id="header-tag">BUILD ON LIGHTCHAIN</span>
   <div class="header-right">
     <span class="health-dot" id="health-dot"></span>
     <span class="health-label" id="health-label">AI</span>
@@ -534,48 +544,54 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="sidebar-tagline">Build Lightchain dApps — no coding needed.</div>
+    <div class="sidebar-tagline" id="sidebar-tagline">Build Lightchain dApps — no coding needed.</div>
 
-    <div class="nav-section">Start Here</div>
+    <div class="nav-section" id="nav-section-start">Start Here</div>
     <div class="nav-item active" onclick="showSection('home')" id="nav-home">
       <span class="nav-icon">🏠</span>
-      <div><span class="nav-label">Home</span><span class="nav-sub">Pick your starting point</span></div>
+      <div><span class="nav-label" id="nav-home-label">Home</span><span class="nav-sub" id="nav-home-sub">Pick your starting point</span></div>
     </div>
 
-    <div class="nav-section">Build Your App</div>
+    <div class="nav-section" id="nav-section-build">Build Your App</div>
     <div class="nav-item" onclick="showSection('learn')" id="nav-learn">
       <span class="nav-icon">📚</span>
-      <div><span class="nav-label">Learn</span><span class="nav-sub">Step-by-step guide, copy &amp; paste</span></div>
+      <div><span class="nav-label" id="nav-learn-label">Learn</span><span class="nav-sub" id="nav-learn-sub">Step-by-step guide, copy &amp; paste</span></div>
     </div>
     <div class="nav-item" onclick="showSection('brainstorm')" id="nav-brainstorm">
       <span class="nav-icon">💡</span>
-      <div><span class="nav-label">Brainstorm</span><span class="nav-sub">AI helps you find your idea</span></div>
+      <div><span class="nav-label" id="nav-brainstorm-label">Brainstorm</span><span class="nav-sub" id="nav-brainstorm-sub">AI helps you find your idea</span></div>
     </div>
     <div class="nav-item" onclick="showSection('build')" id="nav-build">
       <span class="nav-icon">🔨</span>
-      <div><span class="nav-label">Build</span><span class="nav-sub">Turn your idea into a plan</span></div>
+      <div><span class="nav-label" id="nav-build-label">Build</span><span class="nav-sub" id="nav-build-sub">Turn your idea into a plan</span></div>
     </div>
     <div class="nav-item" onclick="showSection('launchcheck')" id="nav-launchcheck">
       <span class="nav-icon">🚀</span>
-      <div><span class="nav-label">Launch Check</span><span class="nav-sub">Any app URL — free scan + fix steps</span></div>
+      <div><span class="nav-label" id="nav-launchcheck-label">Launch Check</span><span class="nav-sub" id="nav-launchcheck-sub">Any app URL — free scan + fix steps</span></div>
     </div>
     <div class="nav-item" onclick="showSection('troubleshoot')" id="nav-troubleshoot">
       <span class="nav-icon">🔧</span>
-      <div><span class="nav-label">Troubleshoot</span><span class="nav-sub">Stuck? AI will help diagnose it</span></div>
+      <div><span class="nav-label" id="nav-troubleshoot-label">Troubleshoot</span><span class="nav-sub" id="nav-troubleshoot-sub">Stuck? AI will help diagnose it</span></div>
     </div>
     <div class="nav-item" onclick="showSection('projects')" id="nav-projects">
       <span class="nav-icon">📂</span>
-      <div><span class="nav-label">My Projects</span><span class="nav-sub">Save &amp; resume your work</span></div>
+      <div><span class="nav-label" id="nav-projects-label">My Projects</span><span class="nav-sub" id="nav-projects-sub">Save &amp; resume your work</span></div>
     </div>
     <div class="nav-item" onclick="showSection('links')" id="nav-links">
       <span class="nav-icon">🔗</span>
-      <div><span class="nav-label">Links &amp; Accounts</span><span class="nav-sub">All your tools in one place</span></div>
+      <div><span class="nav-label" id="nav-links-label">Links &amp; Accounts</span><span class="nav-sub" id="nav-links-sub">All your tools in one place</span></div>
+    </div>
+
+    <div class="lang-section">
+      <div class="lang-section-title" id="lang_title">Language</div>
+      <div class="lang-section-sub" id="lang_sub">Change the whole app — navigation, guides, and buttons.</div>
+      <div class="lang-grid" id="langGrid"></div>
     </div>
 
     <div class="sidebar-footer">
-      <a class="android-install-btn" href="OrcaAppBuilder.apk" download>📲 Download Android App</a>
-      <div class="android-install-hint">Download → open file → tap Install. Allow unknown apps if your phone asks.</div>
-      <a href="#" class="sidebar-terms" onclick="openTerms();return false;">📋 Terms &amp; Disclaimer</a>
+      <a class="android-install-btn" id="android-download" href="OrcaAppBuilder.apk" download>📲 Download Android App</a>
+      <div class="android-install-hint" id="android-hint">Download → open file → tap Install. Allow unknown apps if your phone asks.</div>
+      <a href="#" class="sidebar-terms" id="sidebar-terms" onclick="openTerms();return false;">📋 Terms &amp; Disclaimer</a>
     </div>
   </nav>
 
@@ -587,17 +603,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="home-dashboard">
       <div class="hero">
         <div class="hero-orca">🐬</div>
-        <h1 class="hero-title">Build Your First dApp on Lightchain AI</h1>
-        <p class="hero-sub">No coding experience needed — brainstorm, build, launch check, and get listed on the hub.</p>
+        <h1 class="hero-title" id="hero-title">Build Your First dApp on Lightchain AI</h1>
+        <p class="hero-sub" id="hero-sub">No coding experience needed — brainstorm, build, launch check, and get listed on the hub.</p>
 
         <div class="free-banner">
-          <div class="free-banner-headline">💚 Free to build &amp; launch — you keep 100% of what you charge</div>
-          <div class="free-banner-body">GitHub Pages hosting, no platform fees. Optional Railway ~$5/mo if your app uses AI.</div>
+          <div class="free-banner-headline" id="free-banner-headline">💚 Free to build &amp; launch — you keep 100% of what you charge</div>
+          <div class="free-banner-body" id="free-banner-body">GitHub Pages hosting, no platform fees. Optional Railway ~$5/mo if your app uses AI.</div>
           <div class="free-stack">
-            <div class="free-stack-item">🌐 GitHub Pages</div>
-            <div class="free-stack-item">📝 Free code storage</div>
-            <div class="free-stack-item">🤖 AI optional</div>
-            <div class="free-stack-item">🌍 Custom domain optional</div>
+            <div class="free-stack-item" id="free-stack-gh">🌐 GitHub Pages</div>
+            <div class="free-stack-item" id="free-stack-code">📝 Free code storage</div>
+            <div class="free-stack-item" id="free-stack-ai">🤖 AI optional</div>
+            <div class="free-stack-item" id="free-stack-domain">🌍 Custom domain optional</div>
           </div>
         </div>
       </div>
@@ -605,34 +621,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="mode-grid">
           <div class="mode-card learn" onclick="showSection('learn')">
             <div class="mode-card-icon">📚</div>
-            <div class="mode-card-title">Learn the Basics</div>
-            <div class="mode-card-desc">9 plain-English lessons, copy-paste commands, no coding needed.</div>
+            <div class="mode-card-title" id="mode-learn-title">Learn the Basics</div>
+            <div class="mode-card-desc" id="mode-learn-desc">9 plain-English lessons, copy-paste commands, no coding needed.</div>
           </div>
           <div class="mode-card brainstorm" onclick="showSection('brainstorm')">
             <div class="mode-card-icon">💡</div>
-            <div class="mode-card-title">Brainstorm an Idea</div>
-            <div class="mode-card-desc">Tell the AI what interests you — get 3 realistic app ideas.</div>
+            <div class="mode-card-title" id="mode-brainstorm-title">Brainstorm an Idea</div>
+            <div class="mode-card-desc" id="mode-brainstorm-desc">Tell the AI what interests you — get 3 realistic app ideas.</div>
           </div>
           <div class="mode-card build" onclick="showSection('build')">
             <div class="mode-card-icon">🔨</div>
-            <div class="mode-card-title">Build Your App</div>
-            <div class="mode-card-desc">Describe your idea and get a complete step-by-step build plan.</div>
+            <div class="mode-card-title" id="mode-build-title">Build Your App</div>
+            <div class="mode-card-desc" id="mode-build-desc">Describe your idea and get a complete step-by-step build plan.</div>
           </div>
           <div class="mode-card launch" onclick="showSection('launchcheck')">
             <div class="mode-card-icon">🚀</div>
-            <div class="mode-card-title">Launch Check</div>
-            <div class="mode-card-desc">Paste ANY live app link — yours or a friend's. Free scan + fix steps. No OrcaAppBuilder required.</div>
+            <div class="mode-card-title" id="mode-launch-title">Launch Check</div>
+            <div class="mode-card-desc" id="mode-launch-desc">Paste ANY live app link — yours or a friend's. Free scan + fix steps. No OrcaAppBuilder required.</div>
           </div>
           <div class="mode-card troubleshoot" onclick="showSection('troubleshoot')">
             <div class="mode-card-icon">🔧</div>
-            <div class="mode-card-title">Fix a Problem</div>
-            <div class="mode-card-desc">Something broken? The AI diagnoses and walks you through the fix.</div>
+            <div class="mode-card-title" id="mode-troubleshoot-title">Fix a Problem</div>
+            <div class="mode-card-desc" id="mode-troubleshoot-desc">Something broken? The AI diagnoses and walks you through the fix.</div>
           </div>
         </div>
 
       <div class="home-bottom">
         <div class="pod-strip">
-          <div class="pod-title">🐬 Example apps you can build too</div>
+          <div class="pod-title" id="pod-title">🐬 Example apps you can build too</div>
           <div class="pod-apps">
             <a href="https://orcamail.ai" target="_blank" rel="noopener" class="pod-app">OrcaMail 📧</a>
             <a href="https://orcafiles.ai" target="_blank" rel="noopener" class="pod-app">OrcaFiles 📁</a>
@@ -647,12 +663,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
             <a href="https://keiko-dev-lcai.github.io/lightdex" target="_blank" rel="noopener" class="pod-app">LightDex 💱</a>
             <a href="https://keiko-dev-lcai.github.io/orcavault" target="_blank" rel="noopener" class="pod-app">OrcaVault 🗄️</a>
           </div>
-          <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" class="pod-hub-link">See all apps on the dApp Hub →</a>
+          <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" class="pod-hub-link" id="pod-hub-link">See all apps on the dApp Hub →</a>
         </div>
 
         <div class="tip-jar-compact">
-          <div class="tip-jar-compact-title">☕ Support OrcaAppBuilder</div>
-          <div class="tip-jar-compact-sub">Free to use. Tips keep it running.</div>
+          <div class="tip-jar-compact-title" id="tip-jar-title">☕ Support OrcaAppBuilder</div>
+          <div class="tip-jar-compact-sub" id="tip-jar-sub">Free to use. Tips keep it running.</div>
           <div class="tip-btns">
             <button class="tip-btn" onclick="sendTip('1')">1 LCAI</button>
             <button class="tip-btn" onclick="sendTip('5')">5 LCAI</button>
@@ -660,7 +676,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           </div>
           <div class="tip-custom">
             <input type="number" id="tip-custom-amount" placeholder="Custom" min="0.01" step="0.01">
-            <button onclick="sendCustomTip()">Send ✨</button>
+            <button id="tip-send-btn" onclick="sendCustomTip()">Send ✨</button>
           </div>
           <div id="tip-status"></div>
         </div>
@@ -672,20 +688,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <!-- ══ LEARN ══ -->
     <section id="section-learn" class="section">
       <div class="page-header">
-        <div class="page-badge cyan">📚 STEP-BY-STEP GUIDE</div>
-        <h1 class="page-title">Learn to Build on Lightchain</h1>
-        <p class="page-sub">9 lessons that take you from "I've never built anything" to a live app on the Lightchain dApp Hub. Written in plain English — no jargon without an explanation.</p>
+        <div class="page-badge cyan" id="learn-badge">📚 STEP-BY-STEP GUIDE</div>
+        <h1 class="page-title" id="learn-title">Learn to Build on Lightchain</h1>
+        <p class="page-sub" id="learn-sub">9 lessons that take you from "I've never built anything" to a live app on the Lightchain dApp Hub. Written in plain English — no jargon without an explanation.</p>
       </div>
 
       <!-- OS PICKER — persistent across all steps -->
       <div class="os-picker-bar">
-        <div class="os-picker-label">🖥️ What computer are you using? Pick one and the instructions will adjust to match.</div>
+        <div class="os-picker-label" id="os-picker-label">🖥️ What computer are you using? Pick one and the instructions will adjust to match.</div>
         <div class="os-picker">
           <button class="os-btn" id="osbtn-win" onclick="setLearnOs('win')">🪟 Windows</button>
           <button class="os-btn" id="osbtn-mac" onclick="setLearnOs('mac')">🍎 Mac</button>
           <button class="os-btn" id="osbtn-linux" onclick="setLearnOs('linux')">🐧 Linux / Ubuntu</button>
         </div>
-        <div class="os-please">👆 Tap your computer type above — instructions in each step will update automatically.</div>
+        <div class="os-please" id="os-please">👆 Tap your computer type above — instructions in each step will update automatically.</div>
       </div>
 
       <div class="steps-nav" id="learn-steps-nav">
@@ -1664,9 +1680,9 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ BRAINSTORM ══ -->
     <section id="section-brainstorm" class="section">
       <div class="page-header">
-        <div class="page-badge purple">💡 AI BRAINSTORM WIZARD</div>
-        <h1 class="page-title">Find Your App Idea</h1>
-        <p class="page-sub">Not sure what to build? Answer a few questions and our AI will suggest real, buildable app ideas specifically for Lightchain. No experience needed.</p>
+        <div class="page-badge purple" id="brainstorm-badge">💡 AI BRAINSTORM WIZARD</div>
+        <h1 class="page-title" id="brainstorm-title">Find Your App Idea</h1>
+        <p class="page-sub" id="brainstorm-sub">Not sure what to build? Answer a few questions and our AI will suggest real, buildable app ideas specifically for Lightchain. No experience needed.</p>
       </div>
 
       <div class="wizard-progress" id="bwiz-progress">
@@ -1678,8 +1694,8 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <!-- BRAINSTORM STEP 1: Category -->
       <div class="wizard-step active" id="bwiz-1">
         <div class="card">
-          <div class="card-title">Step 1 of 3 — What world are you most interested in?</div>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:20px;">Pick the one that excites you most. Don't overthink it — there are no wrong answers.</p>
+          <div class="card-title" id="bwiz-s1-title">Step 1 of 3 — What world are you most interested in?</div>
+          <p id="bwiz-s1-sub" style="font-size:14px;color:var(--muted);margin-bottom:20px;">Pick the one that excites you most. Don't overthink it — there are no wrong answers.</p>
           <div class="choice-grid" id="bwiz-category-grid">
             <div class="choice-card" onclick="selectChoice(this,'bwiz-category','DeFi','selected')">
               <div class="choice-icon">💰</div>
@@ -1732,15 +1748,15 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <!-- BRAINSTORM STEP 2: Experience & Audience -->
       <div class="wizard-step" id="bwiz-2">
         <div class="card">
-          <div class="card-title">Step 2 of 3 — Tell us a bit more</div>
+          <div class="card-title" id="bwiz-s2-title">Step 2 of 3 — Tell us a bit more</div>
           <div class="field-group">
-            <label class="field-label">Who would use your app?</label>
-            <div class="field-sub">Think about the person who would open it and what problem they have that day.</div>
+            <label class="field-label" id="bwiz-audience-label">Who would use your app?</label>
+            <div class="field-sub" id="bwiz-audience-sub">Think about the person who would open it and what problem they have that day.</div>
             <textarea class="field-input field-textarea" id="bwiz-audience" placeholder="Example: New crypto users who don't know how to spot scams. Or: Parents who want to teach their kids with AI. Or: Musicians who want to sell their art as NFTs."></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Any specific idea already in your head? (optional)</label>
-            <div class="field-sub">Even a rough half-idea is helpful. Leave blank if you have nothing yet.</div>
+            <label class="field-label" id="bwiz-seed-label">Any specific idea already in your head? (optional)</label>
+            <div class="field-sub" id="bwiz-seed-sub">Even a rough half-idea is helpful. Leave blank if you have nothing yet.</div>
             <textarea class="field-input field-textarea" id="bwiz-seed-idea" placeholder="Example: Something like a 'Shazam for crypto' that identifies a token just by pasting the contract address. Or: A tip jar app for content creators that accepts LCAI."></textarea>
           </div>
         </div>
@@ -1753,8 +1769,8 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <!-- BRAINSTORM STEP 3: AI Response -->
       <div class="wizard-step" id="bwiz-3">
         <div class="card">
-          <div class="card-title">Step 3 of 3 — Your Personalized App Ideas</div>
-          <p style="font-size:14px;color:var(--muted);">The AI is coming up with ideas based on what you told us...</p>
+          <div class="card-title" id="bwiz-s3-title">Step 3 of 3 — Your Personalized App Ideas</div>
+          <p id="bwiz-s3-sub" style="font-size:14px;color:var(--muted);">The AI is coming up with ideas based on what you told us...</p>
         </div>
         <div id="bwiz-result">
           <div class="ai-thinking">
@@ -1764,9 +1780,9 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         </div>
         <div id="bwiz-actions" style="display:none;">
           <div class="step-nav">
-            <button class="btn btn-ghost" onclick="bwizBack(3)">← Try Different Answers</button>
-            <button class="btn btn-primary green" onclick="showSection('build')">🔨 I have an idea — Let's Build It</button>
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="saveToProject('brainstormResult', document.getElementById('bwiz-result').innerText)">📂 Save to Project</button>
+            <button class="btn btn-ghost" id="bwiz-back" onclick="bwizBack(3)">← Try Different Answers</button>
+            <button class="btn btn-primary green" id="bwiz-build-btn" onclick="showSection('build')">🔨 I have an idea — Let's Build It</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bwiz-save-btn" onclick="saveToProject('brainstormResult', document.getElementById('bwiz-result').innerText)">📂 Save to Project</button>
           </div>
         </div>
       </div>
@@ -1775,13 +1791,13 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ BUILD ══ -->
     <section id="section-build" class="section">
       <div class="page-header">
-        <div class="page-badge green">🔨 BUILD WIZARD</div>
-        <h1 class="page-title">Build Your App</h1>
-        <p class="page-sub">Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.</p>
+        <div class="page-badge green" id="build-badge">🔨 BUILD WIZARD</div>
+        <h1 class="page-title" id="build-title">Build Your App</h1>
+        <p class="page-sub" id="build-sub">Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.</p>
       </div>
       <div class="callout warn" style="margin-bottom:20px;">
         <div class="callout-icon">💻</div>
-        <div class="callout-body"><strong>PC Required to Build</strong>Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.</div>
+        <div class="callout-body"><strong id="build-pc-warn-title">PC Required to Build</strong><span id="build-pc-warn-body">Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.</span></div>
       </div>
 
       <div class="wizard-progress" id="build-wiz-progress">
@@ -1792,17 +1808,17 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <!-- BUILD STEP 1: What kind? -->
       <div class="wizard-step active" id="bld-1">
         <div class="card">
-          <div class="card-title">What's your situation?</div>
+          <div class="card-title" id="bld-s1-title">What's your situation?</div>
           <div class="choice-grid" style="grid-template-columns:1fr 1fr;max-width:500px;">
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','scratch','selected-green')" style="text-align:center;">
               <div class="choice-icon">🌱</div>
-              <div class="choice-label">Starting from scratch</div>
-              <div class="choice-sub">I have an idea and want a full plan</div>
+              <div class="choice-label" id="bld-scratch-label">Starting from scratch</div>
+              <div class="choice-sub" id="bld-scratch-sub">I have an idea and want a full plan</div>
             </div>
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','existing','selected-green')" style="text-align:center;">
               <div class="choice-icon">🔧</div>
-              <div class="choice-label">Already started</div>
-              <div class="choice-sub">I have code or a partial app and need help finishing</div>
+              <div class="choice-label" id="bld-existing-label">Already started</div>
+              <div class="choice-sub" id="bld-existing-sub">I have code or a partial app and need help finishing</div>
             </div>
           </div>
         </div>
@@ -1817,27 +1833,27 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         <div class="card" id="bld-desc-card">
           <div class="card-title" id="bld-desc-title">Describe your app idea</div>
           <div class="field-group">
-            <label class="field-label">What is your app? What does it do?</label>
+            <label class="field-label" id="bld-desc-label">What is your app? What does it do?</label>
             <div class="field-sub" id="bld-desc-hint">Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.</div>
             <textarea class="field-input field-textarea" id="bld-description" rows="5" placeholder="Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Who will use it? (optional)</label>
+            <label class="field-label" id="bld-users-label">Who will use it? (optional)</label>
             <textarea class="field-input" id="bld-users" rows="2" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
           </div>
         </div>
         <div class="step-nav">
-          <button class="btn btn-ghost" onclick="bldBack(2)">← Back</button>
-          <button class="btn btn-primary green" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
+          <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
+          <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
         </div>
         <div id="bld-result" style="margin-top:24px;"></div>
         <div id="bld-actions" style="display:none;margin-top:16px;">
           <div class="step-nav">
-            <button class="btn btn-ghost" onclick="bldBack(2)">← Try Again</button>
-            <button class="btn btn-primary" onclick="showSection('learn')">📚 Follow the Step-by-Step Guide</button>
-            <button class="btn btn-primary" style="background:var(--yellow);color:#000;" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="openAiPanel('I want to start building my app. Here is my plan: ' + document.getElementById('bld-result').innerText.substring(0,300))">💬 Ask AI a Question</button>
-            <button class="btn btn-primary" style="background:var(--orange);color:#000;" onclick="saveToProject('buildPlan', document.getElementById('bld-result').innerText)">📂 Save to Project</button>
+            <button class="btn btn-ghost" id="bld-try-again" onclick="bldBack(2)">← Try Again</button>
+            <button class="btn btn-primary" id="bld-learn-btn" onclick="showSection('learn')">📚 Follow the Step-by-Step Guide</button>
+            <button class="btn btn-primary" id="bld-launch-btn" style="background:var(--yellow);color:#000;" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="openAiPanel('I want to start building my app. Here is my plan: ' + document.getElementById('bld-result').innerText.substring(0,300))">💬 Ask AI a Question</button>
+            <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', document.getElementById('bld-result').innerText)">📂 Save to Project</button>
           </div>
         </div>
       </div>
@@ -1862,19 +1878,19 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ LAUNCH CHECK ══ -->
     <section id="section-launchcheck" class="section">
       <div class="page-header lc-compact-head">
-        <div class="page-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
-        <h1 class="page-title">Is this Lightchain app ready to go live?</h1>
-        <p class="page-sub">Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.</p>
+        <div class="page-badge" id="launch-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
+        <h1 class="page-title" id="launch-title">Is this Lightchain app ready to go live?</h1>
+        <p class="page-sub" id="launch-sub">Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.</p>
       </div>
 
       <div class="card" style="padding:12px 14px;margin-bottom:0;">
         <div class="lc-form-row">
           <div class="field-group">
-            <label class="field-label">Live app URL</label>
+            <label class="field-label" id="lc-url-label">Live app URL</label>
             <input class="field-input" id="lc-url" type="url" placeholder="https://your-app.vercel.app">
           </div>
           <div class="field-group narrow">
-            <label class="field-label">Checking for</label>
+            <label class="field-label" id="lc-who-label">Checking for</label>
             <select class="field-input" id="lc-who" style="cursor:pointer;">
               <option value="mine">My app</option>
               <option value="friend">A friend's app</option>
@@ -1882,12 +1898,12 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
               <option value="curious">Just testing</option>
             </select>
           </div>
-          <button class="btn btn-primary" style="background:var(--yellow);color:#000;margin-bottom:0;" onclick="runLaunchCheck()">🔍 Scan</button>
+          <button class="btn btn-primary" style="background:var(--yellow);color:#000;margin-bottom:0;" id="lc-scan-btn" onclick="runLaunchCheck()">🔍 Scan</button>
           <button class="btn btn-ghost" id="lc-rerun-btn" style="display:none;margin-bottom:0;" onclick="runLaunchCheck()">🔄 Rescan</button>
         </div>
         <div class="lc-optional" style="margin-top:6px;">
           <details>
-            <summary>More options (code paste, notes)</summary>
+            <summary id="lc-more-summary">More options (code paste, notes)</summary>
             <div class="field-group" style="margin-top:8px;">
               <textarea class="field-input field-textarea" id="lc-code" rows="2" placeholder="Optional: paste code if URL scan misses something..."></textarea>
             </div>
@@ -1911,70 +1927,70 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ TROUBLESHOOT ══ -->
     <section id="section-troubleshoot" class="section">
       <div class="page-header">
-        <div class="page-badge orange">🔧 TROUBLESHOOT</div>
-        <h1 class="page-title">Fix a Problem</h1>
-        <p class="page-sub">Pick a common issue below or describe your problem in plain English. The AI will walk you through exactly what's wrong and how to fix it.</p>
+        <div class="page-badge orange" id="troubleshoot-badge">🔧 TROUBLESHOOT</div>
+        <h1 class="page-title" id="troubleshoot-title">Fix a Problem</h1>
+        <p class="page-sub" id="troubleshoot-sub">Pick a common issue below or describe your problem in plain English. The AI will walk you through exactly what's wrong and how to fix it.</p>
       </div>
 
       <div class="issue-grid">
         <div class="issue-card" onclick="quickIssue('My AIVM calls are failing with an error about signatures or authentication')">
           <div class="issue-icon">🔑</div>
-          <div class="issue-title">AIVM Not Working</div>
-          <div class="issue-desc">Getting "invalid signature" or authentication errors when trying to use AI</div>
+          <div class="issue-title" id="issue-1-title">AIVM Not Working</div>
+          <div class="issue-desc" id="issue-1-desc">Getting "invalid signature" or authentication errors when trying to use AI</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My Railway server deployed but my app is returning errors or not responding')">
           <div class="issue-icon">🚂</div>
-          <div class="issue-title">Railway Server Down</div>
-          <div class="issue-desc">Server deployed but returning errors or not responding</div>
+          <div class="issue-title" id="issue-2-title">Railway Server Down</div>
+          <div class="issue-desc" id="issue-2-desc">Server deployed but returning errors or not responding</div>
         </div>
         <div class="issue-card" onclick="quickIssue('Users cannot connect their wallet to my app, or the wallet connection is not working')">
           <div class="issue-icon">👛</div>
-          <div class="issue-title">Wallet Won't Connect</div>
-          <div class="issue-desc">Wallet connection fails or users get an error</div>
+          <div class="issue-title" id="issue-3-title">Wallet Won't Connect</div>
+          <div class="issue-desc" id="issue-3-desc">Wallet connection fails or users get an error</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My smart contract deployment failed or I cannot interact with my deployed contract')">
           <div class="issue-icon">📜</div>
-          <div class="issue-title">Smart Contract Issue</div>
-          <div class="issue-desc">Deployment failed or contract calls return errors</div>
+          <div class="issue-title" id="issue-4-title">Smart Contract Issue</div>
+          <div class="issue-desc" id="issue-4-desc">Deployment failed or contract calls return errors</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My GitHub Pages site is not updating after I push new code, or the site is returning 404')">
           <div class="issue-icon">🌐</div>
-          <div class="issue-title">GitHub Pages Not Updating</div>
-          <div class="issue-desc">Site not refreshing after push, or showing 404</div>
+          <div class="issue-title" id="issue-5-title">GitHub Pages Not Updating</div>
+          <div class="issue-desc" id="issue-5-desc">Site not refreshing after push, or showing 404</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My dApp Hub pull request was rejected or I am having trouble with the submission format')">
           <div class="issue-icon">🗂️</div>
-          <div class="issue-title">Hub Submission Rejected</div>
-          <div class="issue-desc">PR rejected or submission format issues</div>
+          <div class="issue-title" id="issue-6-title">Hub Submission Rejected</div>
+          <div class="issue-desc" id="issue-6-desc">PR rejected or submission format issues</div>
         </div>
         <div class="issue-card" onclick="quickIssue('LCAI payments in my app are not working — transactions fail or users cannot pay')">
           <div class="issue-icon">💸</div>
-          <div class="issue-title">Payment Not Working</div>
-          <div class="issue-desc">LCAI transactions failing or users unable to pay</div>
+          <div class="issue-title" id="issue-7-title">Payment Not Working</div>
+          <div class="issue-desc" id="issue-7-desc">LCAI transactions failing or users unable to pay</div>
         </div>
         <div class="issue-card" onclick="showSection('launchcheck')">
           <div class="issue-icon">🚀</div>
-          <div class="issue-title">Works on My PC Only</div>
-          <div class="issue-desc">App works for me but friends get errors — likely localhost backend</div>
+          <div class="issue-title" id="issue-8-title">Works on My PC Only</div>
+          <div class="issue-desc" id="issue-8-desc">App works for me but friends get errors — likely localhost backend</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My Python server works locally but fails on Railway — packages not installing or wrong versions')">
           <div class="issue-icon">🐍</div>
-          <div class="issue-title">Python Package Errors</div>
-          <div class="issue-desc">Works locally but fails on Railway — version conflicts</div>
+          <div class="issue-title" id="issue-9-title">Python Package Errors</div>
+          <div class="issue-desc" id="issue-9-desc">Works locally but fails on Railway — version conflicts</div>
         </div>
         <div class="issue-card" onclick="quickIssue('My AIVM server is failing with: Could not deserialize key data. The data may be in an incorrect format, it may be encrypted with an unsupported algorithm')">
           <div class="issue-icon">🔐</div>
-          <div class="issue-title">"Could not deserialize key data"</div>
-          <div class="issue-desc">AIVM crashes with a key format error even though your private key looks correct</div>
+          <div class="issue-title" id="issue-10-title">"Could not deserialize key data"</div>
+          <div class="issue-desc" id="issue-10-desc">AIVM crashes with a key format error even though your private key looks correct</div>
         </div>
       </div>
 
       <div class="card" style="background:rgba(255,152,0,.06);border-color:rgba(255,152,0,.3);margin-top:8px;">
-        <div class="card-title" style="color:var(--orange);">⚡ Known AIVM Gotcha — "Could not deserialize key data"</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px;">
+        <div class="card-title" id="trouble-gotcha-title" style="color:var(--orange);">⚡ Known AIVM Gotcha — "Could not deserialize key data"</div>
+        <p id="trouble-gotcha-p1" style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:12px;">
           This error appears even when your private key is perfectly valid. The real cause is a mismatch in the <strong style="color:var(--text);">worker's public key format</strong> — the AIVM network sometimes returns a 33-byte compressed key instead of a 65-byte uncompressed key, and hardcoded DER headers only handle one format.
         </p>
-        <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;"><strong style="color:var(--text);">The fix:</strong> In your Python server, detect the key length before building the DER header:</p>
+        <p id="trouble-gotcha-p2" style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:8px;"><strong style="color:var(--text);">The fix:</strong> In your Python server, detect the key length before building the DER header:</p>
         <div class="code-block" style="margin:0;">
           <div class="code-header"><span class="code-label">Python — robust worker key loading</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
           <div class="code-content"><pre>klen = len(worker_pub_bytes)
@@ -1989,12 +2005,12 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
       </div>
 
       <div class="card" style="margin-top:8px;">
-        <div class="card-title">📝 Describe Your Problem</div>
-        <p style="font-size:14px;color:var(--muted);margin-bottom:14px;">Don't see your issue above? Describe it here. Paste any error messages you're seeing.</p>
+        <div class="card-title" id="trouble-describe-title">📝 Describe Your Problem</div>
+        <p id="trouble-describe-sub" style="font-size:14px;color:var(--muted);margin-bottom:14px;">Don't see your issue above? Describe it here. Paste any error messages you're seeing.</p>
         <div class="field-group">
           <textarea class="field-input field-textarea" id="trouble-input" rows="4" placeholder="Describe what's happening and what you've already tried. Paste any error messages here. The more detail you give, the better the diagnosis."></textarea>
         </div>
-        <button class="btn btn-primary orange" onclick="troubleshoot()" style="margin-top:4px;">🔧 Diagnose My Problem</button>
+        <button class="btn btn-primary orange" id="trouble-diagnose-btn" onclick="troubleshoot()" style="margin-top:4px;">🔧 Diagnose My Problem</button>
       </div>
 
       <div id="trouble-result" style="margin-top:20px;"></div>
@@ -2003,95 +2019,95 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
     <!-- ══ LINKS & ACCOUNTS ══ -->
     <section id="section-links" class="section">
       <div class="page-header">
-        <div class="page-badge cyan">🔗 LINKS &amp; ACCOUNTS</div>
-        <h1 class="page-title">Your Tools &amp; Accounts</h1>
-        <p class="page-sub">Everything in one place — your accounts, your live apps, and quick links to all the tools you use. Saves to your browser so it's always here when you need it.</p>
+        <div class="page-badge cyan" id="links-badge">🔗 LINKS &amp; ACCOUNTS</div>
+        <h1 class="page-title" id="links-title">Your Tools &amp; Accounts</h1>
+        <p class="page-sub" id="links-sub">Everything in one place — your accounts, your live apps, and quick links to all the tools you use. Saves to your browser so it's always here when you need it.</p>
       </div>
 
       <!-- MY ACCOUNTS -->
-      <div class="links-section-title">👤 My Accounts</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Paste your personal URLs for each service so you can get back to them in one click. Leave blank for services you don't use yet.</p>
+      <div class="links-section-title" id="links-accounts-title">👤 My Accounts</div>
+      <p id="links-accounts-sub" style="font-size:13px;color:var(--muted);margin-bottom:16px;">Paste your personal URLs for each service so you can get back to them in one click. Leave blank for services you don't use yet.</p>
       <div class="account-grid" id="accounts-grid">
         <!-- rendered by JS -->
       </div>
-      <button class="btn btn-ghost" onclick="showAddAccountForm()" style="margin-top:8px;font-size:13px;">➕ Add Another Account</button>
+      <button class="btn btn-ghost" id="links-add-account-btn" onclick="showAddAccountForm()" style="margin-top:8px;font-size:13px;">➕ Add Another Account</button>
       <div id="add-account-form" style="display:none;margin-top:16px;">
         <div class="card" style="border-color:rgba(0,212,255,.2);max-width:480px;">
-          <div class="card-title">➕ Add Custom Account</div>
+          <div class="card-title" id="links-add-account-title">➕ Add Custom Account</div>
           <div class="field-group">
-            <label class="field-label">Service Name</label>
+            <label class="field-label" id="links-svc-label">Service Name</label>
             <input class="field-input" id="new-account-name" type="text" placeholder="e.g. My Discord, Uniswap, Coinbase..." maxlength="40">
           </div>
           <div class="field-group">
-            <label class="field-label">Emoji Icon (optional)</label>
+            <label class="field-label" id="links-emoji-label">Emoji Icon (optional)</label>
             <input class="field-input" id="new-account-icon" type="text" placeholder="e.g. 💬" maxlength="4" style="width:80px;">
           </div>
           <div class="field-group">
-            <label class="field-label">URL</label>
+            <label class="field-label" id="links-url-label">URL</label>
             <input class="field-input" id="new-account-url" type="url" placeholder="https://...">
           </div>
           <div style="display:flex;gap:10px;margin-top:8px;">
-            <button class="btn btn-primary" onclick="addCustomAccount()">Save Account</button>
-            <button class="btn btn-ghost" onclick="document.getElementById('add-account-form').style.display='none'">Cancel</button>
+            <button class="btn btn-primary" id="links-save-account-btn" onclick="addCustomAccount()">Save Account</button>
+            <button class="btn btn-ghost" id="links-cancel-btn" onclick="document.getElementById('add-account-form').style.display='none'">Cancel</button>
           </div>
         </div>
       </div>
 
       <!-- MY PROJECT LINKS -->
-      <div class="links-section-title">🚀 My Project Links</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Links to your live apps, GitHub repos, and Railway dashboards. Add a link here for every project you launch.</p>
+      <div class="links-section-title" id="links-projects-title">🚀 My Project Links</div>
+      <p id="links-projects-sub" style="font-size:13px;color:var(--muted);margin-bottom:16px;">Links to your live apps, GitHub repos, and Railway dashboards. Add a link here for every project you launch.</p>
       <div class="mylink-grid" id="mylinks-grid">
         <!-- rendered by JS -->
       </div>
       <div id="mylinks-empty" style="display:none;color:var(--muted);font-size:14px;font-style:italic;margin-bottom:16px;">No project links saved yet. Add your first one below.</div>
       <div class="card" style="max-width:520px;margin-top:8px;" id="add-mylink-card">
-        <div class="card-title">➕ Add Project Link</div>
+        <div class="card-title" id="links-add-link-title">➕ Add Project Link</div>
         <div class="field-group">
-          <label class="field-label">Project Name</label>
+          <label class="field-label" id="links-proj-name-label">Project Name</label>
           <input class="field-input" id="new-mylink-name" type="text" placeholder="e.g. OrcaVote, My NFT App..." maxlength="60">
         </div>
         <div class="field-group">
-          <label class="field-label">URL</label>
+          <label class="field-label" id="links-proj-url-label">URL</label>
           <input class="field-input" id="new-mylink-url" type="url" placeholder="https://...">
         </div>
         <div class="field-group">
-          <label class="field-label">Type</label>
+          <label class="field-label" id="links-type-label">Type</label>
           <div class="choice-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;" id="mylink-type-grid">
-            <div class="choice-card selected" onclick="selectMylinkType(this,'live')"><div class="choice-icon">🌐</div><div class="choice-title" style="font-size:11px;">Live App</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'repo')"><div class="choice-icon">📁</div><div class="choice-title" style="font-size:11px;">GitHub Repo</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'server')"><div class="choice-icon">🚂</div><div class="choice-title" style="font-size:11px;">Railway</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'other')"><div class="choice-icon">🔗</div><div class="choice-title" style="font-size:11px;">Other</div></div>
+            <div class="choice-card selected" onclick="selectMylinkType(this,'live')"><div class="choice-icon">🌐</div><div class="choice-title" id="links-type-live" style="font-size:11px;">Live App</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'repo')"><div class="choice-icon">📁</div><div class="choice-title" id="links-type-repo" style="font-size:11px;">GitHub Repo</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'server')"><div class="choice-icon">🚂</div><div class="choice-title" id="links-type-server" style="font-size:11px;">Railway</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'other')"><div class="choice-icon">🔗</div><div class="choice-title" id="links-type-other" style="font-size:11px;">Other</div></div>
           </div>
           <input type="hidden" id="new-mylink-type" value="live">
         </div>
-        <button class="btn btn-primary" onclick="addMyLink()" style="margin-top:4px;">Save Link</button>
+        <button class="btn btn-primary" id="links-save-link-btn" onclick="addMyLink()" style="margin-top:4px;">Save Link</button>
       </div>
 
       <!-- TOOLS & RESOURCES -->
-      <div class="links-section-title">🛠️ Tools &amp; Resources</div>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Essential tools for building on Lightchain — click any card to open it.</p>
+      <div class="links-section-title" id="links-tools-title">🛠️ Tools &amp; Resources</div>
+      <p id="links-tools-sub" style="font-size:13px;color:var(--muted);margin-bottom:16px;">Essential tools for building on Lightchain — click any card to open it.</p>
       <div class="resource-grid">
-        <a href="https://github.com" target="_blank" class="resource-card"><div class="resource-icon">🐙</div><div><div class="resource-name">GitHub</div><div class="resource-desc">Host your code and app for free</div></div></a>
-        <a href="https://desktop.github.com" target="_blank" class="resource-card"><div class="resource-icon">💻</div><div><div class="resource-name">GitHub Desktop</div><div class="resource-desc">Push code without using a terminal</div></div></a>
-        <a href="https://railway.app" target="_blank" class="resource-card"><div class="resource-icon">🚂</div><div><div class="resource-name">Railway</div><div class="resource-desc">Host your Python AI server</div></div></a>
-        <a href="https://cloudflare.com" target="_blank" class="resource-card"><div class="resource-icon">☁️</div><div><div class="resource-name">Cloudflare</div><div class="resource-desc">Domain names and DNS management</div></div></a>
-        <a href="https://remix.ethereum.org" target="_blank" class="resource-card"><div class="resource-icon">⚗️</div><div><div class="resource-name">Remix IDE</div><div class="resource-desc">Deploy smart contracts in your browser</div></div></a>
-        <a href="https://hub.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">💡</div><div><div class="resource-name">Lightchain dApp Hub</div><div class="resource-desc">The official Lightchain app store</div></div></a>
-        <a href="https://discord.gg/lightchain" target="_blank" class="resource-card"><div class="resource-icon">💬</div><div><div class="resource-name">Lightchain Discord</div><div class="resource-desc">Community support and announcements</div></div></a>
-        <a href="https://docs.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">📖</div><div><div class="resource-name">Lightchain Docs</div><div class="resource-desc">Official developer documentation</div></div></a>
-        <a href="https://rpc.mainnet.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔵</div><div><div class="resource-name">Lightchain RPC</div><div class="resource-desc">Chain ID 9200 — mainnet endpoint</div></div></a>
-        <a href="https://code.visualstudio.com" target="_blank" class="resource-card"><div class="resource-icon">📝</div><div><div class="resource-name">VS Code</div><div class="resource-desc">Free code editor — best for HTML files</div></div></a>
-        <a href="https://www.python.org/downloads/" target="_blank" class="resource-card"><div class="resource-icon">🐍</div><div><div class="resource-name">Python</div><div class="resource-desc">Required for your AI server backend</div></div></a>
-        <a href="https://app.uniswap.org" target="_blank" class="resource-card"><div class="resource-icon">🦄</div><div><div class="resource-name">Uniswap</div><div class="resource-desc">Buy/swap LCAI tokens</div></div></a>
-        <a href="https://metamask.io" target="_blank" class="resource-card"><div class="resource-icon">🦊</div><div><div class="resource-name">MetaMask</div><div class="resource-desc">Browser wallet extension (desktop)</div></div></a>
-        <a href="https://trustwallet.com" target="_blank" class="resource-card"><div class="resource-icon">🔐</div><div><div class="resource-name">Trust Wallet</div><div class="resource-desc">Mobile wallet (iOS &amp; Android)</div></div></a>
-        <a href="https://etherscan.io" target="_blank" class="resource-card"><div class="resource-icon">🔍</div><div><div class="resource-name">Etherscan</div><div class="resource-desc">Look up transactions and contracts</div></div></a>
-        <a href="https://scan.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name">Lightchain Explorer</div><div class="resource-desc">Browse Lightchain transactions</div></div></a>
-        <a href="https://coinbase.com" target="_blank" class="resource-card"><div class="resource-icon">🏦</div><div><div class="resource-name">Coinbase</div><div class="resource-desc">Buy ETH to fund your wallet</div></div></a>
-        <a href="https://lightnode.app/playground" target="_blank" class="resource-card"><div class="resource-icon">🧪</div><div><div class="resource-name">AIVM Playground</div><div class="resource-desc">Test a real encrypted AI inference in your browser</div></div></a>
-        <a href="https://github.com/lightchain-protocol/lcai-chat-v2" target="_blank" class="resource-card"><div class="resource-icon">⚡</div><div><div class="resource-name">lcai-chat-v2</div><div class="resource-desc">Official Lightchain chat source (chat.lightchain.ai)</div></div></a>
-        <a href="https://chat.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🤖</div><div><div class="resource-name">Lightchain Chat</div><div class="resource-desc">Production wallet-native AI chat on mainnet</div></div></a>
-        <a href="https://github.com/Keiko-Dev-LCAI/keiko-chat" target="_blank" class="resource-card"><div class="resource-icon">🐬</div><div><div class="resource-name">Keiko Chat</div><div class="resource-desc">Community fork — study or deploy your own chat</div></div></a>
+        <a href="https://github.com" target="_blank" class="resource-card"><div class="resource-icon">🐙</div><div><div class="resource-name" id="res-github-name">GitHub</div><div class="resource-desc" id="res-github-desc">Host your code and app for free</div></div></a>
+        <a href="https://desktop.github.com" target="_blank" class="resource-card"><div class="resource-icon">💻</div><div><div class="resource-name" id="res-ghdesktop-name">GitHub Desktop</div><div class="resource-desc" id="res-ghdesktop-desc">Push code without using a terminal</div></div></a>
+        <a href="https://railway.app" target="_blank" class="resource-card"><div class="resource-icon">🚂</div><div><div class="resource-name" id="res-railway-name">Railway</div><div class="resource-desc" id="res-railway-desc">Host your Python AI server</div></div></a>
+        <a href="https://cloudflare.com" target="_blank" class="resource-card"><div class="resource-icon">☁️</div><div><div class="resource-name" id="res-cloudflare-name">Cloudflare</div><div class="resource-desc" id="res-cloudflare-desc">Domain names and DNS management</div></div></a>
+        <a href="https://remix.ethereum.org" target="_blank" class="resource-card"><div class="resource-icon">⚗️</div><div><div class="resource-name" id="res-remix-name">Remix IDE</div><div class="resource-desc" id="res-remix-desc">Deploy smart contracts in your browser</div></div></a>
+        <a href="https://hub.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">💡</div><div><div class="resource-name" id="res-hub-name">Lightchain dApp Hub</div><div class="resource-desc" id="res-hub-desc">The official Lightchain app store</div></div></a>
+        <a href="https://discord.gg/lightchain" target="_blank" class="resource-card"><div class="resource-icon">💬</div><div><div class="resource-name" id="res-discord-name">Lightchain Discord</div><div class="resource-desc" id="res-discord-desc">Community support and announcements</div></div></a>
+        <a href="https://docs.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">📖</div><div><div class="resource-name" id="res-docs-name">Lightchain Docs</div><div class="resource-desc" id="res-docs-desc">Official developer documentation</div></div></a>
+        <a href="https://rpc.mainnet.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔵</div><div><div class="resource-name" id="res-rpc-name">Lightchain RPC</div><div class="resource-desc" id="res-rpc-desc">Chain ID 9200 — mainnet endpoint</div></div></a>
+        <a href="https://code.visualstudio.com" target="_blank" class="resource-card"><div class="resource-icon">📝</div><div><div class="resource-name" id="res-vscode-name">VS Code</div><div class="resource-desc" id="res-vscode-desc">Free code editor — best for HTML files</div></div></a>
+        <a href="https://www.python.org/downloads/" target="_blank" class="resource-card"><div class="resource-icon">🐍</div><div><div class="resource-name" id="res-python-name">Python</div><div class="resource-desc" id="res-python-desc">Required for your AI server backend</div></div></a>
+        <a href="https://app.uniswap.org" target="_blank" class="resource-card"><div class="resource-icon">🦄</div><div><div class="resource-name" id="res-uniswap-name">Uniswap</div><div class="resource-desc" id="res-uniswap-desc">Buy/swap LCAI tokens</div></div></a>
+        <a href="https://metamask.io" target="_blank" class="resource-card"><div class="resource-icon">🦊</div><div><div class="resource-name" id="res-metamask-name">MetaMask</div><div class="resource-desc" id="res-metamask-desc">Browser wallet extension (desktop)</div></div></a>
+        <a href="https://trustwallet.com" target="_blank" class="resource-card"><div class="resource-icon">🔐</div><div><div class="resource-name" id="res-trust-name">Trust Wallet</div><div class="resource-desc" id="res-trust-desc">Mobile wallet (iOS &amp; Android)</div></div></a>
+        <a href="https://etherscan.io" target="_blank" class="resource-card"><div class="resource-icon">🔍</div><div><div class="resource-name" id="res-etherscan-name">Etherscan</div><div class="resource-desc" id="res-etherscan-desc">Look up transactions and contracts</div></div></a>
+        <a href="https://scan.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name" id="res-explorer-name">Lightchain Explorer</div><div class="resource-desc" id="res-explorer-desc">Browse Lightchain transactions</div></div></a>
+        <a href="https://coinbase.com" target="_blank" class="resource-card"><div class="resource-icon">🏦</div><div><div class="resource-name" id="res-coinbase-name">Coinbase</div><div class="resource-desc" id="res-coinbase-desc">Buy ETH to fund your wallet</div></div></a>
+        <a href="https://lightnode.app/playground" target="_blank" class="resource-card"><div class="resource-icon">🧪</div><div><div class="resource-name" id="res-playground-name">AIVM Playground</div><div class="resource-desc" id="res-playground-desc">Test a real encrypted AI inference in your browser</div></div></a>
+        <a href="https://github.com/lightchain-protocol/lcai-chat-v2" target="_blank" class="resource-card"><div class="resource-icon">⚡</div><div><div class="resource-name" id="res-lcaichat-src-name">lcai-chat-v2</div><div class="resource-desc" id="res-lcaichat-src-desc">Official Lightchain chat source (chat.lightchain.ai)</div></div></a>
+        <a href="https://chat.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🤖</div><div><div class="resource-name" id="res-lcaichat-name">Lightchain Chat</div><div class="resource-desc" id="res-lcaichat-desc">Production wallet-native AI chat on mainnet</div></div></a>
+        <a href="https://github.com/Keiko-Dev-LCAI/keiko-chat" target="_blank" class="resource-card"><div class="resource-icon">🐬</div><div><div class="resource-name" id="res-keikochat-name">Keiko Chat</div><div class="resource-desc" id="res-keikochat-desc">Community fork — study or deploy your own chat</div></div></a>
       </div>
 
     </section>
@@ -2099,44 +2115,44 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
     <!-- ══ PROJECTS ══ -->
     <section id="section-projects" class="section">
       <div class="page-header">
-        <div class="page-badge cyan">📂 MY PROJECTS</div>
-        <h1 class="page-title">Your Saved Projects</h1>
-        <p class="page-sub">Save your app ideas, build plans, and notes here. Come back anytime to pick up where you left off. Everything saves to your browser — no account needed.</p>
+        <div class="page-badge cyan" id="projects-badge">📂 MY PROJECTS</div>
+        <h1 class="page-title" id="projects-title">Your Saved Projects</h1>
+        <p class="page-sub" id="projects-sub">Save your app ideas, build plans, and notes here. Come back anytime to pick up where you left off. Everything saves to your browser — no account needed.</p>
       </div>
 
       <!-- New project form (hidden by default) -->
       <div id="proj-new-form" style="display:none;margin-bottom:24px;">
         <div class="card" style="border-color:rgba(0,212,255,.3);">
-          <div class="card-title">➕ New Project</div>
+          <div class="card-title" id="proj-new-title">➕ New Project</div>
           <div class="field-group">
-            <label class="field-label">Project Name *</label>
+            <label class="field-label" id="proj-name-label">Project Name *</label>
             <input class="field-input" id="proj-name-input" type="text" placeholder="e.g. OrcaVote — community polling app" maxlength="80">
           </div>
           <div class="field-group">
-            <label class="field-label">What's the idea? (optional)</label>
+            <label class="field-label" id="proj-desc-label">What's the idea? (optional)</label>
             <textarea class="field-input field-textarea" id="proj-desc-input" rows="3" placeholder="Brief description of what you want to build..."></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Status</label>
+            <label class="field-label" id="proj-status-label">Status</label>
             <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="proj-status-grid">
               <div class="choice-card selected" onclick="selectProjStatus(this,'💡 Brainstorming')">
                 <div class="choice-icon">💡</div>
-                <div class="choice-title">Brainstorming</div>
+                <div class="choice-title" id="proj-status-brainstorm">Brainstorming</div>
               </div>
               <div class="choice-card" onclick="selectProjStatus(this,'🔨 Building')">
                 <div class="choice-icon">🔨</div>
-                <div class="choice-title">Building</div>
+                <div class="choice-title" id="proj-status-building">Building</div>
               </div>
               <div class="choice-card" onclick="selectProjStatus(this,'🚀 Launched')">
                 <div class="choice-icon">🚀</div>
-                <div class="choice-title">Launched</div>
+                <div class="choice-title" id="proj-status-launched">Launched</div>
               </div>
             </div>
             <input type="hidden" id="proj-status-input" value="💡 Brainstorming">
           </div>
           <div style="display:flex;gap:10px;margin-top:6px;">
-            <button class="btn btn-primary" onclick="saveNewProject()">💾 Save Project</button>
-            <button class="btn btn-ghost" onclick="document.getElementById('proj-new-form').style.display='none'">Cancel</button>
+            <button class="btn btn-primary" id="proj-save-btn" onclick="saveNewProject()">💾 Save Project</button>
+            <button class="btn btn-ghost" id="proj-cancel-btn" onclick="document.getElementById('proj-new-form').style.display='none'">Cancel</button>
           </div>
         </div>
       </div>
@@ -2145,55 +2161,55 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div id="proj-count" style="font-size:14px;color:var(--muted);"></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="showNewProjectForm()">➕ New Project</button>
-          <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="showImportForm()">📥 Import Project</button>
+          <button class="btn btn-primary" id="proj-new-btn" onclick="showNewProjectForm()">➕ New Project</button>
+          <button class="btn btn-primary" id="proj-import-open-btn" style="background:var(--purple);color:#fff;" onclick="showImportForm()">📥 Import Project</button>
         </div>
       </div>
 
       <!-- Import project form (hidden by default) -->
       <div id="proj-import-form" style="display:none;margin-bottom:24px;">
         <div class="card" style="border-color:rgba(168,85,247,.35);">
-          <div class="card-title">📥 Import a Project You've Already Started</div>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Paste in code or error messages from a project you started somewhere else (with Grok, ChatGPT, or on your own). OrcaAppBuilder's AI will read it and help you finish or fix it.</p>
+          <div class="card-title" id="proj-import-title">📥 Import a Project You've Already Started</div>
+          <p id="proj-import-sub" style="font-size:14px;color:var(--muted);margin-bottom:16px;">Paste in code or error messages from a project you started somewhere else (with Grok, ChatGPT, or on your own). OrcaAppBuilder's AI will read it and help you finish or fix it.</p>
           <div class="field-group">
-            <label class="field-label">Project Name *</label>
+            <label class="field-label" id="proj-import-name-label">Project Name *</label>
             <input class="field-input" id="import-name-input" type="text" placeholder="e.g. My NFT Marketplace (started in Grok)" maxlength="80">
           </div>
           <div class="field-group">
-            <label class="field-label">What is this app supposed to do?</label>
+            <label class="field-label" id="proj-import-desc-label">What is this app supposed to do?</label>
             <textarea class="field-input field-textarea" id="import-desc-input" rows="2" placeholder="Brief description — what does the app do, what blockchain features does it use?"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Paste Your Code Here (optional)</label>
+            <label class="field-label" id="proj-import-code-label">Paste Your Code Here (optional)</label>
             <textarea class="field-input field-textarea" id="import-code-input" rows="8" placeholder="Paste your HTML, Python server code, smart contract, or any code files here. Don't worry about formatting — just paste everything you have." style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">Paste Any Error Messages (optional)</label>
+            <label class="field-label" id="proj-import-errors-label">Paste Any Error Messages (optional)</label>
             <textarea class="field-input field-textarea" id="import-errors-input" rows="4" placeholder="Paste error messages, console logs, or describe what's going wrong." style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
           </div>
           <div class="field-group">
-            <label class="field-label">What kind of help do you need?</label>
+            <label class="field-label" id="proj-import-help-label">What kind of help do you need?</label>
             <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="import-help-grid">
-              <div class="choice-card selected" onclick="selectImportHelp(this,'finish')"><div class="choice-icon">🏁</div><div class="choice-title">Finish It</div><div class="choice-sub">Help me complete it</div></div>
-              <div class="choice-card" onclick="selectImportHelp(this,'fix')"><div class="choice-icon">🔧</div><div class="choice-title">Fix It</div><div class="choice-sub">Something's broken</div></div>
-              <div class="choice-card" onclick="selectImportHelp(this,'review')"><div class="choice-icon">🔍</div><div class="choice-title">Review It</div><div class="choice-sub">Check for issues</div></div>
+              <div class="choice-card selected" onclick="selectImportHelp(this,'finish')"><div class="choice-icon">🏁</div><div class="choice-title" id="proj-import-finish">Finish It</div><div class="choice-sub">Help me complete it</div></div>
+              <div class="choice-card" onclick="selectImportHelp(this,'fix')"><div class="choice-icon">🔧</div><div class="choice-title" id="proj-import-fix">Fix It</div><div class="choice-sub">Something's broken</div></div>
+              <div class="choice-card" onclick="selectImportHelp(this,'review')"><div class="choice-icon">🔍</div><div class="choice-title" id="proj-import-review">Review It</div><div class="choice-sub">Check for issues</div></div>
             </div>
             <input type="hidden" id="import-help-input" value="finish">
           </div>
           <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
-            <button class="btn btn-ghost" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
+            <button class="btn btn-primary" id="proj-import-btn" style="background:var(--purple);color:#fff;" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
+            <button class="btn btn-ghost" id="proj-import-cancel" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
           </div>
-          <p style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ AI analysis requires the OrcaAppBuilder server to be running. The project will save regardless — you can run the AI review later from the project page.</p>
+          <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ AI analysis requires the OrcaAppBuilder server to be running. The project will save regardless — you can run the AI review later from the project page.</p>
         </div>
       </div>
 
       <!-- Empty state -->
       <div id="proj-empty" style="display:none;text-align:center;padding:60px 20px;">
         <div style="font-size:56px;margin-bottom:16px;">📂</div>
-        <div style="font-size:18px;font-weight:800;margin-bottom:10px;">No projects yet</div>
-        <div style="font-size:14px;color:var(--muted);margin-bottom:24px;">Start a new project to save your ideas and build plans. You can create as many as you like.</div>
-        <button class="btn btn-primary" onclick="showNewProjectForm()">➕ Start My First Project</button>
+        <div id="proj-empty-title" style="font-size:18px;font-weight:800;margin-bottom:10px;">No projects yet</div>
+        <div id="proj-empty-sub" style="font-size:14px;color:var(--muted);margin-bottom:24px;">Start a new project to save your ideas and build plans. You can create as many as you like.</div>
+        <button class="btn btn-primary" id="proj-empty-btn" onclick="showNewProjectForm()">➕ Start My First Project</button>
       </div>
 
       <!-- Project cards grid -->
@@ -2237,7 +2253,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
 <!-- ═══ AI CHAT FAB + PANEL ═══ -->
 <button class="ai-fab" id="ai-fab" onclick="toggleAiPanel()">
   <span style="font-size:22px;">🐬</span>
-  <span class="ai-fab-text">Ask OrcaAppBuilder AI</span>
+  <span class="ai-fab-text" id="ai-fab-text">Ask OrcaAppBuilder AI</span>
 </button>
 
 <div class="ai-panel" id="ai-panel">
@@ -2246,14 +2262,14 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   <div class="ai-panel-header" id="ai-panel-header">
     <span style="font-size:20px;">🐬</span>
     <div>
-      <div class="ai-panel-title">OrcaAppBuilder AI</div>
-      <div style="font-size:12px;color:var(--muted);">Powered by Lightchain AIVM</div>
+      <div class="ai-panel-title" id="ai-panel-title">OrcaAppBuilder AI</div>
+      <div id="ai-panel-powered" style="font-size:12px;color:var(--muted);">Powered by Lightchain AIVM</div>
     </div>
     <button class="ai-panel-expand" id="ai-panel-expand" onclick="toggleAiPanelExpand()" title="Expand / Collapse">⤢</button>
     <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-msg bot">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "What do I need to get listed on the hub?"</div>
+    <div class="ai-msg bot" id="ai-welcome">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "What do I need to get listed on the hub?"</div>
   </div>
   <div class="ai-input-row">
     <textarea class="ai-input" id="ai-input" placeholder="Ask anything about building on Lightchain..." rows="1" onkeydown="aiKeydown(event)"></textarea>
@@ -2264,50 +2280,98 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
 <!-- ═══ TERMS MODAL ═══ -->
 <div id="orca-terms-overlay" onclick="if(event.target===this)closeTerms()">
   <div class="terms-modal">
-    <h2>📋 Terms &amp; Disclaimer</h2>
-    <p class="terms-sub">OrcaAppBuilder — dApp Builder Companion · orcaapp.ai</p>
+    <h2 id="terms-modal-title">📋 Terms &amp; Disclaimer</h2>
+    <p class="terms-sub" id="terms-sub">OrcaAppBuilder — dApp Builder Companion · orcaapp.ai</p>
 
     <div class="terms-section">
-      <h3>1. Educational Purpose Only</h3>
-      <p>OrcaAppBuilder provides educational guidance and AI-generated suggestions for building decentralized applications. Nothing in this app constitutes professional legal, financial, or technical advice. All code examples are provided as starting points — review and test everything before deploying to production.</p>
+      <h3 id="terms-s1-title">1. Educational Purpose Only</h3>
+      <p id="terms-s1-body">OrcaAppBuilder provides educational guidance and AI-generated suggestions for building decentralized applications. Nothing in this app constitutes professional legal, financial, or technical advice. All code examples are provided as starting points — review and test everything before deploying to production.</p>
     </div>
     <div class="terms-section">
-      <h3>2. AI-Generated Content</h3>
-      <p>Responses from the AI are generated by Lightchain AIVM and may contain errors, outdated information, or suggestions that don't work in all situations. Always verify AI-generated code before using it in a real application.</p>
+      <h3 id="terms-s2-title">2. AI-Generated Content</h3>
+      <p id="terms-s2-body">Responses from the AI are generated by Lightchain AIVM and may contain errors, outdated information, or suggestions that don't work in all situations. Always verify AI-generated code before using it in a real application.</p>
     </div>
     <div class="terms-section">
-      <h3>3. No Refunds</h3>
-      <p>Any LCAI sent through this platform — including voluntary tips, AI usage fees, or any other on-chain transfers — is non-refundable. All blockchain transactions are permanent and irreversible by nature. By confirming any LCAI transfer in your wallet, you explicitly acknowledge this.</p>
+      <h3 id="terms-s3-title">3. No Refunds</h3>
+      <p id="terms-s3-body">Any LCAI sent through this platform — including voluntary tips, AI usage fees, or any other on-chain transfers — is non-refundable. All blockchain transactions are permanent and irreversible by nature. By confirming any LCAI transfer in your wallet, you explicitly acknowledge this.</p>
     </div>
     <div class="terms-section">
-      <h3>4. No Liability for Your App</h3>
-      <p>OrcaAppBuilder is not responsible for any apps you build using this guidance, including any bugs, security vulnerabilities, financial losses, or user disputes that arise from your application. You are solely responsible for your own dApp.</p>
+      <h3 id="terms-s4-title">4. No Liability for Your App</h3>
+      <p id="terms-s4-body">OrcaAppBuilder is not responsible for any apps you build using this guidance, including any bugs, security vulnerabilities, financial losses, or user disputes that arise from your application. You are solely responsible for your own dApp.</p>
     </div>
     <div class="terms-section">
-      <h3>5. Third-Party Services</h3>
-      <p>This app references third-party services (GitHub, Railway, Cloudflare, Lightchain). OrcaAppBuilder has no affiliation with and no control over these services. Their terms and pricing may change at any time.</p>
+      <h3 id="terms-s5-title">5. Third-Party Services</h3>
+      <p id="terms-s5-body">This app references third-party services (GitHub, Railway, Cloudflare, Lightchain). OrcaAppBuilder has no affiliation with and no control over these services. Their terms and pricing may change at any time.</p>
     </div>
     <div class="terms-section">
-      <h3>6. Service Availability</h3>
-      <p>OrcaAppBuilder may be unavailable at any time without notice. AI features depend on the Lightchain AIVM network, which is a third-party decentralized network outside of our control. We make no guarantees about uptime or response quality.</p>
+      <h3 id="terms-s6-title">6. Service Availability</h3>
+      <p id="terms-s6-body">OrcaAppBuilder may be unavailable at any time without notice. AI features depend on the Lightchain AIVM network, which is a third-party decentralized network outside of our control. We make no guarantees about uptime or response quality.</p>
     </div>
     <div class="terms-section">
-      <h3>7. Your Data</h3>
-      <p>Questions you ask the AI are sent to the Lightchain AIVM network for processing. We do not store your questions or personal information on our servers. This app does not use cookies or tracking.</p>
+      <h3 id="terms-s7-title">7. Your Data</h3>
+      <p id="terms-s7-body">Questions you ask the AI are sent to the Lightchain AIVM network for processing. We do not store your questions or personal information on our servers. This app does not use cookies or tracking.</p>
     </div>
     <div class="terms-section">
-      <h3>8. Pricing May Change</h3>
-      <p>OrcaAppBuilder reserves the right to introduce, change, or remove any fees, suggested tip amounts, or pricing structures at any time without prior notice. Continued use of the platform after any pricing change constitutes acceptance of the updated terms.</p>
+      <h3 id="terms-s8-title">8. Pricing May Change</h3>
+      <p id="terms-s8-body">OrcaAppBuilder reserves the right to introduce, change, or remove any fees, suggested tip amounts, or pricing structures at any time without prior notice. Continued use of the platform after any pricing change constitutes acceptance of the updated terms.</p>
     </div>
-    <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px;">You must acknowledge these terms before using OrcaAppBuilder.</p>
-    <button class="terms-close" onclick="closeTerms()" style="background:var(--cyan);color:#000;border-color:var(--cyan);font-size:15px;padding:14px;margin-top:8px;">✅ I Understand &amp; Agree — Enter OrcaAppBuilder</button>
+    <p id="terms-ack" style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px;">You must acknowledge these terms before using OrcaAppBuilder.</p>
+    <button class="terms-close" id="terms-close-btn" onclick="closeTerms()" style="background:var(--cyan);color:#000;border-color:var(--cyan);font-size:15px;padding:14px;margin-top:8px;">✅ I Understand &amp; Agree — Enter OrcaAppBuilder</button>
   </div>
 </div>
+
+<script src="i18n-ui.js?v=20260704"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
 // ── CONFIG ──
 const API_BASE = 'https://web-production-aaaba.up.railway.app';
+
+// ── LANGUAGE (Binai / OrcaGuard pattern) ──
+const LANGS = [
+  {id:'en',label:'🇺🇸 English'},{id:'es',label:'🇪🇸 Spanish'},{id:'fr',label:'🇫🇷 French'},
+  {id:'pt',label:'🇧🇷 Portuguese'},{id:'de',label:'🇩🇪 German'},{id:'ja',label:'🇯🇵 Japanese'},
+  {id:'zh',label:'🇨🇳 Chinese'},{id:'id',label:'🇮🇩 Indonesian'}
+];
+function syncLangButtons(langId) {
+  document.querySelectorAll('.lang-btn').forEach(x => x.classList.toggle('active', x.dataset.id === langId));
+}
+function buildLanguageGrid(gridId, onSelect) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const savedLang = localStorage.getItem('orcaapp_lang') || 'en';
+  LANGS.forEach(l => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'lang-btn' + (l.id === savedLang ? ' active' : '');
+    b.dataset.id = l.id;
+    b.textContent = l.label;
+    b.onclick = () => {
+      localStorage.setItem('orcaapp_lang', l.id);
+      syncLangButtons(l.id);
+      if (onSelect) onSelect(l.id);
+    };
+    grid.appendChild(b);
+  });
+}
+function initLanguagePickers() {
+  buildLanguageGrid('langGrid', () => applyI18n());
+}
+window.resetDynamicUI = function() {
+  const active = document.querySelector('.section.active');
+  if (!active) return;
+  const id = active.id || '';
+  if (id === 'section-projects') renderProjects();
+  if (id === 'section-links') renderLinks();
+  if (typeof checkHealth === 'function') checkHealth();
+  const btn = document.getElementById('wallet-btn');
+  if (btn && btn.classList.contains('connected') && walletAddress) {
+    btn.textContent = t('wallet_connected') + ' ' + walletAddress.slice(0,6) + '…' + walletAddress.slice(-4);
+  } else if (btn && !btn.classList.contains('connected')) {
+    btn.textContent = t('wallet_connect');
+  }
+};
 
 // Session ID — generated once per page load so the AI remembers this conversation
 const SESSION_ID = (typeof crypto !== 'undefined' && crypto.randomUUID)
@@ -2331,8 +2395,10 @@ function showSection(name) {
 
 // ── OS PICKER ──
 let learnOs = '';
+window.learnOs = '';
 function setLearnOs(os) {
   learnOs = os;
+  window.learnOs = os;
   const sec = document.getElementById('section-learn');
   sec.classList.remove('os-win','os-mac','os-linux');
   sec.classList.add('os-' + os);
@@ -2369,9 +2435,9 @@ function showLearnStep(n) {
 function copyCode(btn) {
   const pre = btn.closest('.code-block').querySelector('pre');
   navigator.clipboard.writeText(pre.textContent).then(() => {
-    btn.textContent = '✓ Copied!';
+    btn.textContent = t('btn_copied');
     btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    setTimeout(() => { btn.textContent = t('btn_copy'); btn.classList.remove('copied'); }, 2000);
   });
 }
 
@@ -2418,14 +2484,14 @@ function updateBwizProgress() {
 function bwizNext(from) {
   if (from === 1) {
     const cat = document.getElementById('bwiz-category').value;
-    if (!cat) { alert('Please pick a category first.'); return; }
+    if (!cat) { alert(t('msg_pick_category')); return; }
     document.getElementById('bwiz-1').classList.remove('active');
     document.getElementById('bwiz-2').classList.add('active');
     bwizCurrentStep = 2;
     updateBwizProgress();
   } else if (from === 2) {
     const audience = document.getElementById('bwiz-audience').value.trim();
-    if (!audience) { alert('Please describe who would use your app. Even a rough answer helps!'); return; }
+    if (!audience) { alert(t('msg_describe_audience')); return; }
     document.getElementById('bwiz-2').classList.remove('active');
     document.getElementById('bwiz-3').classList.add('active');
     bwizCurrentStep = 3;
@@ -2566,7 +2632,7 @@ function updateBldProgress() {
 function bldNext(from) {
   if (from === 1) {
     const mode = document.getElementById('bld-mode').value;
-    if (!mode) { alert('Please pick your situation first.'); return; }
+    if (!mode) { alert(t('msg_pick_situation')); return; }
     document.getElementById('bld-1').classList.remove('active');
     document.getElementById('bld-2').classList.add('active');
     bldCurrentStep = 2;
@@ -2592,7 +2658,7 @@ function bldGenerate() {
   const resultEl = document.getElementById('bld-result');
   const actionsEl = document.getElementById('bld-actions');
 
-  if (!description) { alert('Please describe your app first.'); return; }
+  if (!description) { alert(t('msg_describe_app')); return; }
 
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
@@ -2896,7 +2962,7 @@ async function runLaunchCheck() {
   const rerunBtn  = document.getElementById('lc-rerun-btn');
 
   if (!url && !code) {
-    alert('Paste any live app URL — that\'s all we need to scan it.');
+    alert(t('msg_paste_url'));
     return;
   }
 
@@ -2951,7 +3017,7 @@ function troubleshoot() {
   const input   = document.getElementById('trouble-input').value.trim();
   const resultEl = document.getElementById('trouble-result');
 
-  if (!input) { alert('Please describe your problem first.'); return; }
+  if (!input) { alert(t('msg_describe_problem')); return; }
 
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem... this may take 1-2 minutes.</div>';
 
@@ -3138,7 +3204,7 @@ async function callAI(message, mode = 'chat') {
   const res = await fetch(API_BASE + '/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, mode, session_id: SESSION_ID }),
+    body: JSON.stringify({ message, mode, session_id: SESSION_ID, lang: currentLang() }),
     signal: AbortSignal.timeout(15000)
   });
   if (!res.ok) throw new Error('Server error ' + res.status);
@@ -3192,13 +3258,13 @@ function checkHealth() {
       const label = document.getElementById('health-label');
       if (d.status === 'ok') {
         dot.className = 'health-dot online';
-        label.textContent = 'AI Online';
+        label.textContent = t('health_online');
         label.style.color = 'var(--green)';
       }
     })
     .catch(() => {
       const label = document.getElementById('health-label');
-      label.textContent = 'AI Offline';
+      label.textContent = t('health_offline');
     });
 }
 
@@ -3206,6 +3272,8 @@ function checkHealth() {
 checkHealth();
 setInterval(checkHealth, 30000);
 checkTermsOnLoad();
+applyI18n();
+initLanguagePickers();
 
 // ── PROJECTS ──
 const PROJ_STORAGE_KEY = 'orcaappbuilder_projects';
@@ -3241,7 +3309,8 @@ function renderProjects() {
     return;
   }
   empty.style.display = 'none';
-  count.textContent = list.length + ' project' + (list.length !== 1 ? 's' : '') + ' saved in your browser';
+  const s = list.length !== 1 ? 's' : '';
+  count.textContent = t('proj_count', { n: list.length, s: s });
 
   grid.innerHTML = list.map(p => `
     <div class="proj-card" id="pcard-${p.id}">
@@ -3249,12 +3318,12 @@ function renderProjects() {
       <div class="proj-card-name">${escHtml(p.name)}</div>
       ${p.desc ? `<div class="proj-card-desc">${escHtml(p.desc.slice(0,120))}${p.desc.length>120?'…':''}</div>` : ''}
       <div class="proj-card-meta">
-        <span>Created ${fmtDate(p.createdAt)}</span>
-        <span>Updated ${fmtDate(p.updatedAt)}</span>
+        <span>${t('dyn_proj_created')} ${fmtDate(p.createdAt)}</span>
+        <span>${t('dyn_proj_updated')} ${fmtDate(p.updatedAt)}</span>
       </div>
       <div class="proj-card-actions">
-        <button class="proj-btn proj-btn-open" onclick="openProject('${p.id}')">📂 Open</button>
-        <button class="proj-btn proj-btn-del" onclick="deleteProject(event,'${p.id}')">🗑 Delete</button>
+        <button class="proj-btn proj-btn-open" onclick="openProject('${p.id}')">${t('dyn_proj_open')}</button>
+        <button class="proj-btn proj-btn-del" onclick="deleteProject(event,'${p.id}')">${t('dyn_proj_delete')}</button>
       </div>
     </div>
   `).join('');
@@ -3311,7 +3380,7 @@ function openProject(id) {
   detail.style.display = 'block';
   detail.innerHTML = `
     <div class="proj-detail-header">
-      <button class="proj-back-btn" onclick="renderProjects()">← Back to Projects</button>
+      <button class="proj-back-btn" onclick="renderProjects()">${t('dyn_proj_back')}</button>
       <div style="flex:1;">
         <div class="proj-status-badge">${p.status}</div>
         <div style="font-size:22px;font-weight:900;">${escHtml(p.name)}</div>
@@ -3384,7 +3453,7 @@ function updateProjStatus(id, el, status) {
 }
 
 function clearProjField(id, field, btn) {
-  if (!confirm('Clear this saved AI result?')) return;
+  if (!confirm(t('dyn_confirm_clear'))) return;
   const list = getProjects();
   const p = list.find(x => x.id === id);
   if (!p) return;
@@ -3396,7 +3465,7 @@ function clearProjField(id, field, btn) {
 
 function deleteProject(evt, id) {
   evt.stopPropagation();
-  if (!confirm('Delete this project? This cannot be undone.')) return;
+  if (!confirm(t('dyn_confirm_delete_proj'))) return;
   const list = getProjects().filter(x => x.id !== id);
   saveProjects(list);
   renderProjects();
@@ -3406,19 +3475,19 @@ function deleteProject(evt, id) {
 function saveToProject(field, content) {
   const list = getProjects();
   if (list.length === 0) {
-    if (!confirm('You have no projects yet. Create one first?')) return;
+    if (!confirm(t('dyn_confirm_no_projects'))) return;
     showSection('projects');
     showNewProjectForm();
     return;
   }
   const names = list.map((p,i) => `${i+1}. ${p.name}`).join('\n');
-  const choice = prompt('Save to which project?\n\n' + names + '\n\nEnter the number:');
+  const choice = prompt(t('dyn_save_which') + '\n\n' + names + '\n\n' + t('dyn_enter_number'));
   const idx = parseInt(choice) - 1;
   if (isNaN(idx) || idx < 0 || idx >= list.length) return;
   list[idx][field] = content;
   list[idx].updatedAt = Date.now();
   saveProjects(list);
-  alert('✅ Saved to "' + list[idx].name + '"');
+  alert(t('msg_saved_project', { name: list[idx].name }));
 }
 
 // ── IMPORT PROJECT ──
@@ -3517,7 +3586,7 @@ function openProject(id) {
   detail.style.display = 'block';
   detail.innerHTML = `
     <div class="proj-detail-header">
-      <button class="proj-back-btn" onclick="renderProjects()">← Back to Projects</button>
+      <button class="proj-back-btn" onclick="renderProjects()">${t('dyn_proj_back')}</button>
       <div style="flex:1;">
         <div class="proj-status-badge">${p.status}</div>
         <div style="font-size:22px;font-weight:900;">${escHtml(p.name)}</div>
@@ -3601,7 +3670,7 @@ function renderAccountsGrid() {
       </div>
       <div class="account-input-row">
         <input class="account-url-input" id="acct-url-${a.id}" type="url" value="${escHtml(a.url)}" placeholder="${escHtml(a.placeholder || 'https://')}">
-        <button class="account-save-btn" onclick="saveAccountUrl('${a.id}')">Save</button>
+        <button class="account-save-btn" onclick="saveAccountUrl('${a.id}')">${t('links_save_account_btn')}</button>
         ${a.url ? `<a class="account-open-btn" href="${escHtml(a.url)}" target="_blank" rel="noopener">↗</a>` : ''}
       </div>
     </div>
@@ -3658,7 +3727,7 @@ function renderMyLinksGrid() {
       <div class="mylink-name">${escHtml(l.name)}</div>
       <a class="mylink-url" href="${escHtml(l.url)}" target="_blank" rel="noopener">${escHtml(l.url)}</a>
       <div style="display:flex;gap:8px;">
-        <a class="proj-btn proj-btn-open" style="text-decoration:none;font-size:12px;padding:6px 12px;" href="${escHtml(l.url)}" target="_blank" rel="noopener">↗ Open</a>
+        <a class="proj-btn proj-btn-open" style="text-decoration:none;font-size:12px;padding:6px 12px;" href="${escHtml(l.url)}" target="_blank" rel="noopener">${t('dyn_mylink_open')}</a>
         <button class="proj-btn proj-btn-del" onclick="deleteMyLink(${i})">🗑</button>
       </div>
     </div>
@@ -3675,7 +3744,7 @@ function addMyLink() {
   const name = document.getElementById('new-mylink-name').value.trim();
   const url  = document.getElementById('new-mylink-url').value.trim();
   const type = document.getElementById('new-mylink-type').value;
-  if (!name || !url) { alert('Please enter both a name and a URL.'); return; }
+  if (!name || !url) { alert(t('dyn_mylink_need_both')); return; }
   const links = getMyLinks();
   links.push({name, url, type});
   saveMyLinks(links);
@@ -3685,7 +3754,7 @@ function addMyLink() {
 }
 
 function deleteMyLink(idx) {
-  if (!confirm('Remove this link?')) return;
+  if (!confirm(t('dyn_confirm_remove_link'))) return;
   const links = getMyLinks();
   links.splice(idx, 1);
   saveMyLinks(links);
@@ -3745,7 +3814,7 @@ async function connectWallet() {
 async function doConnect() {
   const btn = document.getElementById('wallet-btn');
   try {
-    btn.textContent = 'Connecting…';
+    btn.textContent = t('btn_connecting');
     btn.disabled = true;
     walletProvider = new ethers.BrowserProvider(window.ethereum);
     await walletProvider.send('eth_requestAccounts', []);
@@ -3755,9 +3824,9 @@ async function doConnect() {
     updateWalletUI(walletAddress);
   } catch(e) {
     console.error('Wallet connect error:', e);
-    btn.textContent = '🔗 Connect Wallet';
+    btn.textContent = t('wallet_connect');
     btn.disabled = false;
-    if (e.code !== 4001) alert('Could not connect wallet: ' + (e.message || e));
+    if (e.code !== 4001) alert(t('dyn_wallet_connect_err', { err: e.message || e }));
   }
 }
 
@@ -3776,7 +3845,7 @@ async function switchToLightchain() {
 function updateWalletUI(address) {
   const btn = document.getElementById('wallet-btn');
   const short = address.slice(0,6) + '…' + address.slice(-4);
-  btn.textContent = '✅ ' + short;
+  btn.textContent = t('wallet_connected') + ' ' + short;
   btn.classList.add('connected');
   btn.disabled = false;
   btn.onclick = null;
