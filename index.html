@@ -515,6 +515,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lang-btn.active { border-color: var(--cyan); background: rgba(0,212,255,.12); color: var(--cyan); }
 
 </style>
+<script src="orca-integrations.js"></script>
+<script src="orca-sentry.js" defer></script>
+<script src="orca-sw-register.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script type="module">
   try {
@@ -3788,7 +3791,7 @@ async function connectViaWalletConnect() {
   if (!window.WCEthereumProvider) { alert('WalletConnect not loaded yet. Try again.'); return; }
   try {
     _wcProv = await window.WCEthereumProvider.init({
-      projectId: '3c6a0da53258912a28923198ddac3333',
+      projectId: (window.ORCA_INTEGRATIONS && window.ORCA_INTEGRATIONS.walletConnectProjectId) || '3c6a0da53258912a28923198ddac3333',
       chains: [9200], optionalChains: [1], showQrModal: true,
       metadata: { name: 'OrcaApp Builder', description: 'Lightchain dApp Builder', url: 'https://orcaappbuilder.win', icons: ['https://orcaappbuilder.win/orca-icon.png'] },
       rpcMap: { 9200: 'https://rpc.mainnet.lightchain.ai' }
