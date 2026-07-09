@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OrcaAppBuilder — Build on Lightchain AI</title>
+<title>OrcaAppBuilder — Build Apps Without Coding</title>
 <style>
 :root {
   --bg:     #080c18;
@@ -617,7 +617,7 @@ body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!
     <span class="logo-icon">🐬</span>
     <span class="logo-text">OrcaApp<span>Builder</span></span>
   </a>
-  <span class="header-tag" id="header-tag">BUILD ON LIGHTCHAIN</span>
+  <span class="header-tag" id="header-tag">NO CODING NEEDED</span>
   <div class="header-right">
     <span class="health-dot" id="health-dot"></span>
     <span class="health-label" id="health-label">AI</span>
@@ -630,7 +630,7 @@ body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!
 
   <!-- SIDEBAR -->
   <nav class="sidebar">
-    <div class="sidebar-tagline" id="sidebar-tagline">Build Lightchain dApps — no coding needed.</div>
+    <div class="sidebar-tagline" id="sidebar-tagline">Describe your app — get a plan — build it here.</div>
 
     <div class="nav-section" id="nav-section-start">Start Here</div>
     <div class="nav-item active" onclick="showSection('home')" id="nav-home">
@@ -689,8 +689,8 @@ body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!
       <div class="home-dashboard">
       <div class="hero">
         <div class="hero-orca">🐬</div>
-        <h1 class="hero-title" id="hero-title">Build Your First dApp on Lightchain AI</h1>
-        <p class="hero-sub" id="hero-sub">No coding experience needed — brainstorm, build, and launch check. Share with friends or list on the hub when you're ready.</p>
+        <h1 class="hero-title" id="hero-title">Build Your App — No Coding Needed</h1>
+        <p class="hero-sub" id="hero-sub">Describe what you need, get a step-by-step plan, and walk through it right here. No extra websites to visit first.</p>
 
         <div class="free-banner">
           <div class="free-banner-headline" id="free-banner-headline">💚 Free to build &amp; launch — you keep 100% of what you charge</div>
@@ -1776,7 +1776,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <div class="page-header compact-head">
         <div class="page-badge purple" id="brainstorm-badge">💡 AI BRAINSTORM WIZARD</div>
         <h1 class="page-title" id="brainstorm-title">Find Your App Idea</h1>
-        <p class="page-sub" id="brainstorm-sub">Not sure what to build? Answer a few questions and our AI will suggest real, buildable app ideas specifically for Lightchain. No experience needed.</p>
+        <p class="page-sub" id="brainstorm-sub">Not sure what to build? Answer a few questions and our AI will suggest 3 real, buildable app ideas. No experience needed.</p>
       </div>
 
       <div class="wizard-body">
@@ -2014,7 +2014,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <section id="section-launchcheck" class="section">
       <div class="page-header lc-compact-head">
         <div class="page-badge" id="launch-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
-        <h1 class="page-title" id="launch-title">Is this Lightchain app ready to go live?</h1>
+        <h1 class="page-title" id="launch-title">Is this app ready to go live?</h1>
         <p class="page-sub" id="launch-sub">Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.</p>
       </div>
 
@@ -2220,7 +2220,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
 
       <!-- TOOLS & RESOURCES -->
       <div class="links-section-title" id="links-tools-title">🛠️ Tools &amp; Resources</div>
-      <p id="links-tools-sub" style="font-size:13px;color:var(--muted);margin-bottom:16px;">Essential tools for building on Lightchain — click any card to open it.</p>
+      <p id="links-tools-sub" style="font-size:13px;color:var(--muted);margin-bottom:16px;">Essential tools for builders — blockchain links below are optional advanced.</p>
       <div class="resource-grid">
         <a href="https://github.com" target="_blank" class="resource-card"><div class="resource-icon">🐙</div><div><div class="resource-name" id="res-github-name">GitHub</div><div class="resource-desc" id="res-github-desc">Host your code and app for free</div></div></a>
         <a href="https://desktop.github.com" target="_blank" class="resource-card"><div class="resource-icon">💻</div><div><div class="resource-name" id="res-ghdesktop-name">GitHub Desktop</div><div class="resource-desc" id="res-ghdesktop-desc">Push code without using a terminal</div></div></a>
@@ -2412,10 +2412,10 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
     <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-msg bot" id="ai-welcome">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "How do I share my app with friends?"</div>
+    <div class="ai-msg bot" id="ai-welcome">👋 Hey! I'm the OrcaAppBuilder AI — describe what you need and I'll help you plan it. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "I need to track production with Excel and barcodes"<br>• "How do I share my app with friends?"</div>
   </div>
   <div class="ai-input-row">
-    <textarea class="ai-input" id="ai-input" placeholder="Ask anything about building on Lightchain..." rows="1" onkeydown="aiKeydown(event)"></textarea>
+    <textarea class="ai-input" id="ai-input" placeholder="Describe your app idea or ask for help..." rows="1" onkeydown="aiKeydown(event)"></textarea>
     <button class="ai-send" id="ai-send" onclick="sendAiMessage()">Send</button>
   </div>
 </div>
@@ -2744,26 +2744,30 @@ function runBrainstorm() {
   actionsEl.style.display = 'none';
 
   const prompt = seed
-    ? `I want to build a Lightchain dApp based on this idea: ${seed}.
+    ? `I want to build an app based on this idea: ${seed}.
 ${audience ? 'Target users: ' + audience : ''}
 
-Please suggest 3 specific, realistic ways I could build this on Lightchain. For each variation:
+Please suggest 3 specific, realistic ways I could build this. For each variation:
 1. Give it a catchy name
 2. One sentence: what it does
 3. One sentence: who it helps
-4. What Lightchain feature it uses (AIVM, smart contract, LCAI payments, etc.)
+4. What tools or approach it uses (Excel, a simple website, phone forms, etc. — blockchain only if it truly fits)
 5. Difficulty: Easy / Medium / Hard
+
+Do NOT tell me to visit lightchain.io, Lightnode, lightchain.ai, or any blockchain signup site. Keep ideas practical for someone who has never coded.
 
 After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`
-    : `I am interested in building a Lightchain dApp in the category: ${category}.
+    : `I am interested in building an app in the category: ${category}.
 ${audience ? 'The people who would use my app: ' + audience : ''}
 
-Please suggest 3 specific, realistic app ideas I could build on Lightchain. For each idea:
+Please suggest 3 specific, realistic app ideas I could actually build. For each idea:
 1. Give it a catchy name
 2. One sentence: what it does
 3. One sentence: who it helps
-4. What Lightchain feature it uses (AIVM, smart contract, LCAI payments, etc.)
+4. What tools or approach it uses (Excel, Google Sheets, a simple website, etc. — blockchain only if it truly fits)
 5. Difficulty: Easy / Medium / Hard
+
+Do NOT tell me to visit lightchain.io, Lightnode, lightchain.ai, or any blockchain signup site. Keep ideas practical for someone who has never coded.
 
 After the 3 ideas, recommend which one you think is the best fit for a first-time builder and explain why in 2 sentences.`;
 
@@ -2823,7 +2827,7 @@ function getBuildAudiencePrompt(audience) {
     return `MY GOAL: This app is just for my own use or learning. Keep the plan as simple as possible — fewest tools, fewest steps. Skip hub listing, marketing, and public-launch steps unless absolutely necessary.`;
   }
   if (a === 'hub') {
-    return `MY GOAL: I eventually want this app listed on the Lightchain dApp Hub for the public. Include polish and a Launch Check step near the end, but still keep everything beginner-friendly — no code in the plan.`;
+    return `MY GOAL: I eventually want this app public for anyone to use (optional dApp Hub listing later). Include polish and a Launch Check step near the end, but still keep everything beginner-friendly — no code in the plan. Do NOT send me to lightchain.ai or Lightnode as a step.`;
   }
   return `MY GOAL: I want to share this with friends or a small group — not necessarily the public hub. Focus on getting a working link they can open from their phone. Mention hub listing only as an optional later step, if at all.`;
 }
@@ -3470,7 +3474,7 @@ function troubleshoot() {
 
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem... this may take 1-2 minutes.</div>';
 
-  const prompt = `A Lightchain dApp builder has the following problem:
+  const prompt = `An app builder (may or may not use blockchain) has the following problem:
 
 "${input}"
 
@@ -3987,7 +3991,7 @@ function runAiReview(id) {
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Analyzing your project… this may take 1-2 minutes.</div>';
 
   const helpLabel = {finish:'finish building', fix:'find and fix the bugs in', review:'review and audit'}[p.helpType] || 'help with';
-  let prompt = `Please ${helpLabel} the following Lightchain dApp project.\n\n`;
+  let prompt = `Please ${helpLabel} the following app project.\n\n`;
   if (p.desc)            prompt += `What it's supposed to do: ${p.desc}\n\n`;
   if (p.importedCode)    prompt += `CODE:\n${p.importedCode.slice(0, 6000)}\n\n`;
   if (p.importedErrors)  prompt += `ERRORS / PROBLEMS:\n${p.importedErrors}\n\n`;
@@ -4241,7 +4245,7 @@ async function connectViaWalletConnect() {
     _wcProv = await window.WCEthereumProvider.init({
       projectId: (window.ORCA_INTEGRATIONS && window.ORCA_INTEGRATIONS.walletConnectProjectId) || '3c6a0da53258912a28923198ddac3333',
       chains: [9200], optionalChains: [1], showQrModal: true,
-      metadata: { name: 'OrcaApp Builder', description: 'Lightchain dApp Builder', url: 'https://orcaappbuilder.win', icons: ['https://orcaappbuilder.win/orca-icon.png'] },
+      metadata: { name: 'OrcaApp Builder', description: 'App Builder — no coding needed', url: 'https://orcaappbuilder.win', icons: ['https://orcaappbuilder.win/orca-icon.png'] },
       rpcMap: { 9200: 'https://rpc.mainnet.lightchain.ai' }
     });
     await _wcProv.enable();
