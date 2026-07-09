@@ -207,6 +207,9 @@ window.ORCAAPP_I18N = {
     bld_launch_btn: "🚀 Launch Check (when live)",
     bld_ask_btn: "💬 Ask AI Anything",
     bld_save_btn: "📂 Save to Project",
+    bld_sticky_hint: "Your plan is ready — scroll to read it all, or tap below to start step 1.",
+    bld_sticky_walk: "🚶 Walk Me Through Step 1",
+    bld_sticky_ask: "💬 Ask AI",
     launch_badge: "🚀 LAUNCH CHECK",
     launch_title: "Is this Lightchain app ready to go live?",
     launch_sub: "Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.",
@@ -2979,6 +2982,9 @@ window.applyI18n = function() {
   set('bld-launch-btn', 'bld_launch_btn');
   set('bld-ask-btn', 'bld_ask_btn');
   set('bld-save-btn', 'bld_save_btn');
+  set('bld-sticky-hint', 'bld_sticky_hint');
+  set('bld-sticky-walk', 'bld_sticky_walk');
+  set('bld-sticky-ask', 'bld_sticky_ask');
   set('bld-start-title', 'bld_start_title');
   set('bld-start-s1', 'bld_start_s1');
   set('bld-start-s2', 'bld_start_s2');
