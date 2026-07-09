@@ -3008,11 +3008,13 @@ function sendCoachMessage(msg, mode) {
   addAiMessage('user', msg);
   aiWaiting = true;
   document.getElementById('ai-send').disabled = true;
-  const thinking = addAiMessage('bot', '⏳ Thinking...');
+  const thinking = addAiMessage('bot', t('ai_thinking'));
   callAI(msg, mode || 'build').then(reply => {
     thinking.textContent = reply;
-  }).catch(() => {
-    thinking.textContent = '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+  }).catch((err) => {
+    thinking.textContent = (err && err.message)
+      ? '⚠️ ' + err.message
+      : '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
   }).finally(() => {
     aiWaiting = false;
     document.getElementById('ai-send').disabled = false;
@@ -3534,12 +3536,14 @@ function sendAiMessage() {
   aiWaiting = true;
   document.getElementById('ai-send').disabled = true;
 
-  const thinking = addAiMessage('bot', '⏳ Thinking...');
+  const thinking = addAiMessage('bot', t('ai_thinking'));
 
   callAI(msg, 'chat').then(reply => {
     thinking.textContent = reply;
-  }).catch(() => {
-    thinking.textContent = '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+  }).catch((err) => {
+    thinking.textContent = (err && err.message)
+      ? '⚠️ ' + err.message
+      : '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
   }).finally(() => {
     aiWaiting = false;
     document.getElementById('ai-send').disabled = false;
