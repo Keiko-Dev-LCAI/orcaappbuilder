@@ -2259,6 +2259,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
       <div id="proj-new-form" style="display:none;margin-bottom:24px;">
         <div class="card" style="border-color:rgba(0,212,255,.3);">
           <div class="card-title" id="proj-new-title">➕ New Project</div>
+          <p id="proj-new-save-hint" style="display:none;font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:14px;"></p>
           <div class="field-group">
             <label class="field-label" id="proj-name-label">Project Name *</label>
             <input class="field-input" id="proj-name-input" type="text" placeholder="e.g. OrcaVote — community polling app" maxlength="80">
@@ -2287,7 +2288,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
           </div>
           <div style="display:flex;gap:10px;margin-top:6px;">
             <button class="btn btn-primary" id="proj-save-btn" onclick="saveNewProject()">💾 Save Project</button>
-            <button class="btn btn-ghost" id="proj-cancel-btn" onclick="document.getElementById('proj-new-form').style.display='none'">Cancel</button>
+            <button class="btn btn-ghost" id="proj-cancel-btn" onclick="cancelNewProjectForm()">Cancel</button>
           </div>
         </div>
       </div>
@@ -3736,6 +3737,37 @@ restoreBuildSessionOnLoad();
 
 // ── PROJECTS ──
 const PROJ_STORAGE_KEY = 'orcaappbuilder_projects';
+let _pendingProjectSave = null;
+
+function getBuildDescriptionText() {
+  const fromDom = document.getElementById('bld-description')?.value?.trim();
+  if (fromDom) return fromDom;
+  const draft = getBuildDraft();
+  return (draft && draft.description && draft.description.trim()) || '';
+}
+
+function suggestProjectName(desc) {
+  if (!desc) return '';
+  const line = desc.split('\n')[0].trim();
+  if (line.length <= 50) return line;
+  return line.slice(0, 47) + '…';
+}
+
+function setProjStatusValue(value) {
+  document.getElementById('proj-status-input').value = value;
+  const cards = document.querySelectorAll('#proj-status-grid .choice-card');
+  const idx = { '💡 Brainstorming': 0, '🔨 Building': 1, '🚀 Launched': 2 }[value] ?? 0;
+  cards.forEach((c, i) => c.classList.toggle('selected', i === idx));
+}
+
+function cancelNewProjectForm() {
+  _pendingProjectSave = null;
+  const hint = document.getElementById('proj-new-save-hint');
+  if (hint) hint.style.display = 'none';
+  document.getElementById('proj-new-form').style.display = 'none';
+  const title = document.getElementById('proj-new-title');
+  if (title) title.textContent = t('proj_new_title');
+}
 
 function getProjects() {
   try { return JSON.parse(localStorage.getItem(PROJ_STORAGE_KEY) || '[]'); }
@@ -3792,14 +3824,32 @@ function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function showNewProjectForm() {
+function showNewProjectForm(opts) {
+  opts = opts || {};
+  if (!opts.keepPending) _pendingProjectSave = null;
+
   document.getElementById('proj-new-form').style.display = 'block';
-  document.getElementById('proj-name-input').value = '';
-  document.getElementById('proj-desc-input').value = '';
-  document.getElementById('proj-status-input').value = '💡 Brainstorming';
-  document.querySelectorAll('#proj-status-grid .choice-card').forEach((c,i) => {
-    c.classList.toggle('selected', i === 0);
-  });
+  const hint = document.getElementById('proj-new-save-hint');
+  const title = document.getElementById('proj-new-title');
+
+  if (_pendingProjectSave) {
+    if (title) title.textContent = t('proj_new_title_save');
+    if (hint) {
+      hint.style.display = '';
+      hint.textContent = t('proj_save_hint');
+    }
+    const desc = getBuildDescriptionText();
+    document.getElementById('proj-desc-input').value = desc;
+    document.getElementById('proj-name-input').value = suggestProjectName(desc);
+    setProjStatusValue(_pendingProjectSave.field === 'buildPlan' ? '🔨 Building' : '💡 Brainstorming');
+  } else {
+    if (title) title.textContent = t('proj_new_title');
+    if (hint) hint.style.display = 'none';
+    document.getElementById('proj-name-input').value = '';
+    document.getElementById('proj-desc-input').value = '';
+    setProjStatusValue('💡 Brainstorming');
+  }
+
   document.getElementById('proj-name-input').focus();
   document.getElementById('proj-new-form').scrollIntoView({behavior:'smooth'});
 }
@@ -3817,12 +3867,29 @@ function saveNewProject() {
   const status = document.getElementById('proj-status-input').value;
   const now = Date.now();
   const proj = { id: genProjId(), name, desc, status, notes: '', brainstormResult: '', buildPlan: '', createdAt: now, updatedAt: now };
+  const pending = _pendingProjectSave;
+  if (pending && pending.content) {
+    proj[pending.field] = pending.content;
+    if (pending.field === 'buildPlan' && status === '💡 Brainstorming') {
+      proj.status = '🔨 Building';
+    }
+  }
   const list = getProjects();
   list.unshift(proj);
   saveProjects(list);
+  _pendingProjectSave = null;
+  const hint = document.getElementById('proj-new-save-hint');
+  if (hint) hint.style.display = 'none';
   document.getElementById('proj-new-form').style.display = 'none';
   renderProjects();
-  openProject(proj.id);
+  if (pending && pending.content) {
+    alert(pending.field === 'buildPlan'
+      ? t('msg_saved_project_plan', { name: proj.name })
+      : t('msg_saved_project_brainstorm', { name: proj.name }));
+    openProject(proj.id);
+  } else {
+    openProject(proj.id);
+  }
 }
 
 function openProject(id) {
@@ -3934,9 +4001,9 @@ function deleteProject(evt, id) {
 function saveToProject(field, content) {
   const list = getProjects();
   if (list.length === 0) {
-    if (!confirm(t('dyn_confirm_no_projects'))) return;
+    _pendingProjectSave = { field, content };
     showSection('projects');
-    showNewProjectForm();
+    showNewProjectForm({ keepPending: true });
     return;
   }
   const names = list.map((p,i) => `${i+1}. ${p.name}`).join('\n');
