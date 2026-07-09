@@ -23,7 +23,8 @@
   --code-bg:#0a0f1e;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+html,body{height:100dvh;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:unset;}
 
 /* ── HEADER ── */
 .header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:12px;height:68px;position:fixed;top:0;left:0;right:0;z-index:100;}
@@ -55,7 +56,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #tip-status{font-size:12px;color:var(--muted);margin-top:12px;min-height:18px;}
 
 /* ── LAYOUT ── */
-.layout{display:flex;padding-top:68px;min-height:100vh;}
+.layout{display:flex;padding-top:68px;height:100dvh;box-sizing:border-box;overflow:hidden;}
 
 /* ── SIDEBAR ── */
 .sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:68px;bottom:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
@@ -77,15 +78,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar-terms:hover{color:var(--cyan);}
 
 /* ── MAIN ── */
-.main{margin-left:260px;flex:1;padding:32px 40px 80px;min-width:0;}
+.main{margin-left:260px;flex:1;padding:32px 40px 80px;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
 
 /* ── SECTIONS ── */
-.section{display:none;}
-.section.active{display:block;animation:fadeIn .3s ease;}
+.section{display:none;flex:1;min-height:0;}
+.section.active{display:flex;flex-direction:column;overflow:hidden;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* ── HOME ── */
-#section-home.section.active{display:flex;flex-direction:column;}
+#section-home.section.active{height:100%;}
 .home-dashboard{display:flex;flex-direction:column;gap:10px;}
 .hero{text-align:center;padding:8px 0 4px;flex-shrink:0;}
 .hero-orca{font-size:40px;margin-bottom:4px;line-height:1;}
@@ -133,10 +134,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .launch-verdict-banner.ready{background:rgba(0,230,118,.1);border-color:rgba(0,230,118,.4);}
 .launch-verdict-title{font-size:20px;font-weight:900;margin-bottom:8px;}
 .launch-verdict-body{font-size:14px;color:var(--text);line-height:1.5;}
-#section-launchcheck.section.active{display:flex;flex-direction:column;overflow:hidden;}
-.lc-compact-head{margin-bottom:8px;flex-shrink:0;}
-.lc-compact-head .page-title{font-size:22px;margin-bottom:4px;}
-.lc-compact-head .page-sub{font-size:13px;margin-bottom:0;line-height:1.4;}
+#section-launchcheck.section.active{height:100%;}
+.page-header.compact-head,.page-header.lc-compact-head{margin-bottom:8px;flex-shrink:0;}
+.page-header.compact-head .page-title,.page-header.lc-compact-head .page-title{font-size:22px;margin-bottom:4px;}
+.page-header.compact-head .page-sub,.page-header.lc-compact-head .page-sub{font-size:13px;margin-bottom:0;line-height:1.4;}
+.page-header.compact-head .page-badge,.page-header.lc-compact-head .page-badge{font-size:11px;margin-bottom:6px;}
+.wizard-body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+.wizard-body .wizard-step.active{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
+.wizard-body .wizard-step.active .card{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-bottom:8px;padding:14px 16px;}
+.wizard-body .wizard-step.active .step-nav{flex-shrink:0;margin-top:0;}
+.wizard-body .wizard-step.active#bld-2,.wizard-body .wizard-step.active#bwiz-3{overflow-y:auto;overscroll-behavior:contain;}
+.wizard-body .wizard-progress{flex-shrink:0;margin-bottom:10px;}
+#bld-result,#bwiz-result{max-height:none;}
+.wizard-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
+.section-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;}
+.section-scroll::-webkit-scrollbar{width:8px;}
+.section-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px;}
+.callout-compact{padding:10px 14px;margin-bottom:10px;flex-shrink:0;}
+.callout-compact .callout-icon{font-size:18px;}
+.callout-compact .callout-body{font-size:13px;line-height:1.45;}
+.callout-compact .callout-body strong{font-size:13px;margin-bottom:2px;}
 .lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
@@ -215,7 +232,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pod-app:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.06);}
 
 /* ── PAGE HEADERS ── */
-.page-header{margin-bottom:36px;}
+.page-header{margin-bottom:36px;flex-shrink:0;}
 .page-badge{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
 .page-badge.cyan{color:var(--cyan);}
 .page-badge.purple{color:var(--purple);}
@@ -465,10 +482,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   .nav-item{padding:7px 12px;}
   .nav-section{padding:8px 12px 2px;}
   .android-install-hint{display:none;}
-  .main:has(#section-home.active){padding:12px 20px 16px;}
-  .main:has(#section-launchcheck.active){padding:10px 20px 12px;height:calc(100vh - 68px);overflow:hidden;box-sizing:border-box;}
-  #section-launchcheck.section.active{height:100%;}
+  .main{padding:10px 24px 12px;height:calc(100dvh - 68px);overflow:hidden;box-sizing:border-box;}
+  .main > .section.active{height:100%;}
   .free-banner-body{display:none;}
+  #section-build .page-header,#section-brainstorm .page-header{margin-bottom:8px;}
+  #section-build .page-title,#section-brainstorm .page-title{font-size:22px;margin-bottom:4px;}
+  #section-build .page-sub,#section-brainstorm .page-sub{font-size:13px;line-height:1.4;margin-bottom:0;}
+  #section-build .page-badge,#section-brainstorm .page-badge{font-size:11px;margin-bottom:6px;}
+  #section-build .callout.warn,#section-brainstorm .callout.warn{padding:10px 14px;margin-bottom:10px;}
+  #section-build .callout-body,#section-brainstorm .callout-body{font-size:13px;line-height:1.45;}
+  #section-build .callout-body strong,#section-brainstorm .callout-body strong{font-size:13px;margin-bottom:2px;}
+  #section-build .wizard-progress,#section-brainstorm .wizard-progress{margin-bottom:10px;}
+  #section-build .card,#section-brainstorm .card{padding:14px 16px;margin-bottom:8px;}
+  #section-build .card-title,#section-brainstorm .card-title{font-size:13px;margin-bottom:10px;}
+  #section-build .field-group,#section-brainstorm .field-group{margin-bottom:12px;}
+  #section-build .field-label,#section-brainstorm .field-label{font-size:14px;margin-bottom:6px;}
+  #section-build .field-sub,#section-brainstorm .field-sub{font-size:12px;margin-bottom:6px;}
+  #section-build .field-input,#section-brainstorm .field-input{font-size:14px;padding:10px 12px;}
+  #section-build .field-textarea,#section-brainstorm .field-textarea{min-height:72px;}
+  #section-build .choice-label,#section-brainstorm .choice-label{font-size:14px;}
+  #section-build .choice-sub,#section-brainstorm .choice-sub{font-size:12px;}
+  #section-build .choice-icon,#section-brainstorm .choice-icon{font-size:26px;margin-bottom:6px;}
+  #section-build .choice-card,#section-brainstorm .choice-card{padding:12px;}
+  #section-build .btn,#section-brainstorm .btn{padding:10px 18px;font-size:14px;}
+  #section-build .step-nav,#section-brainstorm .step-nav{margin-top:0;}
+  #section-learn .page-header,#section-troubleshoot .page-header,#section-links .page-header,#section-projects .page-header{margin-bottom:12px;}
+  #section-learn .page-title,#section-troubleshoot .page-title,#section-links .page-title,#section-projects .page-title{font-size:24px;margin-bottom:6px;}
+  #section-learn .page-sub,#section-troubleshoot .page-sub,#section-links .page-sub,#section-projects .page-sub{font-size:14px;line-height:1.45;}
+  #section-learn .page-header,#section-troubleshoot .page-header,#section-links .page-header,#section-projects .page-header{flex-shrink:0;}
+  #section-learn.section.active,#section-troubleshoot.section.active,#section-links.section.active,#section-projects.section.active{overflow-y:auto;overscroll-behavior:contain;}
+  #section-build .page-header,#section-brainstorm .page-header,#section-build .callout-compact{flex-shrink:0;}
+  .home-dashboard{flex:1;min-height:0;overflow:hidden;}
 }
 @media(min-width:821px) and (max-height:820px){
   .sidebar{overflow-y:auto;}
@@ -476,8 +520,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 }
 /* ── RESPONSIVE ── */
 @media(max-width:820px){
+  html,body{height:auto;overflow:auto;}
+  .layout{height:auto;overflow:visible;}
+  .main{margin-left:0;padding:20px 16px 100px;height:auto;overflow:visible;display:block;}
+  .section.active{display:block;overflow:visible;flex:none;height:auto;}
+  .wizard-body{display:block;overflow:visible;}
+  .wizard-body .wizard-step.active{display:block;overflow:visible;flex:none;}
+  .wizard-body .wizard-step.active .card{overflow:visible;flex:none;}
   .sidebar{display:none;}
-  .main{margin-left:0;padding:20px 16px 100px;}
   .mode-grid{grid-template-columns:repeat(2,1fr);}
   .hero-title{font-size:22px;}
   .hero-orca{font-size:36px;}
@@ -1682,12 +1732,13 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
     <!-- ══ BRAINSTORM ══ -->
     <section id="section-brainstorm" class="section">
-      <div class="page-header">
+      <div class="page-header compact-head">
         <div class="page-badge purple" id="brainstorm-badge">💡 AI BRAINSTORM WIZARD</div>
         <h1 class="page-title" id="brainstorm-title">Find Your App Idea</h1>
         <p class="page-sub" id="brainstorm-sub">Not sure what to build? Answer a few questions and our AI will suggest real, buildable app ideas specifically for Lightchain. No experience needed.</p>
       </div>
 
+      <div class="wizard-body">
       <div class="wizard-progress" id="bwiz-progress">
         <div class="wiz-dot active" id="bwiz-d1"></div>
         <div class="wiz-dot" id="bwiz-d2"></div>
@@ -1789,20 +1840,22 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           </div>
         </div>
       </div>
+      </div><!-- end .wizard-body -->
     </section>
 
     <!-- ══ BUILD ══ -->
     <section id="section-build" class="section">
-      <div class="page-header">
+      <div class="page-header compact-head">
         <div class="page-badge green" id="build-badge">🔨 BUILD WIZARD</div>
         <h1 class="page-title" id="build-title">Build Your App</h1>
         <p class="page-sub" id="build-sub">Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.</p>
       </div>
-      <div class="callout warn" style="margin-bottom:20px;">
+      <div class="callout warn callout-compact">
         <div class="callout-icon">💻</div>
         <div class="callout-body"><strong id="build-pc-warn-title">PC Required to Build</strong><span id="build-pc-warn-body">Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.</span></div>
       </div>
 
+      <div class="wizard-body">
       <div class="wizard-progress" id="build-wiz-progress">
         <div class="wiz-dot active" id="bld-d1"></div>
         <div class="wiz-dot" id="bld-d2"></div>
@@ -1838,11 +1891,11 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div class="field-group">
             <label class="field-label" id="bld-desc-label">What is your app? What does it do?</label>
             <div class="field-sub" id="bld-desc-hint">Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.</div>
-            <textarea class="field-input field-textarea" id="bld-description" rows="5" placeholder="Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
+            <textarea class="field-input field-textarea" id="bld-description" rows="3" placeholder="Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
           </div>
           <div class="field-group">
             <label class="field-label" id="bld-users-label">Who will use it? (optional)</label>
-            <textarea class="field-input" id="bld-users" rows="2" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
+            <textarea class="field-input" id="bld-users" rows="1" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
           </div>
         </div>
         <div class="step-nav">
@@ -1860,6 +1913,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           </div>
         </div>
       </div>
+      </div><!-- end .wizard-body -->
     </section>
 
     <!--
