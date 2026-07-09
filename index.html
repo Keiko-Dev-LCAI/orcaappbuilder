@@ -154,6 +154,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .callout-compact .callout-icon{font-size:18px;}
 .callout-compact .callout-body{font-size:13px;line-height:1.45;}
 .callout-compact .callout-body strong{font-size:13px;margin-bottom:2px;}
+.beginner-banner{border-radius:12px;padding:14px 16px;margin-bottom:12px;flex-shrink:0;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.25);}
+.beginner-banner-title{font-size:14px;font-weight:800;color:var(--green);margin-bottom:6px;}
+.beginner-banner-body{font-size:13px;color:var(--muted);line-height:1.5;}
+.learn-code-toggle{margin-bottom:12px;flex-shrink:0;}
+.learn-code-toggle .btn{font-size:12px;padding:8px 14px;}
+#section-learn.learn-simple .code-block{display:none;}
+.start-here-card{border:2px solid rgba(0,230,118,.35);border-radius:14px;padding:16px 18px;margin-top:12px;background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,212,255,.06));flex-shrink:0;}
+.start-here-title{font-size:16px;font-weight:900;color:var(--green);margin-bottom:10px;line-height:1.35;}
+.start-here-steps{list-style:none;padding:0;margin:0 0 4px;}
+.start-here-steps li{font-size:14px;line-height:1.55;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);display:flex;gap:10px;align-items:flex-start;}
+.start-here-steps li:last-child{border-bottom:none;}
+.start-here-num{width:24px;height:24px;border-radius:50%;background:rgba(0,230,118,.2);color:var(--green);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.bld-actions-primary{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+.bld-actions-secondary{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
 .lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
@@ -739,11 +753,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </section>
 
     <!-- ══ LEARN ══ -->
-    <section id="section-learn" class="section">
+    <section id="section-learn" class="section learn-simple">
       <div class="page-header">
         <div class="page-badge cyan" id="learn-badge">📚 STEP-BY-STEP GUIDE</div>
         <h1 class="page-title" id="learn-title">Learn to Build on Lightchain</h1>
         <p class="page-sub" id="learn-sub">9 lessons that take you from "I've never built anything" to a live app on the Lightchain dApp Hub. Written in plain English — no jargon without an explanation.</p>
+      </div>
+
+      <div class="beginner-banner" id="learn-beginner-banner">
+        <div class="beginner-banner-title" id="learn-beginner-title">👋 New here? You don't need to read code.</div>
+        <div class="beginner-banner-body" id="learn-beginner-body">Start with <strong>Build</strong> to describe your idea, then tap <strong>Walk Me Through Step 1</strong>. This guide is optional — code is hidden until you choose to show it.</div>
+      </div>
+      <div class="learn-code-toggle">
+        <button type="button" class="btn btn-ghost" id="learn-code-toggle-btn" onclick="toggleLearnCode()">👀 Show code sections (advanced)</button>
       </div>
 
       <!-- OS PICKER — persistent across all steps -->
@@ -1903,13 +1925,24 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
         </div>
         <div id="bld-result" style="margin-top:24px;"></div>
+        <div id="bld-start-here" class="start-here-card" style="display:none;">
+          <div class="start-here-title" id="bld-start-title">✅ Your plan is ready — here's how to start (no coding knowledge needed)</div>
+          <ol class="start-here-steps">
+            <li><span class="start-here-num">1</span><span id="bld-start-s1">Read your plan above — it's written in plain English.</span></li>
+            <li><span class="start-here-num">2</span><span id="bld-start-s2">Tap the green button below. The AI walks you through the very first step, one thing at a time.</span></li>
+            <li><span class="start-here-num">3</span><span id="bld-start-s3">Stuck on anything? Ask in the chat — you never have to figure out code alone.</span></li>
+          </ol>
+        </div>
         <div id="bld-actions" style="display:none;margin-top:16px;">
-          <div class="step-nav">
+          <div class="bld-actions-primary">
+            <button class="btn btn-primary green" id="bld-walk-btn" onclick="startBuildWalkthrough()">🚶 Walk Me Through Step 1</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="startBuildAskAnything()">💬 Ask AI Anything</button>
+            <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', getBuildPlanText())">📂 Save to Project</button>
+          </div>
+          <div class="bld-actions-secondary">
             <button class="btn btn-ghost" id="bld-try-again" onclick="bldBack(2)">← Try Again</button>
-            <button class="btn btn-primary" id="bld-learn-btn" onclick="showSection('learn')">📚 Follow the Step-by-Step Guide</button>
-            <button class="btn btn-primary" id="bld-launch-btn" style="background:var(--yellow);color:#000;" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="openAiPanel('I want to start building my app. Here is my plan: ' + document.getElementById('bld-result').innerText.substring(0,300))">💬 Ask AI a Question</button>
-            <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', document.getElementById('bld-result').innerText)">📂 Save to Project</button>
+            <button class="btn btn-ghost" id="bld-learn-btn" onclick="showSection('learn')">📚 Advanced guide (has code)</button>
+            <button class="btn btn-ghost" id="bld-launch-btn" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
           </div>
         </div>
       </div>
@@ -2377,7 +2410,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
-<script src="i18n-ui.js?v=20260704"></script>
+<script src="i18n-ui.js?v=20260709"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
@@ -2598,11 +2631,12 @@ Build plan should include:
 7. Estimated time to build (in hours, for a complete beginner using AI tools)
 8. Biggest challenge to be aware of upfront
 
-Write this for someone who has never coded before.`;
+Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
 
   callAI(prompt, 'build').then(reply => {
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Build Plan — Option ${n}</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     if (actionsEl) actionsEl.style.display = '';
+    showBuildStartHere();
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Please try again.</div></div>`;
@@ -2674,7 +2708,81 @@ After the 3 ideas, recommend which one you think is the best fit for a first-tim
 }
 
 // ── BUILD WIZARD ──
+const BUILD_PLAN_RULES = `
+
+CRITICAL — this person has NEVER built an app and knows NOTHING about coding:
+- Write ONLY in plain English (like explaining to a friend)
+- Do NOT include any code, code blocks, Solidity, HTML, JavaScript, Python, JSON, terminal commands, or file contents
+- Do NOT use jargon without a one-sentence plain-English explanation in parentheses
+- Each step must say WHAT to do in everyday language — not how to write code
+- End with: "When you're ready, tap **Walk Me Through Step 1** in OrcaAppBuilder and I'll guide you hands-on."`;
+
 let bldCurrentStep = 1;
+
+function getBuildPlanText() {
+  const el = document.querySelector('#bld-result .ai-response-body');
+  return el ? el.innerText.trim() : (document.getElementById('bld-result')?.innerText || '').trim();
+}
+
+function showBuildStartHere() {
+  const card = document.getElementById('bld-start-here');
+  if (card) card.style.display = '';
+  setTimeout(() => card?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+}
+
+function toggleLearnCode() {
+  const sec = document.getElementById('section-learn');
+  const btn = document.getElementById('learn-code-toggle-btn');
+  if (!sec || !btn) return;
+  const hiding = sec.classList.toggle('learn-simple');
+  btn.textContent = hiding ? t('learn_show_code_btn') : t('learn_hide_code_btn');
+}
+
+function sendCoachMessage(msg, mode) {
+  if (aiWaiting || !msg.trim()) return;
+  if (!aiPanelOpen) toggleAiPanel();
+  addAiMessage('user', msg);
+  aiWaiting = true;
+  document.getElementById('ai-send').disabled = true;
+  const thinking = addAiMessage('bot', '⏳ Thinking...');
+  callAI(msg, mode || 'build').then(reply => {
+    thinking.textContent = reply;
+  }).catch(() => {
+    thinking.textContent = '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+  }).finally(() => {
+    aiWaiting = false;
+    document.getElementById('ai-send').disabled = false;
+  });
+}
+
+function startBuildWalkthrough() {
+  const plan = getBuildPlanText();
+  if (!plan) { alert(t('msg_describe_app')); return; }
+  const prompt = `I'm a complete beginner who has never built an app. I have zero coding experience.
+
+Here is my build plan:
+${plan.slice(0, 2500)}
+
+Help me with ONLY step 1 of this plan.
+
+Rules for your reply:
+- Plain English only — like talking to a friend who has never coded
+- Do NOT show code, file contents, or terminal commands
+- Give me 3–5 simple bullet points for what to do right now
+- Name the one website or tool I should open first (include the link)
+- End by asking if I finished step 1 or need more help`;
+  sendCoachMessage(prompt, 'build');
+}
+
+function startBuildAskAnything() {
+  const plan = getBuildPlanText().slice(0, 600);
+  if (!aiPanelOpen) toggleAiPanel();
+  const input = document.getElementById('ai-input');
+  input.value = plan
+    ? `I have a question about my app plan:\n${plan}\n\nMy question: `
+    : 'I have a question about building my app: ';
+  input.focus();
+}
 
 function updateBldProgress() {
   for (let i = 1; i <= 2; i++) {
@@ -2705,6 +2813,8 @@ function bldBack(from) {
     updateBldProgress();
     document.getElementById('bld-result').innerHTML = '';
     document.getElementById('bld-actions').style.display = 'none';
+    const startCard = document.getElementById('bld-start-here');
+    if (startCard) startCard.style.display = 'none';
   }
 }
 
@@ -2748,11 +2858,12 @@ Please create a complete build plan. Include:
 7. Estimated time to build (in hours, for a complete beginner using AI tools)
 8. Biggest challenge I should be aware of upfront
 
-Write this for someone who has never coded before.`;
+Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
 
   callAI(prompt, 'build').then(reply => {
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Your Build Plan</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     actionsEl.style.display = '';
+    showBuildStartHere();
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
     actionsEl.style.display = '';

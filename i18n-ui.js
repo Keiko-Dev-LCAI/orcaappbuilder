@@ -20,7 +20,9 @@
  *   build-badge, build-title, build-sub, build-pc-warn-title, build-pc-warn-body
  *   bld-s1-title, bld-scratch-label, bld-scratch-sub, bld-existing-label, bld-existing-sub
  *   bld-next1, bld-desc-title, bld-desc-label, bld-desc-hint, bld-users-label, bld-generate-btn
- *   bld-back, bld-learn-btn, bld-launch-btn, bld-ask-btn, bld-save-btn
+ *   bld-back, bld-walk-btn, bld-learn-btn, bld-launch-btn, bld-ask-btn, bld-save-btn
+ *   bld-start-title, bld-start-s1, bld-start-s2, bld-start-s3
+ *   learn-beginner-title, learn-beginner-body, learn-code-toggle-btn
  *   launch-badge, launch-title, launch-sub, lc-url-label, lc-who-label, lc-scan-btn, lc-rerun-btn
  *   lc-more-summary, lc-code-ph, lc-notes-ph
  *   troubleshoot-badge, troubleshoot-title, troubleshoot-sub
@@ -56,6 +58,7 @@
 
 window.ORCAAPP_I18N = {
   en: {
+    /* beginner-first UX — English source strings */
     android_download: "📲 Download Android App",
     android_hint: "Download → open file → tap Install. Allow unknown apps if your phone asks.",
     header_tag: "BUILD ON LIGHTCHAIN",
@@ -70,7 +73,7 @@ window.ORCAAPP_I18N = {
     nav_home_label: "Home",
     nav_home_sub: "Pick your starting point",
     nav_learn_label: "Learn",
-    nav_learn_sub: "Step-by-step guide, copy & paste",
+    nav_learn_sub: "Optional — has code (start with Build)",
     nav_brainstorm_label: "Brainstorm",
     nav_brainstorm_sub: "AI helps you find your idea",
     nav_build_label: "Build",
@@ -93,7 +96,7 @@ window.ORCAAPP_I18N = {
     free_stack_ai: "🤖 AI optional",
     free_stack_domain: "🌍 Custom domain optional",
     mode_learn_title: "Learn the Basics",
-    mode_learn_desc: "9 plain-English lessons, copy-paste commands, no coding needed.",
+    mode_learn_desc: "Optional deep dive — code hidden by default. Start with Build first.",
     mode_brainstorm_title: "Brainstorm an Idea",
     mode_brainstorm_desc: "Tell the AI what interests you — get 3 realistic app ideas.",
     mode_build_title: "Build Your App",
@@ -164,9 +167,18 @@ window.ORCAAPP_I18N = {
     bwiz_save_btn: "📂 Save to Project",
     build_badge: "🔨 BUILD WIZARD",
     build_title: "Build Your App",
-    build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
+    build_sub: "Describe your idea in plain English. The AI gives you a simple step-by-step plan — no code required to understand it.",
     build_pc_warn_title: "PC Required to Build",
     build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    bld_walk_btn: "🚶 Walk Me Through Step 1",
+    bld_start_title: "✅ Your plan is ready — here's how to start (no coding knowledge needed)",
+    bld_start_s1: "Read your plan above — it's written in plain English.",
+    bld_start_s2: "Tap the green button below. The AI walks you through the very first step, one thing at a time.",
+    bld_start_s3: "Stuck on anything? Ask in the chat — you never have to figure out code alone.",
+    learn_beginner_title: "👋 New here? You don't need to read code.",
+    learn_beginner_body: "Start with Build to describe your idea, then tap Walk Me Through Step 1. This guide is optional — code is hidden until you choose to show it.",
+    learn_show_code_btn: "👀 Show code sections (advanced)",
+    learn_hide_code_btn: "🙈 Hide code sections",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -183,9 +195,9 @@ window.ORCAAPP_I18N = {
     bld_generate_btn: "🤖 Generate My Build Plan",
     bld_back: "← Back",
     bld_try_again: "← Try Again",
-    bld_learn_btn: "📚 Follow the Step-by-Step Guide",
+    bld_learn_btn: "📚 Advanced guide (has code)",
     bld_launch_btn: "🚀 Launch Check (when live)",
-    bld_ask_btn: "💬 Ask AI a Question",
+    bld_ask_btn: "💬 Ask AI Anything",
     bld_save_btn: "📂 Save to Project",
     launch_badge: "🚀 LAUNCH CHECK",
     launch_title: "Is this Lightchain app ready to go live?",
@@ -2934,10 +2946,22 @@ window.applyI18n = function() {
   set('bld-generate-btn', 'bld_generate_btn');
   set('bld-back', 'bld_back');
   set('bld-try-again', 'bld_try_again');
+  set('bld-walk-btn', 'bld_walk_btn');
   set('bld-learn-btn', 'bld_learn_btn');
   set('bld-launch-btn', 'bld_launch_btn');
   set('bld-ask-btn', 'bld_ask_btn');
   set('bld-save-btn', 'bld_save_btn');
+  set('bld-start-title', 'bld_start_title');
+  set('bld-start-s1', 'bld_start_s1');
+  set('bld-start-s2', 'bld_start_s2');
+  set('bld-start-s3', 'bld_start_s3');
+  set('learn-beginner-title', 'learn_beginner_title');
+  set('learn-beginner-body', 'learn_beginner_body');
+  const learnCodeBtn = document.getElementById('learn-code-toggle-btn');
+  if (learnCodeBtn) {
+    const sec = document.getElementById('section-learn');
+    learnCodeBtn.textContent = sec && sec.classList.contains('learn-simple') ? t('learn_show_code_btn') : t('learn_hide_code_btn');
+  }
   set('launch-badge', 'launch_badge'); set('launch-title', 'launch_title'); set('launch-sub', 'launch_sub');
   set('lc-url-label', 'lc_url_label'); setPh('lc-url', 'lc_url_ph'); set('lc-who-label', 'lc_who_label');
   const lcWho = document.getElementById('lc-who');
