@@ -173,8 +173,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bld-results-scroll::-webkit-scrollbar{width:8px;}
 .bld-results-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px;}
 #bld-2.has-results .bld-form-block{display:none;}
-#bld-2.has-results{overflow:hidden;}
-#bld-2.has-results .bld-results-scroll{flex:1;min-height:0;}
+#section-build.build-results-mode.section.active{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+#section-build.build-results-mode .wizard-body{flex:none;min-height:auto;overflow:visible;}
+#section-build.build-results-mode #bld-2.has-results{overflow:visible;flex:none;display:block;}
+#section-build.build-results-mode .bld-results-scroll{overflow:visible;flex:none;min-height:auto;}
 .lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
@@ -2444,7 +2446,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
-<script src="i18n-ui.js?v=20260709"></script>
+<script src="i18n-ui.js?v=20260709b"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
@@ -2514,7 +2516,11 @@ function showSection(name) {
     if (mnav) mnav.classList.toggle('active', s === name);
   });
   if (name === 'projects') renderProjects();
+  try { localStorage.setItem('orcaapp_last_section', name); } catch (e) {}
+  if (name === 'build') persistBuildDraft({ section: 'build' });
   window.scrollTo(0, 0);
+  const buildSec = document.getElementById('section-build');
+  if (buildSec && name !== 'build') buildSec.scrollTop = 0;
 }
 
 // ── OS PICKER ──
@@ -2587,6 +2593,7 @@ function selectChoice(el, inputId, value, cls) {
     }
   }
   updateBldNextState();
+  if (inputId === 'bld-mode' || inputId === 'bld-audience') persistBuildDraft();
 
   // Brainstorm wizard
   const bwizNext1 = document.getElementById('bwiz-next1');
@@ -2687,10 +2694,13 @@ Build plan should include:
 
 Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
 
+  persistBuildDraft({ generating: true, hasResults: true, step: 2 });
+
   callAI(prompt, 'build').then(reply => {
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Build Plan — Option ${n}</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     if (actionsEl) actionsEl.style.display = '';
     showBuildStartHere();
+    persistBuildDraft({ generating: false, actionsVisible: true, startHereVisible: true });
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Please try again.</div></div>`;
     if (actionsEl) actionsEl.style.display = '';
@@ -2788,6 +2798,121 @@ function getBuildAudiencePrompt(audience) {
 }
 
 let bldCurrentStep = 1;
+const BUILD_DRAFT_KEY = 'orcaapp_build_draft';
+
+function getBuildDraft() {
+  try { return JSON.parse(localStorage.getItem(BUILD_DRAFT_KEY) || 'null'); }
+  catch (e) { return null; }
+}
+
+function saveBuildDraft(patch) {
+  try {
+    const prev = getBuildDraft() || {};
+    localStorage.setItem(BUILD_DRAFT_KEY, JSON.stringify({ ...prev, ...patch, savedAt: Date.now() }));
+  } catch (e) {}
+}
+
+function collectBuildDraftFromDom() {
+  const resultEl = document.getElementById('bld-result');
+  const resultHtml = resultEl ? resultEl.innerHTML : '';
+  const generating = resultHtml.includes('ai-thinking');
+  return {
+    step: bldCurrentStep,
+    mode: document.getElementById('bld-mode')?.value || '',
+    audience: document.getElementById('bld-audience')?.value || '',
+    description: document.getElementById('bld-description')?.value || '',
+    users: document.getElementById('bld-users')?.value || '',
+    hasResults: !!document.getElementById('bld-2')?.classList.contains('has-results'),
+    resultHtml,
+    actionsVisible: document.getElementById('bld-actions')?.style.display !== 'none',
+    startHereVisible: document.getElementById('bld-start-here')?.style.display !== 'none',
+    generating,
+    section: 'build',
+  };
+}
+
+function persistBuildDraft(patch) {
+  saveBuildDraft({ ...collectBuildDraftFromDom(), ...patch });
+}
+
+function restoreBldChoice(inputId, value, cls) {
+  const input = document.getElementById(inputId);
+  if (!input || !value) return;
+  input.value = value;
+  const grids = document.querySelectorAll('#bld-1 .choice-grid');
+  const grid = inputId === 'bld-mode' ? grids[0] : grids[1];
+  if (!grid) return;
+  grid.querySelectorAll('.choice-card').forEach(c => {
+    c.classList.remove('selected', 'selected-purple', 'selected-green');
+  });
+  const idx = inputId === 'bld-mode'
+    ? { scratch: 0, existing: 1 }[value]
+    : { personal: 0, friends: 1, hub: 2 }[value];
+  const card = grid.querySelectorAll('.choice-card')[idx];
+  if (card) card.classList.add(cls);
+  if (inputId === 'bld-mode') {
+    const hint = document.getElementById('bld-desc-hint');
+    const title = document.getElementById('bld-desc-title');
+    if (value === 'existing') {
+      if (title) title.textContent = t('bld_desc_title_existing');
+      if (hint) hint.textContent = t('bld_desc_hint_existing');
+    } else {
+      if (title) title.textContent = t('bld_desc_title');
+      if (hint) hint.textContent = t('bld_desc_hint');
+    }
+  }
+}
+
+function restoreBuildSessionOnLoad() {
+  const draft = getBuildDraft();
+  if (!draft) return;
+  const hasWork = draft.hasResults || draft.step === 2 || draft.description || draft.generating || (draft.mode && draft.audience);
+  if (!hasWork) return;
+
+  showSection('build');
+
+  if (draft.mode) restoreBldChoice('bld-mode', draft.mode, 'selected-green');
+  if (draft.audience) restoreBldChoice('bld-audience', draft.audience, 'selected-green');
+  updateBldNextState();
+
+  if (draft.description) document.getElementById('bld-description').value = draft.description;
+  if (draft.users) document.getElementById('bld-users').value = draft.users;
+
+  if (draft.step === 2 || draft.hasResults || draft.generating) {
+    document.getElementById('bld-1').classList.remove('active');
+    document.getElementById('bld-2').classList.add('active');
+    bldCurrentStep = 2;
+    updateBldProgress();
+  }
+
+  if (draft.generating) {
+    setBuildResultsMode(true);
+    document.getElementById('bld-result').innerHTML =
+      '<div class="callout warn"><span class="callout-icon">⏳</span><div class="callout-body"><strong>Plan interrupted</strong>Your last generate was interrupted (refresh or connection). Tap <strong>Generate My Build Plan</strong> again — your description is still here.</div></div>';
+    document.getElementById('bld-actions').style.display = 'none';
+    document.getElementById('bld-start-here').style.display = 'none';
+    persistBuildDraft({ generating: false });
+    scrollBuildPlanToTop();
+    return;
+  }
+
+  if (draft.hasResults && draft.resultHtml && !draft.resultHtml.includes('ai-thinking')) {
+    document.getElementById('bld-result').innerHTML = draft.resultHtml;
+    setBuildResultsMode(true);
+    document.getElementById('bld-actions').style.display = draft.actionsVisible ? '' : 'none';
+    document.getElementById('bld-start-here').style.display = draft.startHereVisible ? '' : 'none';
+    scrollBuildPlanToTop();
+  }
+}
+
+function bindBuildDraftAutosave() {
+  ['bld-description', 'bld-users'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.draftBound) return;
+    el.dataset.draftBound = '1';
+    el.addEventListener('input', () => persistBuildDraft());
+  });
+}
 
 function getBuildPlanText() {
   const el = document.querySelector('#bld-result .ai-response-body');
@@ -2796,18 +2921,18 @@ function getBuildPlanText() {
 
 function setBuildResultsMode(on) {
   const step = document.getElementById('bld-2');
-  const scroll = document.getElementById('bld-results-scroll');
+  const section = document.getElementById('section-build');
   if (step) step.classList.toggle('has-results', !!on);
-  if (!on && scroll) scroll.scrollTop = 0;
+  if (section) section.classList.toggle('build-results-mode', !!on);
+  if (!on && section) section.scrollTop = 0;
 }
 
 function scrollBuildPlanToTop() {
-  const scroll = document.getElementById('bld-results-scroll');
   const section = document.getElementById('section-build');
   setTimeout(() => {
-    if (scroll) scroll.scrollTop = 0;
+    window.scrollTo(0, 0);
     if (section) section.scrollTop = 0;
-    document.getElementById('bld-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('bld-result')?.scrollIntoView({ behavior: 'auto', block: 'start' });
   }, 80);
 }
 
@@ -2892,6 +3017,7 @@ function bldNext(from) {
     document.getElementById('bld-2').classList.add('active');
     bldCurrentStep = 2;
     updateBldProgress();
+    persistBuildDraft({ step: 2 });
   }
 }
 
@@ -2906,6 +3032,7 @@ function bldBack(from) {
     document.getElementById('bld-actions').style.display = 'none';
     const startCard = document.getElementById('bld-start-here');
     if (startCard) startCard.style.display = 'none';
+    persistBuildDraft({ step: 1, hasResults: false, resultHtml: '', generating: false, actionsVisible: false, startHereVisible: false });
   }
 }
 
@@ -2923,6 +3050,7 @@ function bldGenerate() {
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
   scrollBuildPlanToTop();
+  persistBuildDraft({ generating: true, hasResults: true, step: 2 });
 
   const audience = getBuildAudience();
   const audiencePrompt = getBuildAudiencePrompt(audience);
@@ -2966,9 +3094,11 @@ Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Your Build Plan</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     actionsEl.style.display = '';
     showBuildStartHere();
+    persistBuildDraft({ generating: false, actionsVisible: true, startHereVisible: true });
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
     actionsEl.style.display = '';
+    persistBuildDraft({ generating: false, actionsVisible: false });
   });
 }
 
@@ -3544,6 +3674,8 @@ setInterval(checkHealth, 30000);
 checkTermsOnLoad();
 applyI18n();
 initLanguagePickers();
+bindBuildDraftAutosave();
+restoreBuildSessionOnLoad();
 
 // ── PROJECTS ──
 const PROJ_STORAGE_KEY = 'orcaappbuilder_projects';
