@@ -1,6 +1,10 @@
 /* Orca PWA service worker — cache shell for faster reloads on mobile */
-const CACHE = 'orca-shell-v1';
+const CACHE = 'orca-shell-v2';
 const PRECACHE = ['./', './index.html', './manifest.json'];
+
+function isHtmlRequest(url) {
+  return url.pathname === '/' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname.endsWith('.html');
+}
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
@@ -25,6 +29,19 @@ self.addEventListener('fetch', function (e) {
   if (e.request.method !== 'GET') return;
   var url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (isHtmlRequest(url)) {
+    e.respondWith(
+      fetch(e.request).then(function (res) {
+        if (res && res.ok) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
+        }
+        return res;
+      }).catch(function () { return caches.match(e.request); })
+    );
+    return;
+  }
 
   e.respondWith(
     caches.match(e.request).then(function (cached) {
