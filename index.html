@@ -168,6 +168,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .start-here-num{width:24px;height:24px;border-radius:50%;background:rgba(0,230,118,.2);color:var(--green);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 .bld-actions-primary{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
 .bld-actions-secondary{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.bld-form-block{flex-shrink:0;}
+.bld-results-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;padding-right:4px;}
+.bld-results-scroll::-webkit-scrollbar{width:8px;}
+.bld-results-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:4px;}
+#bld-2.has-results .bld-form-block{display:none;}
+#bld-2.has-results{overflow:hidden;}
+#bld-2.has-results .bld-results-scroll{flex:1;min-height:0;}
 .lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
@@ -525,6 +532,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   #section-learn .page-sub,#section-troubleshoot .page-sub,#section-links .page-sub,#section-projects .page-sub{font-size:14px;line-height:1.45;}
   #section-learn .page-header,#section-troubleshoot .page-header,#section-links .page-header,#section-projects .page-header{flex-shrink:0;}
   #section-learn.section.active,#section-troubleshoot.section.active,#section-links.section.active,#section-projects.section.active{overflow-y:auto;overscroll-behavior:contain;}
+  #section-build.section.active,#section-brainstorm.section.active{overflow-y:auto;overscroll-behavior:contain;}
   #section-build .page-header,#section-brainstorm .page-header,#section-build .callout-compact{flex-shrink:0;}
   .home-dashboard{flex:1;min-height:0;overflow:hidden;}
 }
@@ -1908,41 +1916,45 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
       <!-- BUILD STEP 2: Describe -->
       <div class="wizard-step" id="bld-2">
-        <div class="card" id="bld-desc-card">
-          <div class="card-title" id="bld-desc-title">Describe your app idea</div>
-          <div class="field-group">
-            <label class="field-label" id="bld-desc-label">What is your app? What does it do?</label>
-            <div class="field-sub" id="bld-desc-hint">Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.</div>
-            <textarea class="field-input field-textarea" id="bld-description" rows="3" placeholder="Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
+        <div class="bld-form-block">
+          <div class="card" id="bld-desc-card">
+            <div class="card-title" id="bld-desc-title">Describe your app idea</div>
+            <div class="field-group">
+              <label class="field-label" id="bld-desc-label">What is your app? What does it do?</label>
+              <div class="field-sub" id="bld-desc-hint">Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.</div>
+              <textarea class="field-input field-textarea" id="bld-description" rows="3" placeholder="Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically."></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label" id="bld-users-label">Who will use it? (optional)</label>
+              <textarea class="field-input" id="bld-users" rows="1" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
+            </div>
           </div>
-          <div class="field-group">
-            <label class="field-label" id="bld-users-label">Who will use it? (optional)</label>
-            <textarea class="field-input" id="bld-users" rows="1" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
+          <div class="step-nav">
+            <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
+            <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
           </div>
         </div>
-        <div class="step-nav">
-          <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
-          <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
-        </div>
-        <div id="bld-result" style="margin-top:24px;"></div>
-        <div id="bld-start-here" class="start-here-card" style="display:none;">
-          <div class="start-here-title" id="bld-start-title">✅ Your plan is ready — here's how to start (no coding knowledge needed)</div>
-          <ol class="start-here-steps">
-            <li><span class="start-here-num">1</span><span id="bld-start-s1">Read your plan above — it's written in plain English.</span></li>
-            <li><span class="start-here-num">2</span><span id="bld-start-s2">Tap the green button below. The AI walks you through the very first step, one thing at a time.</span></li>
-            <li><span class="start-here-num">3</span><span id="bld-start-s3">Stuck on anything? Ask in the chat — you never have to figure out code alone.</span></li>
-          </ol>
-        </div>
-        <div id="bld-actions" style="display:none;margin-top:16px;">
-          <div class="bld-actions-primary">
-            <button class="btn btn-primary green" id="bld-walk-btn" onclick="startBuildWalkthrough()">🚶 Walk Me Through Step 1</button>
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="startBuildAskAnything()">💬 Ask AI Anything</button>
-            <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', getBuildPlanText())">📂 Save to Project</button>
+        <div class="bld-results-scroll" id="bld-results-scroll">
+          <div id="bld-result"></div>
+          <div id="bld-start-here" class="start-here-card" style="display:none;">
+            <div class="start-here-title" id="bld-start-title">✅ Your plan is ready — here's how to start (no coding knowledge needed)</div>
+            <ol class="start-here-steps">
+              <li><span class="start-here-num">1</span><span id="bld-start-s1">Read your plan above — it's written in plain English.</span></li>
+              <li><span class="start-here-num">2</span><span id="bld-start-s2">Tap the green button below. The AI walks you through the very first step, one thing at a time.</span></li>
+              <li><span class="start-here-num">3</span><span id="bld-start-s3">Stuck on anything? Ask in the chat — you never have to figure out code alone.</span></li>
+            </ol>
           </div>
-          <div class="bld-actions-secondary">
-            <button class="btn btn-ghost" id="bld-try-again" onclick="bldBack(2)">← Try Again</button>
-            <button class="btn btn-ghost" id="bld-learn-btn" onclick="showSection('learn')">📚 Advanced guide (has code)</button>
-            <button class="btn btn-ghost" id="bld-launch-btn" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
+          <div id="bld-actions" style="display:none;margin-top:16px;">
+            <div class="bld-actions-primary">
+              <button class="btn btn-primary green" id="bld-walk-btn" onclick="startBuildWalkthrough()">🚶 Walk Me Through Step 1</button>
+              <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="startBuildAskAnything()">💬 Ask AI Anything</button>
+              <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', getBuildPlanText())">📂 Save to Project</button>
+            </div>
+            <div class="bld-actions-secondary">
+              <button class="btn btn-ghost" id="bld-try-again" onclick="bldBack(2)">← Try Again</button>
+              <button class="btn btn-ghost" id="bld-learn-btn" onclick="showSection('learn')">📚 Advanced guide (has code)</button>
+              <button class="btn btn-ghost" id="bld-launch-btn" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
+            </div>
           </div>
         </div>
       </div>
@@ -2609,12 +2621,18 @@ function pickBrainstormOption(n) {
   if (!_lastBrainstormReply) return;
   // Switch to Build section and show result directly (skip the wizard form)
   showSection('build');
+  document.getElementById('bld-1').classList.remove('active');
+  document.getElementById('bld-2').classList.add('active');
+  bldCurrentStep = 2;
+  updateBldProgress();
+  setBuildResultsMode(true);
   const resultEl  = document.getElementById('bld-result');
   const actionsEl = document.getElementById('bld-actions');
+  const startCard = document.getElementById('bld-start-here');
+  if (startCard) startCard.style.display = 'none';
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan for Option ' + n + '... this may take 1-2 minutes.</div>';
   if (actionsEl) actionsEl.style.display = 'none';
-  // Scroll result into view
-  setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
+  scrollBuildPlanToTop();
 
   const prompt = `From the brainstorm ideas below, I want to build Option ${n}. Please create a complete, detailed build plan for that specific idea.
 
@@ -2637,7 +2655,6 @@ Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Build Plan — Option ${n}</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     if (actionsEl) actionsEl.style.display = '';
     showBuildStartHere();
-    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Please try again.</div></div>`;
     if (actionsEl) actionsEl.style.display = '';
@@ -2724,10 +2741,28 @@ function getBuildPlanText() {
   return el ? el.innerText.trim() : (document.getElementById('bld-result')?.innerText || '').trim();
 }
 
+function setBuildResultsMode(on) {
+  const step = document.getElementById('bld-2');
+  const scroll = document.getElementById('bld-results-scroll');
+  if (step) step.classList.toggle('has-results', !!on);
+  if (!on && scroll) scroll.scrollTop = 0;
+}
+
+function scrollBuildPlanToTop() {
+  const scroll = document.getElementById('bld-results-scroll');
+  const section = document.getElementById('section-build');
+  setTimeout(() => {
+    if (scroll) scroll.scrollTop = 0;
+    if (section) section.scrollTop = 0;
+    document.getElementById('bld-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
+}
+
 function showBuildStartHere() {
   const card = document.getElementById('bld-start-here');
+  setBuildResultsMode(true);
   if (card) card.style.display = '';
-  setTimeout(() => card?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+  scrollBuildPlanToTop();
 }
 
 function toggleLearnCode() {
@@ -2807,6 +2842,7 @@ function bldNext(from) {
 
 function bldBack(from) {
   if (from === 2) {
+    setBuildResultsMode(false);
     document.getElementById('bld-2').classList.remove('active');
     document.getElementById('bld-1').classList.add('active');
     bldCurrentStep = 1;
@@ -2827,8 +2863,11 @@ function bldGenerate() {
 
   if (!description) { alert(t('msg_describe_app')); return; }
 
+  setBuildResultsMode(true);
+  document.getElementById('bld-start-here').style.display = 'none';
   resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 1-2 minutes.</div>';
   actionsEl.style.display = 'none';
+  scrollBuildPlanToTop();
 
   const isExisting = mode === 'existing';
   const prompt = isExisting
