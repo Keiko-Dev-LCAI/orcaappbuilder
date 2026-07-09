@@ -679,7 +679,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="hero">
         <div class="hero-orca">🐬</div>
         <h1 class="hero-title" id="hero-title">Build Your First dApp on Lightchain AI</h1>
-        <p class="hero-sub" id="hero-sub">No coding experience needed — brainstorm, build, launch check, and get listed on the hub.</p>
+        <p class="hero-sub" id="hero-sub">No coding experience needed — brainstorm, build, and launch check. Share with friends or list on the hub when you're ready.</p>
 
         <div class="free-banner">
           <div class="free-banner-headline" id="free-banner-headline">💚 Free to build &amp; launch — you keep 100% of what you charge</div>
@@ -765,7 +765,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="page-header">
         <div class="page-badge cyan" id="learn-badge">📚 STEP-BY-STEP GUIDE</div>
         <h1 class="page-title" id="learn-title">Learn to Build on Lightchain</h1>
-        <p class="page-sub" id="learn-sub">9 lessons that take you from "I've never built anything" to a live app on the Lightchain dApp Hub. Written in plain English — no jargon without an explanation.</p>
+        <p class="page-sub" id="learn-sub">9 lessons from "I've never built anything" to a live app you can share. Hub listing is optional — written in plain English, no jargon without an explanation.</p>
       </div>
 
       <div class="beginner-banner" id="learn-beginner-banner">
@@ -796,7 +796,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="step-pill" onclick="showLearnStep(6)" id="spill-6">6 · Wallets &amp; Payments</div>
         <div class="step-pill" onclick="showLearnStep(7)" id="spill-7">7 · Hosting</div>
         <div class="step-pill" onclick="showLearnStep(8)" id="spill-8">8 · Deploy</div>
-        <div class="step-pill" onclick="showLearnStep(9)" id="spill-9">9 · Get Listed</div>
+        <div class="step-pill" onclick="showLearnStep(9)" id="spill-9">9 · Hub (Optional)</div>
       </div>
 
       <!-- STEP 1 -->
@@ -1670,7 +1670,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
         <div class="step-nav">
           <button class="btn btn-ghost" onclick="showLearnStep(7)">← Back</button>
-          <button class="btn btn-primary" onclick="showLearnStep(9)">Next: Get Listed →</button>
+          <button class="btn btn-primary" onclick="showLearnStep(9)">Next: Hub Listing (Optional) →</button>
           <span class="step-counter">8 of 9</span>
         </div>
       </div>
@@ -1679,15 +1679,15 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <div class="learn-step" id="lstep-9">
         <div class="step-header-row">
           <div class="step-num-big">9</div>
-          <div><div class="step-title">Get Listed on the dApp Hub</div>
-          <div class="step-desc">Submit your app to hub.lightchain.ai — the official Lightchain app store.</div></div>
+          <div><div class="step-title">Hub Listing (Optional)</div>
+          <div class="step-desc">Only if you want your app in the official Lightchain app store at hub.lightchain.ai — skip this if it's just for you or friends.</div></div>
         </div>
 
         <div class="callout success">
           <span class="callout-icon">🎉</span>
           <div class="callout-body">
-            <strong>This Is the Finish Line</strong>
-            Getting listed on the dApp Hub puts your app in front of the entire Lightchain community. It's free to submit.
+            <strong>Optional — For Public Apps</strong>
+            Many builders stop at a working link they share with friends. Hub listing is a free extra step when you want the whole Lightchain community to discover your app.
           </div>
         </div>
 
@@ -1748,7 +1748,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <span class="callout-icon">🐬</span>
           <div class="callout-body">
             <strong>You Did It!</strong>
-            You've gone from zero to a live app listed on the official Lightchain dApp Hub. Welcome to the builder community. Jump into the Lightchain Discord (discord.gg/lightchain) and announce your app with #BuildOnLightchain.
+            You've gone from zero to a live Lightchain app. Share your link with friends, or submit to the dApp Hub when you're ready for a wider audience. Welcome to the builder community — announce with #BuildOnLightchain on Discord (discord.gg/lightchain) if you like.
           </div>
         </div>
 
@@ -1908,7 +1908,29 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
             </div>
           </div>
         </div>
+        <div class="card" style="margin-top:12px;">
+          <div class="card-title" id="bld-audience-title">Who is this app for?</div>
+          <div class="field-sub" id="bld-audience-sub" style="margin-bottom:12px;">This helps the AI tailor your plan. Hub listing is never required.</div>
+          <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:0;">
+            <div class="choice-card" onclick="selectChoice(this,'bld-audience','personal','selected-green')" style="text-align:center;">
+              <div class="choice-icon">🏠</div>
+              <div class="choice-label" id="bld-aud-personal-label">Just for me</div>
+              <div class="choice-sub" id="bld-aud-personal-sub">Personal use or learning</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bld-audience','friends','selected-green')" style="text-align:center;">
+              <div class="choice-icon">👥</div>
+              <div class="choice-label" id="bld-aud-friends-label">Friends &amp; family</div>
+              <div class="choice-sub" id="bld-aud-friends-sub">Share a link with people I know</div>
+            </div>
+            <div class="choice-card" onclick="selectChoice(this,'bld-audience','hub','selected-green')" style="text-align:center;">
+              <div class="choice-icon">🌐</div>
+              <div class="choice-label" id="bld-aud-hub-label">Public / hub</div>
+              <div class="choice-sub" id="bld-aud-hub-sub">List on the dApp Hub eventually</div>
+            </div>
+          </div>
+        </div>
         <input type="hidden" id="bld-mode" value="">
+        <input type="hidden" id="bld-audience" value="">
         <div class="step-nav">
           <button class="btn btn-primary green" onclick="bldNext(1)" id="bld-next1" disabled>Next →</button>
         </div>
@@ -2371,7 +2393,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
     <button class="ai-panel-close" onclick="toggleAiPanel()">✕</button>
   </div>
   <div class="ai-messages" id="ai-messages">
-    <div class="ai-msg bot" id="ai-welcome">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "What do I need to get listed on the hub?"</div>
+    <div class="ai-msg bot" id="ai-welcome">👋 Hey! I'm the OrcaAppBuilder AI — ask me anything about building on Lightchain. Not sure where to start? Try asking:<br><br>• "What kind of app should I build?"<br>• "How do I add AI to my app?"<br>• "How do I share my app with friends?"</div>
   </div>
   <div class="ai-input-row">
     <textarea class="ai-input" id="ai-input" placeholder="Ask anything about building on Lightchain..." rows="1" onkeydown="aiKeydown(event)"></textarea>
@@ -2552,22 +2574,33 @@ function selectChoice(el, inputId, value, cls) {
   el.classList.add(cls);
   document.getElementById(inputId).value = value;
 
-  // Enable next button
-  const nextBtn = document.getElementById('bwiz-next1') || document.getElementById('bld-next1');
-  if (nextBtn) nextBtn.disabled = false;
-
   // For build wizard
-  const bldNext1 = document.getElementById('bld-next1');
-  if (bldNext1 && inputId === 'bld-mode') {
-    bldNext1.disabled = false;
-    // Update hint text based on mode
+  if (inputId === 'bld-mode') {
     const hint = document.getElementById('bld-desc-hint');
     const title = document.getElementById('bld-desc-title');
     if (value === 'existing') {
-      if (title) title.textContent = 'Tell us about your existing app';
-      if (hint) hint.textContent = 'Describe what you have built so far, what is working, what is not working, and what you need help with next. Paste any relevant code or error messages.';
+      if (title) title.textContent = t('bld_desc_title_existing');
+      if (hint) hint.textContent = t('bld_desc_hint_existing');
+    } else {
+      if (title) title.textContent = t('bld_desc_title');
+      if (hint) hint.textContent = t('bld_desc_hint');
     }
   }
+  updateBldNextState();
+
+  // Brainstorm wizard
+  const bwizNext1 = document.getElementById('bwiz-next1');
+  if (bwizNext1 && inputId !== 'bld-mode' && inputId !== 'bld-audience') {
+    bwizNext1.disabled = false;
+  }
+}
+
+function updateBldNextState() {
+  const nextBtn = document.getElementById('bld-next1');
+  if (!nextBtn) return;
+  const mode = document.getElementById('bld-mode')?.value;
+  const audience = document.getElementById('bld-audience')?.value;
+  nextBtn.disabled = !(mode && audience);
 }
 
 // ── BRAINSTORM WIZARD ──
@@ -2634,18 +2667,21 @@ function pickBrainstormOption(n) {
   if (actionsEl) actionsEl.style.display = 'none';
   scrollBuildPlanToTop();
 
+  const audiencePrompt = getBuildAudiencePrompt(getBuildAudience());
   const prompt = `From the brainstorm ideas below, I want to build Option ${n}. Please create a complete, detailed build plan for that specific idea.
 
 The brainstorm results were:
 ${_lastBrainstormReply}
 
+${audiencePrompt}
+
 Build plan should include:
 1. App name (use the one suggested for Option ${n})
 2. One-paragraph plain-English description of what we are building
-3. Do I need a smart contract? (Yes/No and why)
-4. Do I need a Python backend on Railway? (Yes/No and why)
-5. Tech stack: exact tools and where to get them
-6. Step-by-step build order (6-10 numbered steps)
+3. Do I need a smart contract? (Yes/No and why in one simple sentence — prefer "No" if a simpler option works)
+4. Do I need a server in the cloud? (Yes/No and why — only if the app needs AI or saved data)
+5. Tools needed: list only the tool NAMES a beginner would sign up for (no SDKs or dev packages)
+6. Step-by-step build order (5-8 numbered steps — simplest path first)
 7. Estimated time to build (in hours, for a complete beginner using AI tools)
 8. Biggest challenge to be aware of upfront
 
@@ -2730,9 +2766,26 @@ const BUILD_PLAN_RULES = `
 CRITICAL — this person has NEVER built an app and knows NOTHING about coding:
 - Write ONLY in plain English (like explaining to a friend)
 - Do NOT include any code, code blocks, Solidity, HTML, JavaScript, Python, JSON, terminal commands, or file contents
+- Do NOT mention SDKs, npm packages, smart contract coding, or blockchain dev jargon unless the idea truly requires it — always suggest the simplest path first
 - Do NOT use jargon without a one-sentence plain-English explanation in parentheses
 - Each step must say WHAT to do in everyday language — not how to write code
+- Do NOT assume they want to list on the dApp Hub unless their goal says so
 - End with: "When you're ready, tap **Walk Me Through Step 1** in OrcaAppBuilder and I'll guide you hands-on."`;
+
+function getBuildAudience() {
+  return document.getElementById('bld-audience')?.value || 'friends';
+}
+
+function getBuildAudiencePrompt(audience) {
+  const a = audience || getBuildAudience();
+  if (a === 'personal') {
+    return `MY GOAL: This app is just for my own use or learning. Keep the plan as simple as possible — fewest tools, fewest steps. Skip hub listing, marketing, and public-launch steps unless absolutely necessary.`;
+  }
+  if (a === 'hub') {
+    return `MY GOAL: I eventually want this app listed on the Lightchain dApp Hub for the public. Include polish and a Launch Check step near the end, but still keep everything beginner-friendly — no code in the plan.`;
+  }
+  return `MY GOAL: I want to share this with friends or a small group — not necessarily the public hub. Focus on getting a working link they can open from their phone. Mention hub listing only as an optional later step, if at all.`;
+}
 
 let bldCurrentStep = 1;
 
@@ -2832,7 +2885,9 @@ function updateBldProgress() {
 function bldNext(from) {
   if (from === 1) {
     const mode = document.getElementById('bld-mode').value;
+    const audience = document.getElementById('bld-audience').value;
     if (!mode) { alert(t('msg_pick_situation')); return; }
+    if (!audience) { alert(t('msg_pick_audience')); return; }
     document.getElementById('bld-1').classList.remove('active');
     document.getElementById('bld-2').classList.add('active');
     bldCurrentStep = 2;
@@ -2869,6 +2924,8 @@ function bldGenerate() {
   actionsEl.style.display = 'none';
   scrollBuildPlanToTop();
 
+  const audience = getBuildAudience();
+  const audiencePrompt = getBuildAudiencePrompt(audience);
   const isExisting = mode === 'existing';
   const prompt = isExisting
     ? `I have already started building a Lightchain dApp. Here is what I have so far and what I need help with:
@@ -2876,24 +2933,30 @@ function bldGenerate() {
 ${description}
 ${users ? 'Target users: ' + users : ''}
 
+${audiencePrompt}
+
 Please:
 1. Summarize what I have built in plain English
 2. Identify the 3 most important things I still need to complete
 3. Flag any potential problems or mistakes in my current approach
 4. Give me a prioritized list of next steps (what to do first, second, third)
-5. Suggest one specific improvement that would make the biggest difference`
+5. Suggest one specific improvement that would make the biggest difference
+
+Write this for someone who has never coded before.${BUILD_PLAN_RULES}`
     : `I want to build this Lightchain dApp:
 
 ${description}
 ${users ? 'Target users: ' + users : ''}
 
+${audiencePrompt}
+
 Please create a complete build plan. Include:
 1. App name suggestion (if I did not give one)
 2. One-paragraph plain-English description of what we are building
-3. Do I need a smart contract? (Yes/No and why)
-4. Do I need a Python backend on Railway? (Yes/No and why)
-5. Tech stack: list the exact tools and where to get them
-6. Step-by-step build order (numbered list, 6-10 steps maximum)
+3. Do I need a smart contract? (Yes/No and why in one simple sentence — prefer "No" if a simpler option works)
+4. Do I need a server in the cloud? (Yes/No and why — only if the app needs AI or saved data)
+5. Tools needed: list only the tool NAMES a beginner would sign up for (no SDKs or dev packages)
+6. Step-by-step build order (numbered list, 5-8 steps maximum — simplest path first)
 7. Estimated time to build (in hours, for a complete beginner using AI tools)
 8. Biggest challenge I should be aware of upfront
 
