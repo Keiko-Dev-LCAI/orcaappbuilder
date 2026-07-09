@@ -1,5 +1,5 @@
 /* Orca PWA service worker — cache shell for faster reloads on mobile */
-const CACHE = 'orca-shell-v3';
+const CACHE = 'orca-shell-v4';
 const PRECACHE = ['./', './index.html', './manifest.json'];
 
 function isHtmlRequest(url) {
