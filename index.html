@@ -1889,7 +1889,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <div class="page-header compact-head">
         <div class="page-badge green" id="build-badge">🔨 BUILD WIZARD</div>
         <h1 class="page-title" id="build-title">Build Your App</h1>
-        <p class="page-sub" id="build-sub">Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.</p>
+        <p class="page-sub" id="build-sub">Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first.</p>
       </div>
       <div class="callout warn callout-compact">
         <div class="callout-icon">💻</div>
@@ -2463,7 +2463,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
-<script src="i18n-ui.js?v=20260709b"></script>
+<script src="i18n-ui.js?v=20260709c"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
@@ -2802,7 +2802,12 @@ const BUILD_PLAN_RULES = `
 CRITICAL — this person has NEVER built an app and knows NOTHING about coding:
 - Write ONLY in plain English (like explaining to a friend)
 - Do NOT include any code, code blocks, Solidity, HTML, JavaScript, Python, JSON, terminal commands, or file contents
-- Do NOT mention SDKs, npm packages, smart contract coding, or blockchain dev jargon unless the idea truly requires it — always suggest the simplest path first
+- Treat this as a regular APP first (payroll, tracking, inventory, etc.) — blockchain/Lightchain is OPTIONAL, not required
+- Default: smart contract = No, Lightchain wallet = not needed, dApp Hub = skip unless they asked for public hub listing
+- Use tools THEY already mentioned (Excel, Oracle, barcodes, Airtable, Google Sheets) before suggesting new signups
+- NEVER tell them to visit lightchain.io (wrong domain — parking page). NEVER "sign up at Lightnode" or "explore Lightchain network" as a step
+- Do NOT mention SDKs, npm, Lightnode, or blockchain jargon unless they clearly need on-chain AI or crypto payments
+- Step 1 must be practical (their existing software OR "tap Walk Me Through Step 1 here in OrcaAppBuilder") — not a random external website
 - Do NOT use jargon without a one-sentence plain-English explanation in parentheses
 - Each step must say WHAT to do in everyday language — not how to write code
 - Do NOT assume they want to list on the dApp Hub unless their goal says so
@@ -3023,8 +3028,10 @@ Help me with ONLY step 1 of this plan.
 Rules for your reply:
 - Plain English only — like talking to a friend who has never coded
 - Do NOT show code, file contents, or terminal commands
-- Give me 3–5 simple bullet points for what to do right now
-- Name the one website or tool I should open first (include the link)
+- Give me 3–5 simple bullet points for step 1 ONLY
+- Step 1 must use tools I ALREADY use (from my plan: Excel, Oracle, Airtable, etc.) OR stay in OrcaAppBuilder — do NOT send me to sign up at Lightnode, lightchain.io, or lightchain.ai unless my plan explicitly requires blockchain
+- NEVER use lightchain.io — that URL is wrong
+- Do NOT tell me to open new websites I have never used before unless my plan already named them
 - End by asking if I finished step 1 or need more help`;
   sendCoachMessage(prompt, 'build');
 }
@@ -3098,7 +3105,7 @@ function bldGenerate() {
   const audiencePrompt = getBuildAudiencePrompt(audience);
   const isExisting = mode === 'existing';
   const prompt = isExisting
-    ? `I have already started building a Lightchain dApp. Here is what I have so far and what I need help with:
+    ? `I have already started building an app. Here is what I have so far and what I need help with:
 
 ${description}
 ${users ? 'Target users: ' + users : ''}
@@ -3113,7 +3120,7 @@ Please:
 5. Suggest one specific improvement that would make the biggest difference
 
 Write this for someone who has never coded before.${BUILD_PLAN_RULES}`
-    : `I want to build this Lightchain dApp:
+    : `I want to build this app (it may or may not need blockchain — decide from my description):
 
 ${description}
 ${users ? 'Target users: ' + users : ''}
@@ -3123,11 +3130,11 @@ ${audiencePrompt}
 Please create a complete build plan. Include:
 1. App name suggestion (if I did not give one)
 2. One-paragraph plain-English description of what we are building
-3. Do I need a smart contract? (Yes/No and why in one simple sentence — prefer "No" if a simpler option works)
-4. Do I need a server in the cloud? (Yes/No and why — only if the app needs AI or saved data)
-5. Tools needed: list only the tool NAMES a beginner would sign up for (no SDKs or dev packages)
-6. Step-by-step build order (numbered list, 5-8 steps maximum — simplest path first)
-7. Estimated time to build (in hours, for a complete beginner using AI tools)
+3. Do I need blockchain or a smart contract? (Yes/No — default No for business tools like payroll, production tracking, inventory; Yes only if I need crypto payments or on-chain records)
+4. Do I need a server in the cloud? (Yes/No — only if the app needs built-in AI chat or multi-user saved data beyond Excel/Oracle)
+5. Tools needed: only everyday tools — especially ones I already mentioned (Excel, Oracle, Airtable, Google Sheets, simple web form). No Lightnode or lightchain.io signups unless truly required
+6. Step-by-step build order (numbered list, 5-8 steps maximum — simplest path first; step 1 must not be "go sign up at a blockchain website")
+7. Estimated time to build (in hours, for a complete beginner)
 8. Biggest challenge I should be aware of upfront
 
 Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
