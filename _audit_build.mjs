@@ -215,13 +215,13 @@ async function main() {
 
   const sw = await page.evaluate(async () => {
     try {
-      const r = await fetch('./sw.js?v=8', { cache: 'no-store' });
+      const r = await fetch('./sw.js?v=9', { cache: 'no-store' });
       const t = await r.text();
-      return /orca-shell-v8/.test(t);
+      return /orca-shell-v9/.test(t) || /ORCA_SW_VERSION = '9'/.test(t);
     } catch (e) { return false; }
   });
-  if (sw) pass('Service worker cache bumped to v8');
-  else fail('sw.js not at orca-shell-v8');
+  if (sw) pass('Service worker cache at v9 (single-source)');
+  else fail('sw.js not at orca-shell-v9');
 
   // Nav sections exist
   for (const id of ['home','learn','brainstorm','build','launchcheck','troubleshoot','projects','links']) {
