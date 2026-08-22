@@ -191,15 +191,18 @@ window.ORCAAPP_I18N = {
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
     bld_existing_label: "Already started",
-    bld_existing_sub: "I have code or a partial app and need help finishing",
+    bld_existing_sub: "Upload or paste what you have — code, files, errors — as your starting point",
     bld_desc_title: "Describe your app idea",
     bld_desc_title_existing: "Tell us about your existing app",
     bld_desc_label: "What is your app? What does it do?",
+    bld_desc_label_existing: "What is this app supposed to do?",
     bld_desc_hint: "Describe it like you'd explain it to a friend. The more detail you give, the better the plan will be.",
-    bld_desc_hint_existing: "Describe what you have built so far, what is working, what is not working, and what you need help with next. Paste any relevant code or error messages.",
+    bld_desc_hint_existing: "Briefly say what the app should do. Below, upload or paste the code/files you already have — that is your starting point.",
     bld_desc_ph: "Example: A tip jar app where content creators share a link, fans connect their wallet and send LCAI tips with a message. The creator can see all their tips and messages on a dashboard. AI generates a thank-you message for each tip automatically.",
     bld_users_label: "Who will use it? (optional)",
     bld_users_ph: "Example: Twitch streamers, YouTubers, artists selling prints...",
+    bld_generate: "🤖 Generate My Build Plan",
+    bld_generate_existing: "🤖 Analyze My Starting Point",
     bld_generate_btn: "🤖 Generate My Build Plan",
     bld_back: "← Back",
     bld_try_again: "← Try Again",
@@ -210,6 +213,8 @@ window.ORCAAPP_I18N = {
     bld_sticky_hint: "Your plan is ready — scroll to read it all, or tap below to start step 1.",
     bld_sticky_walk: "🚶 Walk Me Through Step 1",
     bld_sticky_ask: "💬 Ask AI",
+    msg_describe_or_upload: "Add a short description and/or upload/paste the code you already have.",
+    msg_existing_need_material: "Already started needs your work as a starting point — upload files and/or paste code (or errors), then try again.",
     launch_badge: "🚀 LAUNCH CHECK",
     launch_title: "Is this app ready to go live?",
     launch_sub: "Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.",
@@ -423,6 +428,10 @@ window.ORCAAPP_I18N = {
     msg_pick_situation: "Please pick your situation first.",
     msg_pick_audience: "Please pick who this app is for.",
     msg_describe_app: "Please describe your app first.",
+    msg_describe_or_upload: "Add a short description and/or upload/paste the code you already have.",
+    msg_existing_need_material: "Already started needs your work as a starting point — upload files and/or paste code (or errors), then try again.",
+    bld_exist_panel_title: "📎 Your starting point — upload or paste what you have",
+    bld_exist_panel_sub: "Add the code, files, or errors you already have. The AI uses this as the base — not a blank idea.",
     msg_describe_problem: "Please describe your problem first.",
     msg_paste_url: "Paste any live app URL — that's all we need to scan it.",
     msg_saved_project: "✅ Saved to \"{name}\"",
@@ -430,6 +439,7 @@ window.ORCAAPP_I18N = {
     msg_saved_project_brainstorm: "✅ Saved to \"{name}\" — your brainstorm ideas are stored too.",
     proj_count: "{n} project{s} saved in your browser",
     lang_sub: "Change the whole app — navigation, guides, and buttons.",
+
     btn_connecting: "Connecting…",
     dyn_proj_open: "📂 Open",
     dyn_proj_delete: "🗑 Delete",
@@ -3012,9 +3022,20 @@ window.applyI18n = function() {
   set('bld-aud-personal-label', 'bld_aud_personal_label'); set('bld-aud-personal-sub', 'bld_aud_personal_sub');
   set('bld-aud-friends-label', 'bld_aud_friends_label'); set('bld-aud-friends-sub', 'bld_aud_friends_sub');
   set('bld-aud-hub-label', 'bld_aud_hub_label'); set('bld-aud-hub-sub', 'bld_aud_hub_sub');
-  set('bld-desc-title', 'bld_desc_title'); set('bld-desc-label', 'bld_desc_label'); set('bld-desc-hint', 'bld_desc_hint');
+  // Respect Already-started mode — don't wipe upload panel labels back to scratch copy
+  const bldMode = (document.getElementById('bld-mode') || {}).value;
+  if (bldMode === 'existing') {
+    set('bld-desc-title', 'bld_desc_title_existing');
+    set('bld-desc-label', 'bld_desc_label_existing');
+    set('bld-desc-hint', 'bld_desc_hint_existing');
+    set('bld-generate-btn', 'bld_generate_existing');
+  } else {
+    set('bld-desc-title', 'bld_desc_title'); set('bld-desc-label', 'bld_desc_label'); set('bld-desc-hint', 'bld_desc_hint');
+    set('bld-generate-btn', 'bld_generate_btn');
+  }
   setPh('bld-description', 'bld_desc_ph'); set('bld-users-label', 'bld_users_label'); setPh('bld-users', 'bld_users_ph');
-  set('bld-generate-btn', 'bld_generate_btn');
+  set('bld-exist-panel-title', 'bld_exist_panel_title');
+  set('bld-exist-panel-sub', 'bld_exist_panel_sub');
   set('bld-back', 'bld_back');
   set('bld-try-again', 'bld_try_again');
   set('bld-walk-btn', 'bld_walk_btn');
@@ -3148,5 +3169,9 @@ window.applyI18n = function() {
   set('lang_sub', 'lang_sub');
   applyLearnI18n();
   if (typeof resetDynamicUI === 'function') resetDynamicUI();
+  if (typeof syncBldExistingUI === 'function') {
+    const m = document.getElementById('bld-mode');
+    syncBldExistingUI((m && m.value) || '');
+  }
 };
 

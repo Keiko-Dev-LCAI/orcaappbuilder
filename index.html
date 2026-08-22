@@ -744,9 +744,9 @@ body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!
             <a href="https://smartcontractexplainer.xyz" target="_blank" rel="noopener" class="pod-app">Contract Explainer 🔍</a>
             <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" rel="noopener" class="pod-app">Node Builder ⚡</a>
             <a href="https://keiko-dev-lcai.github.io/myice" target="_blank" rel="noopener" class="pod-app">MyICE 🆘</a>
-            <a href="https://keiko-dev-lcai.github.io/keiko-chat" target="_blank" rel="noopener" class="pod-app">Keiko Chat 💬</a>
+            <a href="https://keiko-dev-lcai.github.io/lightchat-app/" target="_blank" rel="noopener" class="pod-app">LightChat 💬</a>
             <a href="https://chat.lightchain.ai" target="_blank" rel="noopener" class="pod-app">Lightchain Chat ⚡</a>
-            <a href="https://keiko-dev-lcai.github.io/lightdex" target="_blank" rel="noopener" class="pod-app">LightDex 💱</a>
+            <a href="https://lightdex.app/" target="_blank" rel="noopener" class="pod-app">LightDex 💱</a>
             <a href="https://keiko-dev-lcai.github.io/orcavault" target="_blank" rel="noopener" class="pod-app">OrcaVault 🗄️</a>
           </div>
           <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" class="pod-hub-link" id="pod-hub-link">See all apps on the dApp Hub →</a>
@@ -1915,7 +1915,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','existing','selected-green')" style="text-align:center;">
               <div class="choice-icon">🔧</div>
               <div class="choice-label" id="bld-existing-label">Already started</div>
-              <div class="choice-sub" id="bld-existing-sub">I have code or a partial app and need help finishing</div>
+              <div class="choice-sub" id="bld-existing-sub">Upload or paste what you have — code, files, errors — as your starting point</div>
             </div>
           </div>
         </div>
@@ -1962,6 +1962,36 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
               <textarea class="field-input" id="bld-users" rows="1" placeholder="Example: Twitch streamers, YouTubers, artists selling prints..."></textarea>
             </div>
           </div>
+
+          <!-- Already started: upload / paste what they have -->
+          <div class="card" id="bld-existing-panel" style="display:none;margin-top:12px;border-color:rgba(0,230,118,.35);">
+            <div class="card-title" id="bld-exist-panel-title">📎 Your starting point — upload or paste what you have</div>
+            <p id="bld-exist-panel-sub" style="font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.5;">Add the code, files, or errors you already have. The AI uses this as the base — not a blank idea.</p>
+            <div class="field-group">
+              <label class="field-label" id="bld-exist-upload-label">Upload files (optional)</label>
+              <div class="field-sub" id="bld-exist-upload-hint">Text-based files work best: .html .js .css .py .sol .json .md .txt .log (max ~10 files, ~200KB total).</div>
+              <input type="file" id="bld-exist-files" multiple accept=".html,.htm,.js,.mjs,.cjs,.css,.py,.sol,.json,.md,.txt,.log,.ts,.tsx,.jsx,.vue,.env,.toml,.yml,.yaml,.csv,text/*" style="width:100%;margin-top:8px;padding:12px;background:var(--bg3);border:1px dashed var(--border);border-radius:10px;color:var(--text);font-size:14px;cursor:pointer;">
+              <div id="bld-exist-file-list" style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5;"></div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" id="bld-exist-code-label">Paste your code here (optional)</label>
+              <textarea class="field-input field-textarea" id="bld-exist-code" rows="8" placeholder="Paste HTML, Python, Solidity, or any code you already have…" style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label" id="bld-exist-errors-label">Paste error messages (optional)</label>
+              <textarea class="field-input field-textarea" id="bld-exist-errors" rows="3" placeholder="Console errors, Railway logs, wallet errors…" style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
+            </div>
+            <div class="field-group">
+              <label class="field-label" id="bld-exist-help-label">What kind of help do you need?</label>
+              <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="bld-exist-help-grid">
+                <div class="choice-card selected" onclick="selectBldExistHelp(this,'finish')"><div class="choice-icon">🏁</div><div class="choice-title" id="bld-exist-finish">Finish It</div><div class="choice-sub">Help me complete it</div></div>
+                <div class="choice-card" onclick="selectBldExistHelp(this,'fix')"><div class="choice-icon">🔧</div><div class="choice-title" id="bld-exist-fix">Fix It</div><div class="choice-sub">Something's broken</div></div>
+                <div class="choice-card" onclick="selectBldExistHelp(this,'review')"><div class="choice-icon">🔍</div><div class="choice-title" id="bld-exist-review">Review It</div><div class="choice-sub">Check for issues</div></div>
+              </div>
+              <input type="hidden" id="bld-exist-help" value="finish">
+            </div>
+          </div>
+
           <div class="step-nav">
             <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
             <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
@@ -2237,12 +2267,12 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
         <a href="https://metamask.io" target="_blank" class="resource-card"><div class="resource-icon">🦊</div><div><div class="resource-name" id="res-metamask-name">MetaMask</div><div class="resource-desc" id="res-metamask-desc">Browser wallet extension (desktop)</div></div></a>
         <a href="https://trustwallet.com" target="_blank" class="resource-card"><div class="resource-icon">🔐</div><div><div class="resource-name" id="res-trust-name">Trust Wallet</div><div class="resource-desc" id="res-trust-desc">Mobile wallet (iOS &amp; Android)</div></div></a>
         <a href="https://etherscan.io" target="_blank" class="resource-card"><div class="resource-icon">🔍</div><div><div class="resource-name" id="res-etherscan-name">Etherscan</div><div class="resource-desc" id="res-etherscan-desc">Look up transactions and contracts</div></div></a>
-        <a href="https://scan.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name" id="res-explorer-name">Lightchain Explorer</div><div class="resource-desc" id="res-explorer-desc">Browse Lightchain transactions</div></div></a>
+        <a href="https://mainnet.lightscan.app" target="_blank" class="resource-card"><div class="resource-icon">🔭</div><div><div class="resource-name" id="res-explorer-name">Lightchain Explorer</div><div class="resource-desc" id="res-explorer-desc">Browse Lightchain transactions</div></div></a>
         <a href="https://coinbase.com" target="_blank" class="resource-card"><div class="resource-icon">🏦</div><div><div class="resource-name" id="res-coinbase-name">Coinbase</div><div class="resource-desc" id="res-coinbase-desc">Buy ETH to fund your wallet</div></div></a>
         <a href="https://lightnode.app/playground" target="_blank" class="resource-card"><div class="resource-icon">🧪</div><div><div class="resource-name" id="res-playground-name">AIVM Playground</div><div class="resource-desc" id="res-playground-desc">Test a real encrypted AI inference in your browser</div></div></a>
         <a href="https://github.com/lightchain-protocol/lcai-chat-v2" target="_blank" class="resource-card"><div class="resource-icon">⚡</div><div><div class="resource-name" id="res-lcaichat-src-name">lcai-chat-v2</div><div class="resource-desc" id="res-lcaichat-src-desc">Official Lightchain chat source (chat.lightchain.ai)</div></div></a>
         <a href="https://chat.lightchain.ai" target="_blank" class="resource-card"><div class="resource-icon">🤖</div><div><div class="resource-name" id="res-lcaichat-name">Lightchain Chat</div><div class="resource-desc" id="res-lcaichat-desc">Production wallet-native AI chat on mainnet</div></div></a>
-        <a href="https://github.com/Keiko-Dev-LCAI/keiko-chat" target="_blank" class="resource-card"><div class="resource-icon">🐬</div><div><div class="resource-name" id="res-keikochat-name">Keiko Chat</div><div class="resource-desc" id="res-keikochat-desc">Community fork — study or deploy your own chat</div></div></a>
+        <a href="https://keiko-dev-lcai.github.io/lightchat-app/" target="_blank" class="resource-card"><div class="resource-icon">🐬</div><div><div class="resource-name" id="res-keikochat-name">LightChat</div><div class="resource-desc" id="res-keikochat-desc">Community wallet chat on Lightchain — try the live app</div></div></a>
       </div>
 
     </section>
@@ -2464,7 +2494,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
-<script src="i18n-ui.js?v=20260709c"></script>
+<script src="i18n-ui.js?v=20260822a"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
@@ -2609,15 +2639,7 @@ function selectChoice(el, inputId, value, cls) {
 
   // For build wizard
   if (inputId === 'bld-mode') {
-    const hint = document.getElementById('bld-desc-hint');
-    const title = document.getElementById('bld-desc-title');
-    if (value === 'existing') {
-      if (title) title.textContent = t('bld_desc_title_existing');
-      if (hint) hint.textContent = t('bld_desc_hint_existing');
-    } else {
-      if (title) title.textContent = t('bld_desc_title');
-      if (hint) hint.textContent = t('bld_desc_hint');
-    }
+    syncBldExistingUI(value);
   }
   updateBldNextState();
   if (inputId === 'bld-mode' || inputId === 'bld-audience') persistBuildDraft();
@@ -2858,6 +2880,10 @@ function collectBuildDraftFromDom() {
     audience: document.getElementById('bld-audience')?.value || '',
     description: document.getElementById('bld-description')?.value || '',
     users: document.getElementById('bld-users')?.value || '',
+    existCode: document.getElementById('bld-exist-code')?.value || '',
+    existErrors: document.getElementById('bld-exist-errors')?.value || '',
+    existHelp: document.getElementById('bld-exist-help')?.value || 'finish',
+    existFileNames: _bldExistUploaded.map(f => f.name),
     hasResults: !!document.getElementById('bld-2')?.classList.contains('has-results'),
     resultHtml,
     actionsVisible: document.getElementById('bld-actions')?.style.display !== 'none',
@@ -2886,17 +2912,97 @@ function restoreBldChoice(inputId, value, cls) {
     : { personal: 0, friends: 1, hub: 2 }[value];
   const card = grid.querySelectorAll('.choice-card')[idx];
   if (card) card.classList.add(cls);
-  if (inputId === 'bld-mode') {
-    const hint = document.getElementById('bld-desc-hint');
-    const title = document.getElementById('bld-desc-title');
-    if (value === 'existing') {
-      if (title) title.textContent = t('bld_desc_title_existing');
-      if (hint) hint.textContent = t('bld_desc_hint_existing');
-    } else {
-      if (title) title.textContent = t('bld_desc_title');
-      if (hint) hint.textContent = t('bld_desc_hint');
-    }
+  if (inputId === 'bld-mode') syncBldExistingUI(value);
+}
+
+function syncBldExistingUI(mode) {
+  const isExisting = mode === 'existing';
+  const hint = document.getElementById('bld-desc-hint');
+  const title = document.getElementById('bld-desc-title');
+  const label = document.getElementById('bld-desc-label');
+  const panel = document.getElementById('bld-existing-panel');
+  const genBtn = document.getElementById('bld-generate-btn');
+  if (isExisting) {
+    if (title) title.textContent = t('bld_desc_title_existing');
+    if (hint) hint.textContent = t('bld_desc_hint_existing');
+    if (label) label.textContent = t('bld_desc_label_existing');
+    if (panel) panel.style.display = '';
+    if (genBtn) genBtn.textContent = t('bld_generate_existing');
+  } else {
+    if (title) title.textContent = t('bld_desc_title');
+    if (hint) hint.textContent = t('bld_desc_hint');
+    if (label) label.textContent = t('bld_desc_label');
+    if (panel) panel.style.display = 'none';
+    if (genBtn) genBtn.textContent = t('bld_generate');
   }
+}
+
+function selectBldExistHelp(el, value) {
+  const grid = document.getElementById('bld-exist-help-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  const input = document.getElementById('bld-exist-help');
+  if (input) input.value = value;
+  persistBuildDraft();
+}
+
+/** Uploaded file texts for Already-started mode (client-side read). */
+let _bldExistUploaded = []; // [{name, text}]
+
+function initBldExistFileInput() {
+  const input = document.getElementById('bld-exist-files');
+  if (!input || input.dataset.bound === '1') return;
+  input.dataset.bound = '1';
+  input.addEventListener('change', async () => {
+    const files = Array.from(input.files || []);
+    const listEl = document.getElementById('bld-exist-file-list');
+    if (!files.length) {
+      _bldExistUploaded = [];
+      if (listEl) listEl.textContent = '';
+      return;
+    }
+    const maxFiles = 10;
+    const maxTotal = 200 * 1024;
+    const picked = files.slice(0, maxFiles);
+    let total = 0;
+    const loaded = [];
+    for (const f of picked) {
+      if (f.size > 150 * 1024) {
+        loaded.push({ name: f.name, text: '', skip: 'too large (max 150KB per file)' });
+        continue;
+      }
+      if (total + f.size > maxTotal) {
+        loaded.push({ name: f.name, text: '', skip: 'skipped — total upload limit ~200KB' });
+        continue;
+      }
+      try {
+        const text = await f.text();
+        total += f.size;
+        loaded.push({ name: f.name, text });
+      } catch (e) {
+        loaded.push({ name: f.name, text: '', skip: 'could not read' });
+      }
+    }
+    _bldExistUploaded = loaded.filter(x => x.text);
+    if (listEl) {
+      listEl.innerHTML = loaded.map(x =>
+        x.skip
+          ? `⚠️ <strong>${escapeHtml(x.name)}</strong> — ${escapeHtml(x.skip)}`
+          : `✅ <strong>${escapeHtml(x.name)}</strong> (${Math.round((x.text || '').length / 1024)} KB)`
+      ).join('<br>');
+    }
+    persistBuildDraft();
+  });
+}
+
+function getBldExistingMaterial() {
+  const pasted = (document.getElementById('bld-exist-code')?.value || '').trim();
+  const errors = (document.getElementById('bld-exist-errors')?.value || '').trim();
+  const help = document.getElementById('bld-exist-help')?.value || 'finish';
+  const fileBlocks = _bldExistUploaded.map(f =>
+    `--- FILE: ${f.name} ---\n${f.text}`
+  ).join('\n\n');
+  return { pasted, errors, help, fileBlocks, hasMaterial: !!(pasted || errors || fileBlocks) };
 }
 
 function restoreBuildSessionOnLoad() {
@@ -2910,9 +3016,26 @@ function restoreBuildSessionOnLoad() {
   if (draft.mode) restoreBldChoice('bld-mode', draft.mode, 'selected-green');
   if (draft.audience) restoreBldChoice('bld-audience', draft.audience, 'selected-green');
   updateBldNextState();
+  if (draft.mode) syncBldExistingUI(draft.mode);
 
   if (draft.description) document.getElementById('bld-description').value = draft.description;
   if (draft.users) document.getElementById('bld-users').value = draft.users;
+  if (draft.existCode) document.getElementById('bld-exist-code').value = draft.existCode;
+  if (draft.existErrors) document.getElementById('bld-exist-errors').value = draft.existErrors;
+  if (draft.existHelp) {
+    document.getElementById('bld-exist-help').value = draft.existHelp;
+    const grid = document.getElementById('bld-exist-help-grid');
+    if (grid) {
+      grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+      const idx = { finish: 0, fix: 1, review: 2 }[draft.existHelp] ?? 0;
+      const card = grid.querySelectorAll('.choice-card')[idx];
+      if (card) card.classList.add('selected');
+    }
+  }
+  if (draft.existFileNames && draft.existFileNames.length) {
+    const listEl = document.getElementById('bld-exist-file-list');
+    if (listEl) listEl.textContent = 'Previously uploaded (re-select files to include again): ' + draft.existFileNames.join(', ');
+  }
 
   if (draft.step === 2 || draft.hasResults || draft.generating) {
     document.getElementById('bld-1').classList.remove('active');
@@ -2943,7 +3066,7 @@ function restoreBuildSessionOnLoad() {
 }
 
 function bindBuildDraftAutosave() {
-  ['bld-description', 'bld-users'].forEach(id => {
+  ['bld-description', 'bld-users', 'bld-exist-code', 'bld-exist-errors'].forEach(id => {
     const el = document.getElementById(id);
     if (!el || el.dataset.draftBound) return;
     el.dataset.draftBound = '1';
@@ -3073,7 +3196,12 @@ function bldNext(from) {
     document.getElementById('bld-2').classList.add('active');
     bldCurrentStep = 2;
     updateBldProgress();
+    syncBldExistingUI(mode);
     persistBuildDraft({ step: 2 });
+    if (mode === 'existing') {
+      const panel = document.getElementById('bld-existing-panel');
+      if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 }
 
@@ -3098,8 +3226,17 @@ function bldGenerate() {
   const users = document.getElementById('bld-users').value.trim();
   const resultEl = document.getElementById('bld-result');
   const actionsEl = document.getElementById('bld-actions');
+  const isExisting = mode === 'existing';
+  const material = isExisting ? getBldExistingMaterial() : null;
 
-  if (!description) { alert(t('msg_describe_app')); return; }
+  if (!description && !(material && material.hasMaterial)) {
+    alert(isExisting ? t('msg_describe_or_upload') : t('msg_describe_app'));
+    return;
+  }
+  if (isExisting && !material.hasMaterial && description.length < 20) {
+    alert(t('msg_existing_need_material'));
+    return;
+  }
 
   setBuildResultsMode(true);
   document.getElementById('bld-start-here').style.display = 'none';
@@ -3110,19 +3247,23 @@ function bldGenerate() {
 
   const audience = getBuildAudience();
   const audiencePrompt = getBuildAudiencePrompt(audience);
-  const isExisting = mode === 'existing';
+  const helpLabel = { finish: 'finish / complete what I started', fix: 'fix what is broken', review: 'review for issues' }[(material && material.help) || 'finish'];
   const prompt = isExisting
-    ? `I have already started building an app. Here is what I have so far and what I need help with:
+    ? `I have already started building an app. I uploaded and/or pasted my existing work as the starting point. Help type: ${helpLabel}.
 
-${description}
+What the app is supposed to do:
+${description || '(see materials below)'}
 ${users ? 'Target users: ' + users : ''}
 
 ${audiencePrompt}
 
+=== MY EXISTING MATERIALS (starting point — use these; do not ignore) ===
+${material.fileBlocks ? material.fileBlocks + '\n\n' : ''}${material.pasted ? '--- PASTED CODE ---\n' + material.pasted + '\n\n' : ''}${material.errors ? '--- ERRORS / LOGS ---\n' + material.errors + '\n\n' : ''}${!material.hasMaterial ? '(No files/code pasted — work only from my description.)\n' : ''}=== END MATERIALS ===
+
 Please:
-1. Summarize what I have built in plain English
-2. Identify the 3 most important things I still need to complete
-3. Flag any potential problems or mistakes in my current approach
+1. Summarize what I already have in plain English (from the materials)
+2. Identify the 3 most important things I still need to complete (or fix, if help type is fix)
+3. Flag any potential problems or mistakes in my current approach / code
 4. Give me a prioritized list of next steps (what to do first, second, third)
 5. Suggest one specific improvement that would make the biggest difference
 
@@ -3733,6 +3874,7 @@ checkTermsOnLoad();
 applyI18n();
 initLanguagePickers();
 bindBuildDraftAutosave();
+initBldExistFileInput();
 restoreBuildSessionOnLoad();
 
 // ── PROJECTS ──
@@ -4316,7 +4458,7 @@ async function connectViaWalletConnect() {
     _wcProv = await window.WCEthereumProvider.init({
       projectId: (window.ORCA_INTEGRATIONS && window.ORCA_INTEGRATIONS.walletConnectProjectId) || '3c6a0da53258912a28923198ddac3333',
       chains: [9200], optionalChains: [1], showQrModal: true,
-      metadata: { name: 'OrcaApp Builder', description: 'App Builder — no coding needed', url: 'https://orcaappbuilder.win', icons: ['https://orcaappbuilder.win/orca-icon.png'] },
+      metadata: { name: 'OrcaApp Builder', description: 'App Builder — no coding needed', url: 'https://orcaappbuilder.win', icons: ['https://orcaappbuilder.win/icon-192.png'] },
       rpcMap: { 9200: 'https://rpc.mainnet.lightchain.ai' }
     });
     await _wcProv.enable();
