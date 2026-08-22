@@ -3282,15 +3282,29 @@ function toggleLearnCode() {
   btn.textContent = hiding ? t('learn_show_code_btn') : t('learn_hide_code_btn');
 }
 
-function sendCoachMessage(msg, mode) {
-  if (aiWaiting || !msg.trim()) return;
+/**
+ * Coach chat helper.
+ * @param {string} promptForAI - full instructions sent to AIVM (may include guardrails)
+ * @param {string} mode - callAI mode
+ * @param {string} [displayText] - short bubble shown to the user (defaults to promptForAI)
+ */
+function sendCoachMessage(promptForAI, mode, displayText) {
+  if (aiWaiting || !promptForAI.trim()) return;
   if (!aiPanelOpen) toggleAiPanel();
-  addAiMessage('user', msg);
+  const bubble = (displayText && String(displayText).trim()) || promptForAI;
+  addAiMessage('user', bubble);
   aiWaiting = true;
   document.getElementById('ai-send').disabled = true;
   const thinking = addAiMessage('bot', t('ai_thinking'));
-  callAI(msg, mode || 'build').then(reply => {
+  // Scroll to the thinking/reply bubble, not past a wall of hidden prompt text
+  try {
+    thinking.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {}
+  callAI(promptForAI, mode || 'build').then(reply => {
     thinking.textContent = reply;
+    try {
+      thinking.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {}
   }).catch((err) => {
     thinking.textContent = (err && err.message)
       ? '⚠️ ' + err.message
@@ -3304,7 +3318,7 @@ function sendCoachMessage(msg, mode) {
 function startBuildWalkthrough() {
   const plan = getBuildPlanText();
   if (!plan) { alert(t('msg_describe_app')); return; }
-  const prompt = `I'm a complete beginner who has never built an app. I have zero coding experience.
+  const promptForAI = `I'm a complete beginner who has never built an app. I have zero coding experience.
 
 Here is my build plan:
 ${plan.slice(0, 2500)}
@@ -3319,16 +3333,15 @@ Rules for your reply:
 - NEVER use lightchain.io — that URL is wrong
 - Do NOT tell me to open new websites I have never used before unless my plan already named them
 - End by asking if I finished step 1 or need more help`;
-  sendCoachMessage(prompt, 'build');
+  // Full prompt goes to AIVM; user only sees a short bubble (no rule dump in chat)
+  sendCoachMessage(promptForAI, 'build', 'Walk me through step 1 of my plan');
 }
 
 function startBuildAskAnything() {
-  const plan = getBuildPlanText().slice(0, 600);
+  // Prefills the composer only — user edits/sends their own question (no auto-dump of plan+rules)
   if (!aiPanelOpen) toggleAiPanel();
   const input = document.getElementById('ai-input');
-  input.value = plan
-    ? `I have a question about my app plan:\n${plan}\n\nMy question: `
-    : 'I have a question about building my app: ';
+  input.value = 'I have a question about my app plan: ';
   input.focus();
 }
 

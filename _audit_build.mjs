@@ -187,6 +187,19 @@ async function main() {
     pass('Sticky bar visible above mobile nav after plan (z=' + sticky2.z + ')');
   else fail('Sticky bar not reliably shown: ' + JSON.stringify({ sticky, sticky2 }));
 
+  // Walkthrough: full prompt to AI, short bubble on screen
+  const coach = await page.evaluate(() => {
+    const src = String(sendCoachMessage);
+    const walk = String(startBuildWalkthrough);
+    const hasDisplayArg = src.includes('displayText') || src.includes('promptForAI');
+    const shortBubble = walk.includes('Walk me through step 1 of my plan');
+    const stillSendsFull = walk.includes('NEVER use lightchain.io');
+    return { hasDisplayArg, shortBubble, stillSendsFull };
+  });
+  if (coach.hasDisplayArg && coach.shortBubble && coach.stillSendsFull)
+    pass('Walkthrough splits display bubble from full AI prompt');
+  else fail('Walkthrough prompt leak fix incomplete: ' + JSON.stringify(coach));
+
   // Nav sections exist
   for (const id of ['home','learn','brainstorm','build','launchcheck','troubleshoot','projects','links']) {
     const exists = await page.evaluate((sid) => !!document.getElementById('section-' + sid), id);
