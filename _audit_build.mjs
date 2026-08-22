@@ -150,6 +150,43 @@ async function main() {
   if (afterBack) pass('bldBack returns to situation step');
   else fail('bldBack did not return to situation step');
 
+  // Sticky action bar after a fake plan (Already started path)
+  await page.evaluate(() => {
+    resetBuildWizard();
+    document.querySelectorAll('#bld-situation-grid .choice-card')[1]?.click();
+    document.querySelectorAll('#bld-1 .choice-grid')[1]?.querySelectorAll('.choice-card')[0]?.click();
+    bldNext(1);
+  });
+  await new Promise(r => setTimeout(r, 200));
+  const sticky = await page.evaluate(() => {
+    const resultEl = document.getElementById('bld-result');
+    const actionsEl = document.getElementById('bld-actions');
+    resultEl.innerHTML = '<div class="ai-response-box"><div class="ai-response-header">Plan</div><div class="ai-response-body">' +
+      ('Step one do this. '.repeat(20)) + '</div></div>';
+    if (actionsEl) actionsEl.style.display = '';
+    if (typeof showBuildStartHere === 'function') showBuildStartHere();
+    else if (typeof revealBuildStickyBar === 'function') revealBuildStickyBar();
+    else setBuildStickyBar(true);
+    const bar = document.getElementById('bld-sticky-bar');
+    const walk = document.getElementById('bld-sticky-walk');
+    const visible = bar?.classList.contains('visible');
+    const z = bar ? getComputedStyle(bar).zIndex : '';
+    const navZ = getComputedStyle(document.querySelector('.mobile-nav')).zIndex;
+    return { visible, z, navZ, walk: !!walk, bodyClass: document.body.classList.contains('bld-sticky-open') };
+  });
+  await new Promise(r => setTimeout(r, 250));
+  const sticky2 = await page.evaluate(() => {
+    const bar = document.getElementById('bld-sticky-bar');
+    return {
+      visible: bar?.classList.contains('visible'),
+      display: bar ? getComputedStyle(bar).display : '',
+      z: bar ? getComputedStyle(bar).zIndex : ''
+    };
+  });
+  if (sticky2.visible && sticky2.display !== 'none' && Number(sticky2.z) >= 150)
+    pass('Sticky bar visible above mobile nav after plan (z=' + sticky2.z + ')');
+  else fail('Sticky bar not reliably shown: ' + JSON.stringify({ sticky, sticky2 }));
+
   // Nav sections exist
   for (const id of ['home','learn','brainstorm','build','launchcheck','troubleshoot','projects','links']) {
     const exists = await page.evaluate((sid) => !!document.getElementById('section-' + sid), id);

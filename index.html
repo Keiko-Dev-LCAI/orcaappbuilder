@@ -257,11 +257,15 @@ body.build-results-open .main{height:auto!important;overflow:visible!important;d
 body.build-results-open #section-build.section.active,body.build-results-open #section-build.build-results-mode.section.active{height:auto!important;overflow:visible!important;flex:none!important;display:block!important;}
 body.build-results-open #section-build .wizard-body,body.build-results-open #section-build #bld-2.has-results,body.build-results-open #section-build .bld-results-scroll{overflow:visible!important;flex:none!important;min-height:auto!important;display:block!important;}
 body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!important;height:auto!important;}
-.bld-sticky-bar{display:none;position:fixed;left:260px;right:0;bottom:0;z-index:145;padding:10px 20px 14px;background:linear-gradient(180deg,rgba(10,14,26,0) 0%,rgba(10,14,26,.92) 28%,var(--bg) 100%);border-top:1px solid rgba(0,230,118,.35);box-shadow:0 -6px 28px rgba(0,0,0,.5);backdrop-filter:blur(10px);}
+/* Must sit ABOVE .mobile-nav (z-index:150) and stay tappable; below terms overlay */
+.bld-sticky-bar{display:none;position:fixed;left:260px;right:0;bottom:0;z-index:160;padding:10px 20px 14px;background:linear-gradient(180deg,rgba(10,14,26,0) 0%,rgba(10,14,26,.95) 22%,var(--bg) 100%);border-top:1px solid rgba(0,230,118,.45);box-shadow:0 -6px 28px rgba(0,0,0,.55);backdrop-filter:blur(10px);pointer-events:auto;}
 .bld-sticky-bar.visible{display:block;}
 .bld-sticky-inner{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;max-width:920px;margin:0 auto;}
 .bld-sticky-hint{flex:1 1 100%;text-align:center;font-size:12px;color:var(--muted);line-height:1.35;}
-.bld-sticky-inner .btn{flex:1 1 auto;min-width:140px;max-width:280px;}
+.bld-sticky-inner .btn{flex:1 1 auto;min-width:140px;max-width:280px;min-height:48px;touch-action:manipulation;pointer-events:auto;}
+/* When plan sticky is up, tuck AI FAB so it doesn't cover Walk Me Through */
+body.bld-sticky-open .ai-fab{bottom:150px;}
+body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .lc-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;flex-shrink:0;}
 .lc-form-row .field-group{flex:1;min-width:200px;margin-bottom:0;}
 .lc-form-row .field-group.narrow{flex:0 0 180px;min-width:140px;}
@@ -653,8 +657,10 @@ body.build-results-open .wizard-body .wizard-step.active#bld-2{overflow:visible!
   .wallet-btn::before{content:'🔗';font-size:18px;}
   .wallet-btn.connected::before{content:'✅';font-size:18px;}
   .ai-fab{bottom:74px;}
-  .bld-sticky-bar{left:0;bottom:52px;padding:8px 12px 10px;}
+  .bld-sticky-bar{left:0;right:0;bottom:52px;padding:10px 12px 12px;z-index:160;}
   body.build-results-open .main{padding-bottom:120px;}
+  body.bld-sticky-open .ai-fab{bottom:168px;}
+  body.bld-sticky-open.build-results-open .main{padding-bottom:190px!important;}
   .ai-panel{width:calc(100vw - 28px);right:14px;bottom:130px;height:70vh;min-height:300px;}
   .ai-resize-handle{display:none;}
   .choice-grid{grid-template-columns:1fr 1fr;}
@@ -3186,7 +3192,7 @@ function restoreBuildSessionOnLoad() {
     document.getElementById('bld-actions').style.display = draft.actionsVisible ? '' : 'none';
     document.getElementById('bld-start-here').style.display = draft.startHereVisible ? '' : 'none';
     scrollBuildPlanToTop();
-    if (draft.actionsVisible) setBuildStickyBar(true);
+    if (draft.actionsVisible) revealBuildStickyBar();
   }
 }
 
@@ -3208,9 +3214,28 @@ function setBuildStickyBar(show) {
   const bar = document.getElementById('bld-sticky-bar');
   if (!bar) return;
   const plan = getBuildPlanText();
-  const visible = !!show && plan.length > 30;
+  const actionsOn = document.getElementById('bld-actions')?.style.display !== 'none';
+  const hasResults = document.getElementById('bld-2')?.classList.contains('has-results');
+  // Show when asked AND we have a real plan (or actions row is up after generate)
+  const visible = !!show && (plan.length > 30 || (actionsOn && hasResults && plan.length > 10));
   bar.classList.toggle('visible', visible);
   bar.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  document.body.classList.toggle('bld-sticky-open', visible);
+  if (visible) {
+    // Keep Walk Me Through in the thumb zone above mobile nav
+    const hint = document.getElementById('bld-sticky-hint');
+    if (hint) hint.textContent = t('bld_sticky_hint') || hint.textContent;
+  }
+}
+
+/** Call after plan HTML is in the DOM — avoids race where plan text isn't readable yet. */
+function revealBuildStickyBar() {
+  setBuildStickyBar(true);
+  requestAnimationFrame(() => {
+    setBuildStickyBar(true);
+    setTimeout(() => setBuildStickyBar(true), 50);
+    setTimeout(() => setBuildStickyBar(true), 200);
+  });
 }
 
 function setBuildResultsMode(on) {
@@ -3243,8 +3268,10 @@ function showBuildStartHere() {
   const card = document.getElementById('bld-start-here');
   setBuildResultsMode(true);
   if (card) card.style.display = '';
+  const actionsEl = document.getElementById('bld-actions');
+  if (actionsEl) actionsEl.style.display = '';
   scrollBuildPlanToTop();
-  setBuildStickyBar(true);
+  revealBuildStickyBar();
 }
 
 function toggleLearnCode() {
@@ -3515,10 +3542,12 @@ Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Your Build Plan</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
     actionsEl.style.display = '';
     showBuildStartHere();
-    persistBuildDraft({ generating: false, actionsVisible: true, startHereVisible: true });
+    revealBuildStickyBar();
+    persistBuildDraft({ generating: false, actionsVisible: true, startHereVisible: true, hasResults: true });
   }).catch(() => {
     resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
     actionsEl.style.display = '';
+    setBuildStickyBar(false);
     persistBuildDraft({ generating: false, actionsVisible: false });
   });
 }
