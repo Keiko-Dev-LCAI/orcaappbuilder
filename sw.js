@@ -1,6 +1,6 @@
 /* Orca PWA service worker — cache shell for faster reloads on mobile */
-const CACHE = 'orca-shell-v7';
-const PRECACHE = ['./', './index.html', './manifest.json'];
+const CACHE = 'orca-shell-v8';
+const PRECACHE = ['./', './index.html', './manifest.json', './i18n-ui.js'];
 
 function isHtmlRequest(url) {
   return url.pathname === '/' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html') || url.pathname.endsWith('.html');

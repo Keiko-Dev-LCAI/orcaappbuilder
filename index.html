@@ -684,7 +684,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 </style>
 <script src="orca-integrations.js"></script>
 <script src="orca-sentry.js" defer></script>
-<script src="orca-sw-register.js" defer></script>
+<script src="orca-sw-register.js?v=8" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script type="module">
   try {
@@ -2932,12 +2932,13 @@ const BUILD_PLAN_RULES = `
 CRITICAL — this person has NEVER built an app and knows NOTHING about coding:
 - Write ONLY in plain English (like explaining to a friend)
 - Do NOT include any code, code blocks, Solidity, HTML, JavaScript, Python, JSON, terminal commands, or file contents
-- Treat this as a regular APP first (payroll, tracking, inventory, etc.) — blockchain/Lightchain is OPTIONAL, not required
+- Treat this as a regular APP first unless they clearly asked for blockchain/Lightchain features
 - Default: smart contract = No, Lightchain wallet = not needed, dApp Hub = skip unless they asked for public hub listing
-- Use tools THEY already mentioned (Excel, Oracle, barcodes, Airtable, Google Sheets) before suggesting new signups
+- Use ONLY tools/platforms THEY already named in their description or uploaded materials — do NOT invent a generic Excel/Oracle/Airtable/Sheets stack if they didn't mention it
+- If they described a Lightchain / DAO / AIVM / docs app, keep steps on THAT product — never restart at "brainstorm what to build"
 - NEVER tell them to visit lightchain.io (wrong domain — parking page). NEVER "sign up at Lightnode" or "explore Lightchain network" as a step
 - Do NOT mention SDKs, npm, Lightnode, or blockchain jargon unless they clearly need on-chain AI or crypto payments
-- Step 1 must be practical (their existing software OR "tap Walk Me Through Step 1 here in OrcaAppBuilder") — not a random external website
+- Step 1 must be a practical next action for THEIR app (or "tap Walk Me Through Step 1 here in OrcaAppBuilder") — not a random external website
 - Do NOT use jargon without a one-sentence plain-English explanation in parentheses
 - Each step must say WHAT to do in everyday language — not how to write code
 - Do NOT assume they want to list on the dApp Hub unless their goal says so
@@ -3318,22 +3319,23 @@ function sendCoachMessage(promptForAI, mode, displayText) {
 function startBuildWalkthrough() {
   const plan = getBuildPlanText();
   if (!plan) { alert(t('msg_describe_app')); return; }
-  const promptForAI = `I'm a complete beginner who has never built an app. I have zero coding experience.
+  const promptForAI = `I already have a COMPLETE build plan for a specific app. The idea is settled — we are BUILDING it, not inventing it.
 
-Here is my build plan:
-${plan.slice(0, 2500)}
+MY BUILD PLAN (source of truth — base every step ONLY on this):
+${plan.slice(0, 3500)}
 
-Help me with ONLY step 1 of this plan.
+Help me with ONLY the first concrete build action for THIS plan (call it Step 1).
 
 Rules for your reply:
 - Plain English only — like talking to a friend who has never coded
 - Do NOT show code, file contents, or terminal commands
-- Give me 3–5 simple bullet points for step 1 ONLY
-- Step 1 must use tools I ALREADY use (from my plan: Excel, Oracle, Airtable, etc.) OR stay in OrcaAppBuilder — do NOT send me to sign up at Lightnode, lightchain.io, or lightchain.ai unless my plan explicitly requires blockchain
-- NEVER use lightchain.io — that URL is wrong
-- Do NOT tell me to open new websites I have never used before unless my plan already named them
-- End by asking if I finished step 1 or need more help`;
-  // Full prompt goes to AIVM; user only sees a short bubble (no rule dump in chat)
+- Give me 3–5 simple bullet points for Step 1 ONLY — a real next action to build THIS app
+- Base your answer ONLY on the tools, platforms, features, and sections named in my build plan above. Do NOT introduce tools my plan did not mention (no generic Excel/Oracle/Airtable/wireframe filler unless my plan named them)
+- The app is ALREADY fully defined in the plan. FORBIDDEN: brainstorm features, decide what to build, sketch random wireframes, "think about what your app needs", or treat this like a blank new idea
+- If the plan is a Lightchain / DAO / docs / AIVM app, Step 1 must be a concrete build step for that product (e.g. screens, governor read, presets, copy/download) — not a discovery workshop
+- Stay in OrcaAppBuilder when possible; do NOT send me to lightchain.io (wrong domain), Lightnode signup, or new websites my plan did not name
+- End by asking if I finished Step 1 or need more help`;
+  // Full prompt → AIVM only. Visible bubble MUST stay one short line (SW cache bump required for clients).
   sendCoachMessage(promptForAI, 'build', 'Walk me through step 1 of my plan');
 }
 
@@ -3544,8 +3546,8 @@ Please create a complete build plan. Include:
 2. One-paragraph plain-English description of what we are building
 3. Do I need blockchain or a smart contract? (Yes/No — default No for business tools like payroll, production tracking, inventory; Yes only if I need crypto payments or on-chain records)
 4. Do I need a server in the cloud? (Yes/No — only if the app needs built-in AI chat or multi-user saved data beyond Excel/Oracle)
-5. Tools needed: only everyday tools — especially ones I already mentioned (Excel, Oracle, Airtable, Google Sheets, simple web form). No Lightnode or lightchain.io signups unless truly required
-6. Step-by-step build order (numbered list, 5-8 steps maximum — simplest path first; step 1 must not be "go sign up at a blockchain website")
+5. Tools needed: only what I already named (or the simplest tools that fit THIS idea). No invented Excel/Airtable stack. No Lightnode or lightchain.io signups unless truly required
+6. Step-by-step build order (numbered list, 5-8 steps maximum — simplest path first; step 1 must be a concrete build action for THIS app, not brainstorming)
 7. Estimated time to build (in hours, for a complete beginner)
 8. Biggest challenge I should be aware of upfront
 

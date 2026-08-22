@@ -3,6 +3,6 @@
   if (cfg.enableServiceWorker === false) return;
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', function () {
-    navigator.serviceWorker.register('./sw.js').catch(function () {});
+    navigator.serviceWorker.register('./sw.js?v=8').catch(function () {});
   });
 })();

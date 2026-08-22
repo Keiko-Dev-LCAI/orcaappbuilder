@@ -193,12 +193,35 @@ async function main() {
     const walk = String(startBuildWalkthrough);
     const hasDisplayArg = src.includes('displayText') || src.includes('promptForAI');
     const shortBubble = walk.includes('Walk me through step 1 of my plan');
-    const stillSendsFull = walk.includes('NEVER use lightchain.io');
+    const stillSendsFull = walk.includes('lightchain.io') && walk.includes('MY BUILD PLAN');
     return { hasDisplayArg, shortBubble, stillSendsFull };
   });
   if (coach.hasDisplayArg && coach.shortBubble && coach.stillSendsFull)
     pass('Walkthrough splits display bubble from full AI prompt');
   else fail('Walkthrough prompt leak fix incomplete: ' + JSON.stringify(coach));
+
+  const coach3 = await page.evaluate(() => {
+    const walk = String(startBuildWalkthrough);
+    return {
+      noExcelHardcode: !walk.includes('Excel, Oracle, Airtable'),
+      forbidsBrainstorm: walk.includes('FORBIDDEN') && walk.includes('brainstorm'),
+      planOnly: walk.includes('ONLY on the tools') || walk.includes('ONLY on this'),
+      swBumpHint: true
+    };
+  });
+  if (coach3.noExcelHardcode && coach3.forbidsBrainstorm && coach3.planOnly)
+    pass('Walkthrough anchored to plan (no Excel hardcode / no brainstorm restart)');
+  else fail('Walkthrough plan-anchor incomplete: ' + JSON.stringify(coach3));
+
+  const sw = await page.evaluate(async () => {
+    try {
+      const r = await fetch('./sw.js?v=8', { cache: 'no-store' });
+      const t = await r.text();
+      return /orca-shell-v8/.test(t);
+    } catch (e) { return false; }
+  });
+  if (sw) pass('Service worker cache bumped to v8');
+  else fail('sw.js not at orca-shell-v8');
 
   // Nav sections exist
   for (const id of ['home','learn','brainstorm','build','launchcheck','troubleshoot','projects','links']) {
