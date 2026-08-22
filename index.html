@@ -160,6 +160,40 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   #bld-situation-grid{grid-template-columns:1fr 1fr!important;gap:8px;}
   #bld-situation-grid .choice-sub{font-size:11px;line-height:1.3;}
 }
+/* Already-started help tiles + clear bottom chrome (mobile nav was eating taps) */
+#bld-2 .bld-form-block .card{flex:none!important;overflow:visible!important;height:auto;}
+#bld-exist-help-grid{
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:10px;
+  margin-top:8px;
+  position:relative;
+  z-index:6;
+}
+#bld-exist-help-grid .choice-card{
+  appearance:none;
+  -webkit-appearance:none;
+  border:2px solid var(--border);
+  background:var(--bg3);
+  color:inherit;
+  font:inherit;
+  width:100%;
+  cursor:pointer;
+  pointer-events:auto;
+  touch-action:manipulation;
+}
+#bld-exist-help-grid .choice-card.selected-green{
+  border-color:var(--green);
+  background:rgba(0,230,118,.08);
+}
+#bld-2 .bld-step-nav{
+  position:relative;
+  z-index:6;
+  padding-bottom:max(24px, calc(72px + env(safe-area-inset-bottom, 0px)));
+  margin-top:12px;
+  gap:10px;
+  display:flex;
+  flex-wrap:wrap;
+}
 .wizard-body .wizard-progress{flex-shrink:0;margin-bottom:10px;}
 #bld-result,#bwiz-result{max-height:none;}
 .wizard-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
@@ -1997,18 +2031,31 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
               <label class="field-label" id="bld-exist-errors-label">Paste error messages (optional)</label>
               <textarea class="field-input field-textarea" id="bld-exist-errors" rows="3" placeholder="Console errors, Railway logs, wallet errors…" style="font-family:'Fira Code','Courier New',monospace;font-size:12px;"></textarea>
             </div>
-            <div class="field-group">
+            <div class="field-group" id="bld-exist-help-wrap">
               <label class="field-label" id="bld-exist-help-label">What kind of help do you need?</label>
-              <div class="choice-grid" style="grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px;" id="bld-exist-help-grid">
-                <div class="choice-card selected" onclick="selectBldExistHelp(this,'finish')"><div class="choice-icon">🏁</div><div class="choice-title" id="bld-exist-finish">Finish It</div><div class="choice-sub">Help me complete it</div></div>
-                <div class="choice-card" onclick="selectBldExistHelp(this,'fix')"><div class="choice-icon">🔧</div><div class="choice-title" id="bld-exist-fix">Fix It</div><div class="choice-sub">Something's broken</div></div>
-                <div class="choice-card" onclick="selectBldExistHelp(this,'review')"><div class="choice-icon">🔍</div><div class="choice-title" id="bld-exist-review">Review It</div><div class="choice-sub">Check for issues</div></div>
+              <div class="field-sub" id="bld-exist-help-hint">Tap one, then tap the green button below.</div>
+              <div class="choice-grid bld-exist-help-grid" id="bld-exist-help-grid" role="group" aria-label="Help type">
+                <button type="button" class="choice-card selected-green" data-exist-help="finish" id="bld-exist-help-finish">
+                  <div class="choice-icon">🏁</div>
+                  <div class="choice-title" id="bld-exist-finish">Finish It</div>
+                  <div class="choice-sub">Help me complete it</div>
+                </button>
+                <button type="button" class="choice-card" data-exist-help="fix" id="bld-exist-help-fix">
+                  <div class="choice-icon">🔧</div>
+                  <div class="choice-title" id="bld-exist-fix">Fix It</div>
+                  <div class="choice-sub">Something's broken</div>
+                </button>
+                <button type="button" class="choice-card" data-exist-help="review" id="bld-exist-help-review">
+                  <div class="choice-icon">🔍</div>
+                  <div class="choice-title" id="bld-exist-review">Review It</div>
+                  <div class="choice-sub">Check for issues</div>
+                </button>
               </div>
               <input type="hidden" id="bld-exist-help" value="finish">
             </div>
           </div>
 
-          <div class="step-nav">
+          <div class="step-nav bld-step-nav">
             <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
             <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
           </div>
@@ -2510,7 +2557,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
-<script src="i18n-ui.js?v=20260822a"></script>
+<script src="i18n-ui.js?v=20260822c"></script>
 
 <!-- ═══ JAVASCRIPT ═══ -->
 <script>
@@ -2955,11 +3002,39 @@ function syncBldExistingUI(mode) {
 
 function selectBldExistHelp(el, value) {
   const grid = document.getElementById('bld-exist-help-grid');
-  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
-  if (el) el.classList.add('selected');
+  if (grid) {
+    grid.querySelectorAll('.choice-card').forEach(c => {
+      c.classList.remove('selected', 'selected-green', 'selected-purple');
+    });
+  }
+  const card = el && el.closest ? (el.closest('.choice-card') || el) : el;
+  if (card) card.classList.add('selected-green');
   const input = document.getElementById('bld-exist-help');
-  if (input) input.value = value;
+  if (input) input.value = value || 'finish';
+  // Reflect choice on the main CTA so it feels like the button “did something”
+  const genBtn = document.getElementById('bld-generate-btn');
+  if (genBtn && document.getElementById('bld-mode')?.value === 'existing') {
+    const labels = {
+      finish: '🤖 Analyze — Finish It',
+      fix: '🤖 Analyze — Fix It',
+      review: '🤖 Analyze — Review It'
+    };
+    genBtn.textContent = labels[value] || t('bld_generate_existing');
+  }
   persistBuildDraft();
+}
+
+function initBldExistHelpButtons() {
+  const grid = document.getElementById('bld-exist-help-grid');
+  if (!grid || grid.dataset.bound === '1') return;
+  grid.dataset.bound = '1';
+  grid.addEventListener('click', (e) => {
+    const card = e.target.closest('.choice-card[data-exist-help]');
+    if (!card || !grid.contains(card)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    selectBldExistHelp(card, card.getAttribute('data-exist-help') || 'finish');
+  });
 }
 
 /** Uploaded file texts for Already-started mode (client-side read). */
@@ -3039,13 +3114,12 @@ function restoreBuildSessionOnLoad() {
   if (draft.existCode) document.getElementById('bld-exist-code').value = draft.existCode;
   if (draft.existErrors) document.getElementById('bld-exist-errors').value = draft.existErrors;
   if (draft.existHelp) {
-    document.getElementById('bld-exist-help').value = draft.existHelp;
+    const helpVal = draft.existHelp;
+    document.getElementById('bld-exist-help').value = helpVal;
     const grid = document.getElementById('bld-exist-help-grid');
     if (grid) {
-      grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
-      const idx = { finish: 0, fix: 1, review: 2 }[draft.existHelp] ?? 0;
-      const card = grid.querySelectorAll('.choice-card')[idx];
-      if (card) card.classList.add('selected');
+      const card = grid.querySelector(`.choice-card[data-exist-help="${helpVal}"]`);
+      selectBldExistHelp(card || grid.querySelector('.choice-card'), helpVal);
     }
   }
   if (draft.existFileNames && draft.existFileNames.length) {
@@ -3891,6 +3965,7 @@ applyI18n();
 initLanguagePickers();
 bindBuildDraftAutosave();
 initBldExistFileInput();
+initBldExistHelpButtons();
 restoreBuildSessionOnLoad();
 
 // ── PROJECTS ──
