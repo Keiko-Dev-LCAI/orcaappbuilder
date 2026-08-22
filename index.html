@@ -194,6 +194,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   display:flex;
   flex-wrap:wrap;
 }
+.bld-escape-bar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(0,230,118,.35);
+  background:rgba(0,230,118,.06);
+  position:relative;
+  z-index:8;
+}
+.bld-escape-bar .btn{
+  flex:0 0 auto;
+  min-height:44px;
+  touch-action:manipulation;
+  border-color:var(--green)!important;
+  color:var(--green)!important;
+  font-weight:800;
+}
+.bld-escape-hint{
+  flex:1 1 180px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.35;
+}
+#bld-escape-bar.bld-escape-hidden{display:none;}
 .wizard-body .wizard-progress{flex-shrink:0;margin-bottom:10px;}
 #bld-result,#bwiz-result{max-height:none;}
 .wizard-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
@@ -1940,6 +1968,10 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         <div class="page-badge green" id="build-badge">🔨 BUILD WIZARD</div>
         <h1 class="page-title" id="build-title">Build Your App</h1>
         <p class="page-sub" id="build-sub">Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first.</p>
+        <div id="bld-escape-bar" class="bld-escape-bar">
+          <button type="button" class="btn btn-ghost" id="bld-start-over-btn" onclick="resetBuildWizard()">← Scratch or Already started</button>
+          <span class="bld-escape-hint" id="bld-escape-hint">Always available — leaves the upload/plan screen and shows both options again.</span>
+        </div>
       </div>
       <div class="callout warn callout-compact">
         <div class="callout-icon">💻</div>
@@ -2056,8 +2088,9 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           </div>
 
           <div class="step-nav bld-step-nav">
-            <button class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back</button>
-            <button class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
+            <button type="button" class="btn btn-ghost" id="bld-back" onclick="bldBack(2)">← Back to options</button>
+            <button type="button" class="btn btn-ghost" id="bld-start-over-inline" onclick="resetBuildWizard()" style="border-color:var(--green);color:var(--green);font-weight:800;">Start over</button>
+            <button type="button" class="btn btn-primary green" id="bld-generate-btn" onclick="bldGenerate()">🤖 Generate My Build Plan</button>
           </div>
         </div>
         <div class="bld-results-scroll" id="bld-results-scroll">
@@ -2630,6 +2663,7 @@ function showSection(name) {
   try { localStorage.setItem('orcaapp_last_section', name); } catch (e) {}
   if (name === 'build') {
     persistBuildDraft({ section: 'build' });
+    updateBldEscapeBar();
     if (document.getElementById('bld-2')?.classList.contains('has-results')) {
       document.documentElement.classList.add('build-results-open');
       document.body.classList.add('build-results-open');
@@ -3132,6 +3166,7 @@ function restoreBuildSessionOnLoad() {
     document.getElementById('bld-2').classList.add('active');
     bldCurrentStep = 2;
     updateBldProgress();
+    updateBldEscapeBar();
   }
 
   if (draft.generating) {
@@ -3185,11 +3220,15 @@ function setBuildResultsMode(on) {
   if (section) section.classList.toggle('build-results-mode', !!on);
   document.documentElement.classList.toggle('build-results-open', !!on);
   document.body.classList.toggle('build-results-open', !!on);
+  // Results mode hides the form — keep form display recoverable
+  const form = document.querySelector('#bld-2 .bld-form-block');
+  if (form) form.style.display = on ? 'none' : '';
   if (!on) {
     setBuildStickyBar(false);
     window.scrollTo(0, 0);
     if (section) section.scrollTop = 0;
   }
+  updateBldEscapeBar();
 }
 
 function scrollBuildPlanToTop() {
@@ -3288,6 +3327,7 @@ function bldNext(from) {
     updateBldProgress();
     syncBldExistingUI(mode);
     persistBuildDraft({ step: 2 });
+    updateBldEscapeBar();
     if (mode === 'existing') {
       const panel = document.getElementById('bld-existing-panel');
       if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -3297,17 +3337,111 @@ function bldNext(from) {
 
 function bldBack(from) {
   if (from === 2) {
-    setBuildResultsMode(false);
-    document.getElementById('bld-2').classList.remove('active');
-    document.getElementById('bld-1').classList.add('active');
-    bldCurrentStep = 1;
-    updateBldProgress();
-    document.getElementById('bld-result').innerHTML = '';
-    document.getElementById('bld-actions').style.display = 'none';
+    // Always return to the two options (scratch | already started)
+    goBuildSituationStep({ clearResults: true });
+  }
+}
+
+/** Hard reset / escape hatch — unsticks upload or plan screens. */
+function clearBuildDraftStorage() {
+  try { localStorage.removeItem(BUILD_DRAFT_KEY); } catch (e) {}
+}
+
+function goBuildSituationStep(opts) {
+  const clearResults = !opts || opts.clearResults !== false;
+  setBuildResultsMode(false);
+  const bld1 = document.getElementById('bld-1');
+  const bld2 = document.getElementById('bld-2');
+  if (bld2) {
+    bld2.classList.remove('active');
+    bld2.classList.remove('has-results');
+  }
+  if (bld1) bld1.classList.add('active');
+  bldCurrentStep = 1;
+  updateBldProgress();
+  if (clearResults) {
+    const resultEl = document.getElementById('bld-result');
+    if (resultEl) resultEl.innerHTML = '';
+    const actionsEl = document.getElementById('bld-actions');
+    if (actionsEl) actionsEl.style.display = 'none';
     const startCard = document.getElementById('bld-start-here');
     if (startCard) startCard.style.display = 'none';
-    persistBuildDraft({ step: 1, hasResults: false, resultHtml: '', generating: false, actionsVisible: false, startHereVisible: false });
   }
+  // Re-show form block if it was hidden under results mode
+  const form = document.querySelector('#bld-2 .bld-form-block');
+  if (form) form.style.display = '';
+  updateBldEscapeBar();
+  persistBuildDraft({
+    step: 1,
+    hasResults: false,
+    resultHtml: '',
+    generating: false,
+    actionsVisible: false,
+    startHereVisible: false
+  });
+  try {
+    bld1?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (e) {}
+}
+
+function resetBuildWizard() {
+  // Full start-over: back to both options, clear situation selection + uploads
+  goBuildSituationStep({ clearResults: true });
+  document.getElementById('bld-mode').value = '';
+  document.getElementById('bld-audience').value = '';
+  document.querySelectorAll('#bld-1 .choice-card').forEach(c => {
+    c.classList.remove('selected', 'selected-green', 'selected-purple');
+  });
+  const desc = document.getElementById('bld-description');
+  const users = document.getElementById('bld-users');
+  const code = document.getElementById('bld-exist-code');
+  const errors = document.getElementById('bld-exist-errors');
+  const files = document.getElementById('bld-exist-files');
+  const fileList = document.getElementById('bld-exist-file-list');
+  if (desc) desc.value = '';
+  if (users) users.value = '';
+  if (code) code.value = '';
+  if (errors) errors.value = '';
+  if (files) files.value = '';
+  if (fileList) fileList.textContent = '';
+  _bldExistUploaded = [];
+  document.getElementById('bld-exist-help').value = 'finish';
+  const helpGrid = document.getElementById('bld-exist-help-grid');
+  if (helpGrid) {
+    helpGrid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected', 'selected-green'));
+    const fin = helpGrid.querySelector('[data-exist-help="finish"]');
+    if (fin) fin.classList.add('selected-green');
+  }
+  syncBldExistingUI('');
+  updateBldNextState();
+  clearBuildDraftStorage();
+  persistBuildDraft({
+    step: 1,
+    mode: '',
+    audience: '',
+    description: '',
+    users: '',
+    existCode: '',
+    existErrors: '',
+    existHelp: 'finish',
+    existFileNames: [],
+    hasResults: false,
+    resultHtml: '',
+    generating: false
+  });
+  updateBldEscapeBar();
+  showSection('build');
+}
+
+function updateBldEscapeBar() {
+  const bar = document.getElementById('bld-escape-bar');
+  if (!bar) return;
+  // Show whenever user is past situation step or has results — so they can always escape
+  const onStep2 = document.getElementById('bld-2')?.classList.contains('active');
+  const hasRes = document.getElementById('bld-2')?.classList.contains('has-results');
+  const show = !!(onStep2 || hasRes);
+  bar.classList.toggle('bld-escape-hidden', !show);
 }
 
 function bldGenerate() {
@@ -3967,6 +4101,7 @@ bindBuildDraftAutosave();
 initBldExistFileInput();
 initBldExistHelpButtons();
 restoreBuildSessionOnLoad();
+updateBldEscapeBar();
 
 // ── PROJECTS ──
 const PROJ_STORAGE_KEY = 'orcaappbuilder_projects';
