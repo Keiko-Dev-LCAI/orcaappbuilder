@@ -684,7 +684,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 </style>
 <script src="orca-integrations.js"></script>
 <script src="orca-sentry.js" defer></script>
-<script src="orca-sw-register.js?v=8" defer></script>
+<script src="orca-sw-register.js?v=9" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
 <script type="module">
   try {
@@ -2468,7 +2468,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
             <button class="btn btn-primary" id="proj-import-btn" style="background:var(--purple);color:#fff;" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
             <button class="btn btn-ghost" id="proj-import-cancel" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
           </div>
-          <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ AI analysis requires the OrcaAppBuilder server to be running. The project will save regardless — you can run the AI review later from the project page.</p>
+          <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ If AI is busy, your project still saves — you can run analysis again in a moment from the project page.</p>
         </div>
       </div>
 
@@ -2921,7 +2921,7 @@ After the 3 ideas, recommend which one you think is the best fit for a first-tim
       </div>`;
     actionsEl.style.display = '';
   }).catch(err => {
-    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable right now. Make sure the OrcaAppBuilder server is running on your local machine (port 8187), or that it\'s been deployed to Railway.</div></div>`;
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>AI is busy right now — give it a moment and try again.</div></div>`;
     actionsEl.style.display = '';
   });
 }
@@ -3309,7 +3309,7 @@ function sendCoachMessage(promptForAI, mode, displayText) {
   }).catch((err) => {
     thinking.textContent = (err && err.message)
       ? '⚠️ ' + err.message
-      : '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+      : '⚠️ AI is busy right now — give it a moment and try again.';
   }).finally(() => {
     aiWaiting = false;
     document.getElementById('ai-send').disabled = false;
@@ -3560,7 +3560,7 @@ Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
     revealBuildStickyBar();
     persistBuildDraft({ generating: false, actionsVisible: true, startHereVisible: true, hasResults: true });
   }).catch(() => {
-    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The AI server is not reachable. Make sure the OrcaAppBuilder server is running on port 8187, or deploy it to Railway.</div></div>`;
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>AI is busy right now — give it a moment and try again.</div></div>`;
     actionsEl.style.display = '';
     setBuildStickyBar(false);
     persistBuildDraft({ generating: false, actionsVisible: false });
@@ -3902,7 +3902,7 @@ Be direct. Assume the person is not a developer. Do not ask follow-up questions 
   callAI(prompt, 'troubleshoot').then(reply => {
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔧 Diagnosis &amp; Fix</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
   }).catch(() => {
-    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The OrcaAppBuilder AI server is not running. Start it locally on port 8187 or deploy to Railway.</div></div>`;
+    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>AI is busy right now — give it a moment and try again.</div></div>`;
   });
 }
 
@@ -3953,7 +3953,7 @@ function sendAiMessage() {
   }).catch((err) => {
     thinking.textContent = (err && err.message)
       ? '⚠️ ' + err.message
-      : '⚠️ The AI server is not running right now. Start the OrcaAppBuilder server on port 8187 or deploy it to Railway.';
+      : '⚠️ AI is busy right now — give it a moment and try again.';
   }).finally(() => {
     aiWaiting = false;
     document.getElementById('ai-send').disabled = false;
