@@ -144,6 +144,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .wizard-body .wizard-step.active .card{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-bottom:8px;padding:14px 16px;}
 .wizard-body .wizard-step.active .step-nav{flex-shrink:0;margin-top:0;}
 .wizard-body .wizard-step.active#bld-2,.wizard-body .wizard-step.active#bwiz-3{overflow-y:auto;overscroll-behavior:contain;}
+/* Step 1 (scratch | already started + audience): never clip into one visible card */
+.wizard-body .wizard-step.active#bld-1{
+  overflow-y:auto;overscroll-behavior:contain;display:block;flex:1;min-height:0;
+}
+.wizard-body .wizard-step.active#bld-1 .card{
+  flex:none!important;overflow:visible!important;min-height:0;height:auto;
+}
+#bld-situation-grid{
+  grid-template-columns:1fr 1fr!important;
+  max-width:560px;
+  gap:12px;
+}
+@media(max-width:420px){
+  #bld-situation-grid{grid-template-columns:1fr 1fr!important;gap:8px;}
+  #bld-situation-grid .choice-sub{font-size:11px;line-height:1.3;}
+}
 .wizard-body .wizard-progress{flex-shrink:0;margin-bottom:10px;}
 #bld-result,#bwiz-result{max-height:none;}
 .wizard-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;}
@@ -1906,7 +1922,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       <div class="wizard-step active" id="bld-1">
         <div class="card">
           <div class="card-title" id="bld-s1-title">What's your situation?</div>
-          <div class="choice-grid" style="grid-template-columns:1fr 1fr;max-width:500px;">
+          <div class="choice-grid" id="bld-situation-grid">
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','scratch','selected-green')" style="text-align:center;">
               <div class="choice-icon">🌱</div>
               <div class="choice-label" id="bld-scratch-label">Starting from scratch</div>
@@ -1915,7 +1931,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','existing','selected-green')" style="text-align:center;">
               <div class="choice-icon">🔧</div>
               <div class="choice-label" id="bld-existing-label">Already started</div>
-              <div class="choice-sub" id="bld-existing-sub">Upload or paste what you have — code, files, errors — as your starting point</div>
+              <div class="choice-sub" id="bld-existing-sub">I have code or a partial app — upload/paste it next</div>
             </div>
           </div>
         </div>

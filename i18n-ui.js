@@ -191,7 +191,7 @@ window.ORCAAPP_I18N = {
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
     bld_existing_label: "Already started",
-    bld_existing_sub: "Upload or paste what you have — code, files, errors — as your starting point",
+    bld_existing_sub: "I have code or a partial app — upload/paste it next",
     bld_desc_title: "Describe your app idea",
     bld_desc_title_existing: "Tell us about your existing app",
     bld_desc_label: "What is your app? What does it do?",
