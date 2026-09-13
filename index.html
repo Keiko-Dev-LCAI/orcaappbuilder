@@ -686,6 +686,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 <script src="orca-sentry.js" defer></script>
 <script src="orca-sw-register.js?v=9" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="keiko-pay.js"></script>
 <script type="module">
   try {
     const { EthereumProvider } = await import('https://esm.sh/@walletconnect/ethereum-provider@2.17.3');
@@ -847,6 +848,18 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
           <div class="tip-custom">
             <input type="number" id="tip-custom-amount" placeholder="Custom" min="0.01" step="0.01">
             <button id="tip-send-btn" onclick="sendCustomTip()">Send ✨</button>
+          </div>
+          <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+            <div class="tip-jar-compact-sub" style="margin-bottom:6px">💜 Tip in KEIKO</div>
+            <div class="tip-btns">
+              <button class="tip-btn" onclick="sendKeikoTip(5000)">5K</button>
+              <button class="tip-btn" onclick="sendKeikoTip(25000)">25K</button>
+              <button class="tip-btn" onclick="sendKeikoTip(100000)">100K</button>
+            </div>
+            <div class="tip-custom">
+              <input type="number" id="tip-keiko-custom-amount" placeholder="KEIKO" min="1" step="1" value="10000">
+              <button type="button" onclick="sendCustomKeikoTip()">Send KEIKO</button>
+            </div>
           </div>
           <div id="tip-status"></div>
         </div>
@@ -4831,6 +4844,58 @@ async function doSendTip(amountStr) {
       status.textContent = 'Tip cancelled.';
     } else {
       status.textContent = 'Transaction failed: ' + (e.shortMessage || e.message || 'unknown error');
+      status.style.color = 'var(--red)';
+    }
+  }
+}
+
+async function sendKeikoTip(amount) {
+  await doSendKeikoTip(Number(amount));
+}
+
+async function sendCustomKeikoTip() {
+  const val = (document.getElementById('tip-keiko-custom-amount').value || '').trim();
+  const n = Number(val);
+  if (!val || !Number.isFinite(n) || n <= 0) {
+    alert('Please enter a valid KEIKO tip amount.');
+    return;
+  }
+  await doSendKeikoTip(n);
+}
+
+async function doSendKeikoTip(amount) {
+  const status = document.getElementById('tip-status');
+  status.style.color = 'var(--muted)';
+  if (typeof KeikoPay === 'undefined') {
+    status.textContent = 'KEIKO pay helper not loaded.';
+    status.style.color = 'var(--yellow)';
+    return;
+  }
+  if (!walletSigner) {
+    status.textContent = 'Connecting wallet first…';
+    await connectWallet();
+    if (!walletSigner) {
+      status.textContent = 'Wallet not connected. Connect above and try again.';
+      status.style.color = 'var(--yellow)';
+      return;
+    }
+  }
+  try {
+    status.textContent = '⏳ Confirm KEIKO transfer in your wallet…';
+    const r = await KeikoPay.pay({
+      to: TIP_ADDRESS,
+      amount: amount,
+      // tip-only — no backend verify
+    });
+    if (!r.ok) throw new Error(r.error || 'KEIKO tip failed');
+    const txUrl = 'https://mainnet.lightscan.app/tx/' + r.txHash;
+    status.innerHTML = '🎉 Thank you! ' + amount + ' KEIKO sent — <a href="' + txUrl + '" target="_blank" rel="noopener" style="color:var(--cyan)">view tx</a>';
+    status.style.color = 'var(--green)';
+  } catch (e) {
+    if (e && (e.code === 4001 || /reject|denied/i.test(String(e.message || '')))) {
+      status.textContent = 'Tip cancelled.';
+    } else {
+      status.textContent = 'KEIKO tip failed: ' + ((e && (e.shortMessage || e.message)) || 'unknown error');
       status.style.color = 'var(--red)';
     }
   }
