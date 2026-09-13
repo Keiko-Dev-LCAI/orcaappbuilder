@@ -14,13 +14,14 @@
   --cyan:   #00d4ff;
   --cyan2:  #0099cc;
   --green:  #00e676;
-  --purple: #a855f7;
+  --purple: #c4b5fd;
   --orange: #ff9800;
   --red:    #ff5252;
   --yellow: #fbbf24;
   --text:   #e8eaf0;
-  --muted:  #7a8499;
+  --muted:  #9aa3b5;
   --code-bg:#0a0f1e;
+  --on-accent: #0a0f1e;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100dvh;overflow:hidden;}
@@ -35,7 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .header-tag{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.25);color:var(--cyan);padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;letter-spacing:.5px;}
 .header-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
 .health-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;transition:background .3s;}
-.health-dot.online{background:var(--green);box-shadow:0 0 6px rgba(0,230,118,.5);}
+.health-dot.online{background:var(--green);}
 .health-label{font-size:15px;color:var(--muted);}
 /* ── WALLET CONNECT ── */
 .wallet-btn{padding:9px 18px;border-radius:20px;border:1px solid var(--border);background:var(--bg3);color:var(--muted);font-size:18px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap;}
@@ -62,10 +63,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:68px;bottom:0;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;}
 .sidebar-logo{padding:24px 22px 12px;border-bottom:1px solid var(--border);}
 .sidebar-tagline{font-size:12px;color:var(--muted);line-height:1.4;padding:8px 14px 6px;}
-.nav-section{padding:10px 14px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
-.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;font-size:14px;color:var(--muted);}
+.nav-section{padding:10px 14px 4px;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--muted);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;transition:all .2s;border-radius:8px;margin:0 8px;font-size:14px;color:var(--muted);}
 .nav-item:hover{background:var(--bg3);color:var(--text);}
-.nav-item.active{background:rgba(0,212,255,.07);border-left-color:var(--cyan);color:var(--cyan);}
+.nav-item.active{background:rgba(0,212,255,.1);color:var(--cyan);}
 .nav-item .nav-icon{font-size:18px;width:22px;text-align:center;flex-shrink:0;}
 .nav-item .nav-label{font-weight:700;}
 .nav-item .nav-sub{font-size:12px;color:var(--muted);display:block;margin-top:2px;line-height:1.3;}
@@ -73,8 +74,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sidebar-footer{margin-top:auto;padding:10px 14px 12px;border-top:1px solid var(--border);flex-shrink:0;}
 .android-install-btn{display:block;text-align:center;background:var(--cyan);color:#000;font-weight:800;font-size:13px;padding:9px 10px;border-radius:8px;text-decoration:none;margin-bottom:6px;}
 .android-install-btn:hover{opacity:.9;}
-.android-install-hint{font-size:11px;color:var(--muted);line-height:1.35;}
-.sidebar-terms{font-size:11px;color:var(--muted);text-decoration:none;display:block;margin-top:8px;text-align:center;}
+.android-install-hint{font-size:12px;color:var(--muted);line-height:1.35;}
+.sidebar-terms{font-size:12px;color:var(--muted);text-decoration:none;display:block;margin-top:8px;text-align:center;}
 .sidebar-terms:hover{color:var(--cyan);}
 
 /* ── MAIN ── */
@@ -90,11 +91,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .home-dashboard{display:flex;flex-direction:column;gap:10px;}
 .hero{text-align:center;padding:8px 0 4px;flex-shrink:0;}
 .hero-orca{font-size:40px;margin-bottom:4px;line-height:1;}
-.hero-title{font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--cyan),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:6px;line-height:1.15;}
+.hero-title{font-size:28px;font-weight:900;color:var(--cyan);margin-bottom:6px;line-height:1.15;}
 .hero-sub{font-size:15px;color:var(--muted);max-width:720px;margin:0 auto 8px;line-height:1.45;}
 .mode-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0;flex-shrink:0;}
 .mode-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 10px;cursor:pointer;transition:all .2s;text-align:center;}
-.mode-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,212,255,.12);}
+.mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.35);border-color:rgba(0,212,255,.35);}
 .mode-card-icon{font-size:26px;margin-bottom:6px;}
 .mode-card-title{font-size:14px;font-weight:800;margin-bottom:4px;}
 .mode-card-desc{font-size:12px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -118,7 +119,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .launch-finding.warning{border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.06);}
 .launch-finding.ok{border-color:rgba(0,230,118,.3);background:rgba(0,230,118,.06);}
 .launch-finding.info{border-color:rgba(0,212,255,.25);background:rgba(0,212,255,.05);}
-.launch-sev{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:4px 8px;border-radius:4px;flex-shrink:0;margin-top:2px;}
+.launch-sev{font-size:12px;font-weight:800;letter-spacing:.03em;padding:4px 8px;border-radius:4px;flex-shrink:0;margin-top:2px;}
 .launch-sev.critical{background:rgba(255,82,82,.2);color:#ff8a80;}
 .launch-sev.warning{background:rgba(251,191,36,.2);color:var(--yellow);}
 .launch-sev.ok{background:rgba(0,230,118,.2);color:var(--green);}
@@ -126,8 +127,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .launch-finding-body{flex:1;min-width:0;}
 .launch-finding-title{font-weight:800;font-size:14px;margin-bottom:4px;}
 .launch-finding-detail{font-size:13px;color:var(--muted);line-height:1.55;}
-.launch-finding-src{font-size:11px;color:var(--muted);margin-top:6px;opacity:.85;}
-.launch-snippet{font-family:monospace;font-size:11px;color:var(--text);background:var(--code-bg);padding:6px 8px;border-radius:6px;margin-top:6px;word-break:break-all;}
+.launch-finding-src{font-size:12px;color:var(--muted);margin-top:6px;opacity:.85;}
+.launch-snippet{font-family:monospace;font-size:12px;color:var(--text);background:var(--code-bg);padding:6px 8px;border-radius:6px;margin-top:6px;word-break:break-all;}
 .launch-verdict-banner{border-radius:14px;padding:20px 22px;margin-bottom:16px;border:2px solid var(--border);}
 .launch-verdict-banner.not-ready{background:rgba(255,82,82,.1);border-color:rgba(255,82,82,.45);}
 .launch-verdict-banner.warnings{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);}
@@ -138,7 +139,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .page-header.compact-head,.page-header.lc-compact-head{margin-bottom:8px;flex-shrink:0;}
 .page-header.compact-head .page-title,.page-header.lc-compact-head .page-title{font-size:22px;margin-bottom:4px;}
 .page-header.compact-head .page-sub,.page-header.lc-compact-head .page-sub{font-size:13px;margin-bottom:0;line-height:1.4;}
-.page-header.compact-head .page-badge,.page-header.lc-compact-head .page-badge{font-size:11px;margin-bottom:6px;}
+.page-header.compact-head .page-badge,.page-header.lc-compact-head .page-badge{font-size:12px;margin-bottom:6px;}
 .wizard-body{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
 .wizard-body .wizard-step.active{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;}
 .wizard-body .wizard-step.active .card{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-bottom:8px;padding:14px 16px;}
@@ -158,7 +159,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 }
 @media(max-width:420px){
   #bld-situation-grid{grid-template-columns:1fr 1fr!important;gap:8px;}
-  #bld-situation-grid .choice-sub{font-size:11px;line-height:1.3;}
+  #bld-situation-grid .choice-sub{font-size:12px;line-height:1.3;}
 }
 /* Already-started help tiles + clear bottom chrome (mobile nav was eating taps) */
 #bld-2 .bld-form-block .card{flex:none!important;overflow:visible!important;height:auto;}
@@ -277,7 +278,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .lc-results-scroll::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.28);}
 .fix-step-compact.done{opacity:.55;}
 .lc-next-step{border:2px solid rgba(0,212,255,.45);border-radius:12px;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,230,118,.06));padding:14px 16px;margin-bottom:10px;flex-shrink:0;}
-.lc-next-step-head{font-size:11px;font-weight:800;color:var(--cyan);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.lc-next-step-head{font-size:12px;font-weight:800;color:var(--cyan);letter-spacing:.03em;margin-bottom:6px;}
 .lc-next-step-title{font-size:15px;font-weight:900;margin-bottom:8px;line-height:1.35;}
 .lc-next-step-do{font-size:13px;line-height:1.55;color:var(--text);margin-bottom:8px;}
 .lc-next-step-check{font-size:12px;color:var(--green);font-weight:700;line-height:1.45;margin-bottom:10px;}
@@ -294,7 +295,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .fix-step-compact{display:flex;align-items:center;gap:8px;padding:6px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;}
 .fix-step-compact:last-child{border-bottom:none;}
 .fix-step-compact .fix-step-title{flex:1;font-weight:600;}
-.fix-step-compact .fix-step-help button{font-size:11px;}
+.learn-step-compact .learn-step-help button{font-size:12px;}
 .lc-ai-details{border:1px solid var(--border);border-radius:10px;background:var(--card);}
 .lc-ai-details summary{padding:10px 14px;cursor:pointer;font-weight:800;font-size:13px;color:var(--cyan);}
 .lc-ai-details .ai-response-box{border:none;margin:0;}
@@ -321,17 +322,17 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .free-banner-headline{font-size:14px;font-weight:900;color:#00c864;margin-bottom:4px;letter-spacing:-.2px;}
 .free-banner-body{font-size:13px;color:var(--muted);line-height:1.4;margin-bottom:6px;}
 .free-stack{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
-.free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#00c864;}
+.free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:#00c864;}
 .free-stack-item span{color:var(--muted);font-weight:400;}
 .home-bottom{display:flex;gap:12px;margin-top:4px;align-items:flex-start;}
 .tip-jar-compact{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;width:200px;flex-shrink:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
 .tip-jar-compact-title{font-size:13px;font-weight:800;margin-bottom:4px;}
-.tip-jar-compact-sub{font-size:11px;color:var(--muted);margin-bottom:8px;line-height:1.3;}
+.tip-jar-compact-sub{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.3;}
 .tip-jar-compact .tip-btns{gap:6px;margin-bottom:8px;}
-.tip-jar-compact .tip-btn{padding:6px 10px;font-size:11px;}
-.tip-jar-compact .tip-custom input{width:70px;padding:5px 8px;font-size:11px;}
-.tip-jar-compact .tip-custom button{padding:5px 10px;font-size:11px;}
-.pod-title{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+.tip-jar-compact .tip-btn{padding:6px 10px;font-size:12px;}
+.tip-jar-compact .tip-custom input{width:70px;padding:5px 8px;font-size:12px;}
+.tip-jar-compact .tip-custom button{padding:5px 10px;font-size:12px;}
+.pod-title{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.03em;margin-bottom:10px;}
 .pod-apps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
 .pod-hub-link{display:block;margin-top:10px;font-size:12px;font-weight:700;color:var(--cyan);text-decoration:none;text-align:center;}
 .pod-hub-link:hover{text-decoration:underline;}
@@ -345,7 +346,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 
 /* ── PAGE HEADERS ── */
 .page-header{margin-bottom:36px;flex-shrink:0;}
-.page-badge{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.page-badge{font-size:13px;font-weight:700;letter-spacing:.02em;margin-bottom:12px;}
 .page-badge.cyan{color:var(--cyan);}
 .page-badge.purple{color:var(--purple);}
 .page-badge.green{color:var(--green);}
@@ -370,7 +371,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 
 /* ── CARDS / CALLOUTS ── */
 .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;}
-.card-title{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:14px;}
+.card-title{font-size:16px;font-weight:700;letter-spacing:.02em;color:var(--muted);margin-bottom:14px;}
 .card p{font-size:18px;line-height:1.8;margin-bottom:12px;}
 .card p:last-child{margin-bottom:0;}
 .card ul,.card ol{padding-left:22px;font-size:18px;line-height:2;}
@@ -407,8 +408,8 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .btn{padding:13px 26px;border-radius:8px;font-size:18px;font-weight:700;cursor:pointer;border:none;transition:all .2s;font-family:inherit;line-height:1;}
 .btn-primary{background:var(--cyan);color:#000;}
 .btn-primary:hover{background:#00b8e0;}
-.btn-primary.purple{background:var(--purple);color:#fff;}
-.btn-primary.purple:hover{background:#9333ea;}
+.btn-primary.purple{background:var(--purple);color:var(--on-accent);}
+.btn-primary.purple:hover{background:#a78bfa;}
 .btn-primary.green{background:var(--green);color:#000;}
 .btn-primary.green:hover{background:#00c853;}
 .btn-primary.orange{background:var(--orange);color:#000;}
@@ -422,7 +423,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .os-picker{display:flex;gap:10px;flex-wrap:wrap;}
 .os-btn{background:var(--bg3);border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:10px;cursor:pointer;font-size:18px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:8px;font-family:inherit;}
 .os-btn:hover{border-color:var(--cyan);color:var(--text);background:var(--bg2);}
-.os-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.12);box-shadow:0 0 12px rgba(0,212,255,.15);}
+.os-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.12);}
 .os-please{margin-top:12px;font-size:13px;color:var(--orange);font-style:italic;}
 .os-block{display:none!important;}
 #section-learn.os-win .os-block.win{display:block!important;}
@@ -430,7 +431,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 #section-learn.os-linux .os-block.linux{display:block!important;}
 #section-learn.os-win .os-block.win-mac,#section-learn.os-mac .os-block.win-mac{display:block!important;}
 #section-learn.os-win .os-please,#section-learn.os-mac .os-please,#section-learn.os-linux .os-please{display:none!important;}
-.os-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;margin-right:6px;vertical-align:middle;}
+.os-tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px;margin-right:6px;vertical-align:middle;}
 .os-tag.win{background:rgba(0,120,215,.2);color:#4db3ff;border:1px solid rgba(0,120,215,.3);}
 .os-tag.mac{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
 .os-tag.linux{background:rgba(255,152,0,.15);color:#ffb74d;border:1px solid rgba(255,152,0,.3);}
@@ -440,7 +441,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .wizard-step.active{display:block;}
 .wizard-progress{display:flex;gap:8px;margin-bottom:28px;}
 .wiz-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:all .3s;}
-.wiz-dot.active{background:var(--cyan);box-shadow:0 0 8px rgba(0,212,255,.4);}
+.wiz-dot.active{background:var(--cyan);}
 .wiz-dot.done{background:var(--green);}
 
 .choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:24px;}
@@ -478,7 +479,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 /* ── PROJECTS ── */
 .proj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .25s;position:relative;}
 .proj-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,.1);}
-.proj-status-badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:12px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
+.proj-status-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:12px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
 .proj-card-name{font-size:18px;font-weight:800;margin-bottom:8px;line-height:1.3;}
 .proj-card-desc{font-size:18px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
 .proj-card-meta{font-size:18px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;}
@@ -497,7 +498,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .proj-notes-area:focus{outline:none;border-color:var(--cyan);}
 
 /* ── LINKS & ACCOUNTS ── */
-.links-section-title{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:32px 0 16px;display:flex;align-items:center;gap:8px;}
+.links-section-title{font-size:14px;font-weight:800;letter-spacing:.02em;color:var(--muted);margin:32px 0 16px;display:flex;align-items:center;gap:8px;}
 .links-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
 .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px;}
 .resource-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px;text-decoration:none;transition:all .2s;cursor:pointer;}
@@ -565,7 +566,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 /* ── MOBILE BOTTOM NAV ── */
 .mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:150;padding:0;}
 .mobile-nav-items{display:flex;}
-.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;cursor:pointer;font-size:10px;font-weight:700;color:var(--muted);transition:all .2s;border:none;background:none;font-family:inherit;}
+.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;cursor:pointer;font-size:12px;font-weight:700;color:var(--muted);transition:all .2s;border:none;background:none;font-family:inherit;}
 .mobile-nav-item.active{color:var(--cyan);}
 .mobile-nav-item .mn-icon{font-size:20px;line-height:1;}
 
@@ -589,7 +590,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 /* Compact sidebar on desktop — everything visible without scroll */
 @media(min-width:821px){
   .sidebar{overflow-y:hidden;}
-  .sidebar-tagline{font-size:11px;padding:6px 12px 4px;line-height:1.35;}
+  .sidebar-tagline{font-size:12px;padding:6px 12px 4px;line-height:1.35;}
   .nav-item .nav-sub{display:none;}
   .nav-item{padding:7px 12px;}
   .nav-section{padding:8px 12px 2px;}
@@ -600,7 +601,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
   #section-build .page-header,#section-brainstorm .page-header{margin-bottom:8px;}
   #section-build .page-title,#section-brainstorm .page-title{font-size:22px;margin-bottom:4px;}
   #section-build .page-sub,#section-brainstorm .page-sub{font-size:13px;line-height:1.4;margin-bottom:0;}
-  #section-build .page-badge,#section-brainstorm .page-badge{font-size:11px;margin-bottom:6px;}
+  #section-build .page-badge,#section-brainstorm .page-badge{font-size:12px;margin-bottom:6px;}
   #section-build .callout.warn,#section-brainstorm .callout.warn{padding:10px 14px;margin-bottom:10px;}
   #section-build .callout-body,#section-brainstorm .callout-body{font-size:13px;line-height:1.45;}
   #section-build .callout-body strong,#section-brainstorm .callout-body strong{font-size:13px;margin-bottom:2px;}
@@ -629,7 +630,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 }
 @media(min-width:821px) and (max-height:820px){
   .sidebar{overflow-y:auto;}
-  .nav-item .nav-sub{display:block;font-size:11px;}
+  .nav-item .nav-sub{display:block;font-size:12px;}
 }
 /* ── RESPONSIVE ── */
 @media(max-width:820px){
@@ -871,7 +872,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
     <!-- ══ LEARN ══ -->
     <section id="section-learn" class="section learn-simple">
       <div class="page-header">
-        <div class="page-badge cyan" id="learn-badge">📚 STEP-BY-STEP GUIDE</div>
+        <div class="page-badge cyan" id="learn-badge">📚 Step-by-step guide</div>
         <h1 class="page-title" id="learn-title">Learn to Build on Lightchain</h1>
         <p class="page-sub" id="learn-sub">9 lessons from "I've never built anything" to a live app you can share. Hub listing is optional — written in plain English, no jargon without an explanation.</p>
       </div>
@@ -1871,7 +1872,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ BRAINSTORM ══ -->
     <section id="section-brainstorm" class="section">
       <div class="page-header compact-head">
-        <div class="page-badge purple" id="brainstorm-badge">💡 AI BRAINSTORM WIZARD</div>
+        <div class="page-badge purple" id="brainstorm-badge">💡 AI brainstorm wizard</div>
         <h1 class="page-title" id="brainstorm-title">Find Your App Idea</h1>
         <p class="page-sub" id="brainstorm-sub">Not sure what to build? Answer a few questions and our AI will suggest 3 real, buildable app ideas. No experience needed.</p>
       </div>
@@ -1974,7 +1975,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div class="step-nav">
             <button class="btn btn-ghost" id="bwiz-back" onclick="bwizBack(3)">← Try Different Answers</button>
             <button class="btn btn-primary green" id="bwiz-build-btn" onclick="showSection('build')">🔨 I have an idea — Let's Build It</button>
-            <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bwiz-save-btn" onclick="saveToProject('brainstormResult', document.getElementById('bwiz-result').innerText)">📂 Save to Project</button>
+            <button class="btn btn-primary" style="background:var(--purple);color:var(--on-accent);" id="bwiz-save-btn" onclick="saveToProject('brainstormResult', document.getElementById('bwiz-result').innerText)">📂 Save to Project</button>
           </div>
         </div>
       </div>
@@ -1984,7 +1985,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ BUILD ══ -->
     <section id="section-build" class="section">
       <div class="page-header compact-head">
-        <div class="page-badge green" id="build-badge">🔨 BUILD WIZARD</div>
+        <div class="page-badge green" id="build-badge">🔨 Build wizard</div>
         <h1 class="page-title" id="build-title">Build Your App</h1>
         <p class="page-sub" id="build-sub">Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first.</p>
         <div id="bld-escape-bar" class="bld-escape-bar">
@@ -2125,7 +2126,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div id="bld-actions" style="display:none;margin-top:16px;">
             <div class="bld-actions-primary">
               <button class="btn btn-primary green" id="bld-walk-btn" onclick="startBuildWalkthrough()">🚶 Walk Me Through Step 1</button>
-              <button class="btn btn-primary" style="background:var(--purple);color:#fff;" id="bld-ask-btn" onclick="startBuildAskAnything()">💬 Ask AI Anything</button>
+              <button class="btn btn-primary" style="background:var(--purple);color:var(--on-accent);" id="bld-ask-btn" onclick="startBuildAskAnything()">💬 Ask AI Anything</button>
               <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', getBuildPlanText())">📂 Save to Project</button>
             </div>
             <div class="bld-actions-secondary">
@@ -2158,7 +2159,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ LAUNCH CHECK ══ -->
     <section id="section-launchcheck" class="section">
       <div class="page-header lc-compact-head">
-        <div class="page-badge" id="launch-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 LAUNCH CHECK</div>
+        <div class="page-badge" id="launch-badge" style="background:rgba(251,191,36,.15);color:var(--yellow);border:1px solid rgba(251,191,36,.35);">🚀 Launch check</div>
         <h1 class="page-title" id="launch-title">Is this app ready to go live?</h1>
         <p class="page-sub" id="launch-sub">Paste any public app URL — yours, a friend's, or a hub listing. We scan it and show what to fix before real users open the link.</p>
       </div>
@@ -2207,7 +2208,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <!-- ══ TROUBLESHOOT ══ -->
     <section id="section-troubleshoot" class="section">
       <div class="page-header">
-        <div class="page-badge orange" id="troubleshoot-badge">🔧 TROUBLESHOOT</div>
+        <div class="page-badge orange" id="troubleshoot-badge">🔧 Troubleshoot</div>
         <h1 class="page-title" id="troubleshoot-title">Fix a Problem</h1>
         <p class="page-sub" id="troubleshoot-sub">Pick a common issue below or describe your problem in plain English. The AI will walk you through exactly what's wrong and how to fix it.</p>
       </div>
@@ -2299,7 +2300,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
     <!-- ══ LINKS & ACCOUNTS ══ -->
     <section id="section-links" class="section">
       <div class="page-header">
-        <div class="page-badge cyan" id="links-badge">🔗 LINKS &amp; ACCOUNTS</div>
+        <div class="page-badge cyan" id="links-badge">🔗 Links &amp; accounts</div>
         <h1 class="page-title" id="links-title">Your Tools &amp; Accounts</h1>
         <p class="page-sub" id="links-sub">Everything in one place — your accounts, your live apps, and quick links to all the tools you use. Saves to your browser so it's always here when you need it.</p>
       </div>
@@ -2353,10 +2354,10 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
         <div class="field-group">
           <label class="field-label" id="links-type-label">Type</label>
           <div class="choice-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px;" id="mylink-type-grid">
-            <div class="choice-card selected" onclick="selectMylinkType(this,'live')"><div class="choice-icon">🌐</div><div class="choice-title" id="links-type-live" style="font-size:11px;">Live App</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'repo')"><div class="choice-icon">📁</div><div class="choice-title" id="links-type-repo" style="font-size:11px;">GitHub Repo</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'server')"><div class="choice-icon">🚂</div><div class="choice-title" id="links-type-server" style="font-size:11px;">Railway</div></div>
-            <div class="choice-card" onclick="selectMylinkType(this,'other')"><div class="choice-icon">🔗</div><div class="choice-title" id="links-type-other" style="font-size:11px;">Other</div></div>
+            <div class="choice-card selected" onclick="selectMylinkType(this,'live')"><div class="choice-icon">🌐</div><div class="choice-title" id="links-type-live" style="font-size:12px;">Live App</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'repo')"><div class="choice-icon">📁</div><div class="choice-title" id="links-type-repo" style="font-size:12px;">GitHub Repo</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'server')"><div class="choice-icon">🚂</div><div class="choice-title" id="links-type-server" style="font-size:12px;">Railway</div></div>
+            <div class="choice-card" onclick="selectMylinkType(this,'other')"><div class="choice-icon">🔗</div><div class="choice-title" id="links-type-other" style="font-size:12px;">Other</div></div>
           </div>
           <input type="hidden" id="new-mylink-type" value="live">
         </div>
@@ -2443,7 +2444,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
         <div id="proj-count" style="font-size:14px;color:var(--muted);"></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <button class="btn btn-primary" id="proj-new-btn" onclick="showNewProjectForm()">➕ New Project</button>
-          <button class="btn btn-primary" id="proj-import-open-btn" style="background:var(--purple);color:#fff;" onclick="showImportForm()">📥 Import Project</button>
+          <button class="btn btn-primary" id="proj-import-open-btn" style="background:var(--purple);color:var(--on-accent);" onclick="showImportForm()">📥 Import Project</button>
         </div>
       </div>
 
@@ -2478,7 +2479,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
             <input type="hidden" id="import-help-input" value="finish">
           </div>
           <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
-            <button class="btn btn-primary" id="proj-import-btn" style="background:var(--purple);color:#fff;" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
+            <button class="btn btn-primary" id="proj-import-btn" style="background:var(--purple);color:var(--on-accent);" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
             <button class="btn btn-ghost" id="proj-import-cancel" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
           </div>
           <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ If AI is busy, your project still saves — you can run analysis again in a moment from the project page.</p>
@@ -3735,7 +3736,7 @@ function renderFixPlan(scan) {
     const openFirst = pi === 0 || (next && next.playbook.id === pb.id);
     html += `<details class="fix-playbook-details"${openFirst ? ' open' : ''}>`;
     html += `<summary>${escapeHtml((pb.emoji || '📋') + ' Fix ' + (pi + 1) + ': ' + (pb.title || '') + ' (' + stepCount + ' steps)')}</summary>`;
-    if (pb.why) html += `<p style="font-size:11px;color:var(--muted);padding:8px 12px 0;margin:0;line-height:1.4;">${escapeHtml(pb.why)}</p>`;
+    if (pb.why) html += `<p style="font-size:12px;color:var(--muted);padding:8px 12px 0;margin:0;line-height:1.4;">${escapeHtml(pb.why)}</p>`;
     (pb.steps || []).forEach(step => {
       const checked = isFixStepDone(pb.id, step.num);
       const isCurrent = next && next.playbook.id === pb.id && next.step.num === step.num;
@@ -4344,7 +4345,7 @@ function openProject(id) {
     <div class="card" style="margin-bottom:16px;">
       <div class="card-title" style="display:flex;justify-content:space-between;">
         <span>🤖 AI Brainstorm Result</span>
-        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:11px;padding:4px 8px;">Clear</button>
+        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:12px;padding:4px 8px;">Clear</button>
       </div>
       <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.brainstormResult)}</div>
     </div>` : ''}
@@ -4353,7 +4354,7 @@ function openProject(id) {
     <div class="card" style="margin-bottom:16px;">
       <div class="card-title" style="display:flex;justify-content:space-between;">
         <span>🔨 AI Build Plan</span>
-        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:11px;padding:4px 8px;">Clear</button>
+        <button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:12px;padding:4px 8px;">Clear</button>
       </div>
       <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.buildPlan)}</div>
     </div>` : ''}
@@ -4524,7 +4525,7 @@ function openProject(id) {
     <div class="card" style="margin-bottom:16px;">
       <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;">
         <span>📥 Imported Project</span>
-        <button class="btn btn-primary" style="padding:8px 16px;font-size:13px;background:var(--purple);color:#fff;" id="ai-review-btn-${id}" onclick="runAiReview('${id}')">🐬 Run AI Review</button>
+        <button class="btn btn-primary" style="padding:8px 16px;font-size:13px;background:var(--purple);color:var(--on-accent);" id="ai-review-btn-${id}" onclick="runAiReview('${id}')">🐬 Run AI Review</button>
       </div>
       ${p.desc ? `<p style="font-size:14px;margin-bottom:12px;">${escHtml(p.desc)}</p>` : ''}
       ${p.importedCode ? `<details style="margin-bottom:10px;"><summary style="cursor:pointer;font-size:13px;color:var(--muted);font-weight:700;">📄 View Pasted Code</summary><pre style="font-family:'Fira Code',monospace;font-size:12px;line-height:1.6;color:#c8d4f0;white-space:pre-wrap;margin-top:10px;padding:12px;background:var(--code-bg);border-radius:8px;overflow-x:auto;">${escHtml(p.importedCode)}</pre></details>` : ''}
@@ -4545,8 +4546,8 @@ function openProject(id) {
     </div>
     ${importSection}
     ${p.desc && !p.importedCode ? `<div class="card" style="margin-bottom:16px;"><div class="card-title">💡 Idea</div><p>${escHtml(p.desc)}</p></div>` : ''}
-    ${p.brainstormResult ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🤖 AI Brainstorm Result</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:11px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.brainstormResult)}</div></div>` : ''}
-    ${p.buildPlan ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🔨 AI Build Plan</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:11px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.buildPlan)}</div></div>` : ''}
+    ${p.brainstormResult ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🤖 AI Brainstorm Result</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','brainstormResult',this)" style="font-size:12px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.brainstormResult)}</div></div>` : ''}
+    ${p.buildPlan ? `<div class="card" style="margin-bottom:16px;"><div class="card-title" style="display:flex;justify-content:space-between;"><span>🔨 AI Build Plan</span><button class="proj-btn proj-btn-edit" onclick="clearProjField('${id}','buildPlan',this)" style="font-size:12px;padding:4px 8px;">Clear</button></div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;">${escHtml(p.buildPlan)}</div></div>` : ''}
     <div class="card">
       <div class="card-title">📝 My Notes</div>
       <p style="font-size:13px;color:var(--muted);margin-bottom:10px;">Jot down links, decisions, questions, anything you want to remember.</p>
