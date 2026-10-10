@@ -2004,7 +2004,40 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
       <!-- BUILD STEP 1: What kind? -->
       <div class="wizard-step active" id="bld-1">
-        <div class="card">
+        <!-- LANE PICKER (optional) -->
+        <div class="card" id="bld-lane-card">
+          <div class="card-title" id="bld-lane-title">What are you here to build?</div>
+          <div class="field-sub" id="bld-lane-sub" style="margin-bottom:12px;">Pick a lane and we'll show a few working apps you can remix as a starting point. Totally optional — skip it if you already know your idea.</div>
+          <div class="choice-grid" id="bld-lane-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:0;">
+            <div class="choice-card" onclick="selectLane(this,'money')" style="text-align:center;">
+              <div class="choice-icon">🚀</div>
+              <div class="choice-label" id="bld-lane-money-label">Make money / go viral</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'business')" style="text-align:center;">
+              <div class="choice-icon">💼</div>
+              <div class="choice-label" id="bld-lane-business-label">For my business</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'personal')" style="text-align:center;">
+              <div class="choice-icon">🏠</div>
+              <div class="choice-label" id="bld-lane-personal-label">Just for me</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'fun')" style="text-align:center;">
+              <div class="choice-icon">🎉</div>
+              <div class="choice-label" id="bld-lane-fun-label">Just for fun</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'community')" style="text-align:center;">
+              <div class="choice-icon">👥</div>
+              <div class="choice-label" id="bld-lane-community-label">For my community</div>
+            </div>
+          </div>
+          <div id="bld-template-wrap" style="display:none;margin-top:16px;">
+            <div class="field-sub" id="bld-template-hint" style="margin-bottom:10px;">Remix one of these — it fills in your idea below so you don't start from a blank page. You can edit it after.</div>
+            <div class="choice-grid" id="bld-template-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-bottom:0;"></div>
+          </div>
+          <input type="hidden" id="bld-lane" value="">
+          <input type="hidden" id="bld-template" value="">
+        </div>
+        <div class="card" style="margin-top:12px;">
           <div class="card-title" id="bld-s1-title">What's your situation?</div>
           <div class="choice-grid" id="bld-situation-grid">
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','scratch','selected-green')" style="text-align:center;">
@@ -2774,6 +2807,106 @@ function updateBldNextState() {
   nextBtn.disabled = !(mode && audience);
 }
 
+// ─── LANE PICKER: intent-based templates that remix into a build ───────────
+// "ready: true" = a clean, de-identified scaffold exists to fork today.
+// Others pre-fill the idea so the AI builds a plan for that kind of app.
+const BUILD_LANES = {
+  money: { templates: [
+    { id:'lighttube', name:'LightTube', tag:'On-chain video platform', ready:true,
+      seed:'An on-chain video app like LightTube: creators upload videos stored fully on-chain, viewers watch them in a clean feed, and creators earn LCAI/KEIKO tips. Include wallet connect and a creator dashboard.' },
+    { id:'lighttunes', name:'LightTunes', tag:'On-chain music',
+      seed:'An on-chain music app like LightTunes: artists upload tracks stored on-chain, listeners stream them, and fans tip artists in LCAI/KEIKO. Include wallet connect and an artist page.' },
+    { id:'orcamint', name:'OrcaMint', tag:'NFT mint + marketplace',
+      seed:'An NFT minting and marketplace app like OrcaMint: users mint NFTs, list them for sale, make and accept offers, and browse a gallery. Include wallet connect.' },
+    { id:'lightstudio', name:'LightStudio', tag:'AI media studio',
+      seed:'An AI media studio like LightStudio: users generate images, video, or audio from a text prompt using the AIVM, pay per generation in LCAI, and download or publish the result.' },
+  ]},
+  business: { templates: [
+    { id:'orcalearn', name:'OrcaLearn', tag:'AI tutor / courses',
+      seed:'An AI learning app like OrcaLearn: users pick a topic and the AIVM teaches it step by step with quizzes and explanations. Good for onboarding or training a business audience.' },
+    { id:'orcavault', name:'OrcaVault', tag:'Encrypted file storage',
+      seed:'A secure file app like OrcaVault: users store and share encrypted files on-chain, with a paid one-click relay for larger transfers. Include wallet connect.' },
+    { id:'orcaguard', name:'OrcaGuard', tag:'Community / Discord security',
+      seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord or group, run by an admin. Include wallet connect and an admin panel.' },
+    { id:'scexplainer', name:'SC Explainer', tag:'Smart-contract explainer',
+      seed:'A smart-contract explainer like SC Explainer: a user pastes a contract address or code and the AIVM returns a plain-English explanation of what it does and any risks.' },
+  ]},
+  personal: { templates: [
+    { id:'myice', name:'MyICE', tag:'In-case-of-emergency card',
+      seed:'A personal in-case-of-emergency app like MyICE: the owner stores key emergency info and contacts privately and can share a quick-access card. Data stays private to them.' },
+    { id:'lightweather', name:'LightWeather', tag:'Weather',
+      seed:'A clean weather app like LightWeather: the user sees current conditions and a forecast for their location, with a simple, fast interface.' },
+    { id:'orcamail', name:'OrcaMail', tag:'Wallet-to-wallet messaging',
+      seed:'A messaging app like OrcaMail: users send messages wallet-to-wallet, keeping their own inbox. Include wallet connect.' },
+  ]},
+  fun: { templates: [
+    { id:'binai', name:'Binai', tag:'Playful AI companion',
+      seed:'A fun AI companion app like Binai: users chat with a friendly AIVM personality for entertainment. Include wallet connect for paid interactions.' },
+    { id:'emojistickers', name:'Emojis & Stickers', tag:'Discord sticker/GIF maker',
+      seed:'A sticker and GIF maker like Emojis & Stickers: users generate custom emojis, stickers, and GIFs for Discord using the AIVM, then download them.' },
+    { id:'lightjury', name:'LightJury', tag:'AI jury / dispute verdicts',
+      seed:'A dispute-resolution app like LightJury: a user submits a question or dispute and a jury of several independent AIs deliberates and returns a verdict with reasoning.' },
+  ]},
+  community: { templates: [
+    { id:'orcaguard', name:'OrcaGuard', tag:'Group security / access',
+      seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord, DAO, or club, run by an admin. Include wallet connect and an admin panel.' },
+    { id:'lightjury', name:'LightJury', tag:'Group dispute verdicts',
+      seed:'A group dispute app like LightJury: members submit a dispute and a jury of several independent AIs deliberates and returns a verdict the group can act on.' },
+    { id:'orcamail', name:'OrcaMail', tag:'Group messaging',
+      seed:'A group messaging app like OrcaMail: members message wallet-to-wallet within a community, each keeping their own inbox. Include wallet connect.' },
+  ]},
+};
+
+function selectLane(el, lane) {
+  const grid = document.getElementById('bld-lane-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const laneInput = document.getElementById('bld-lane');
+  if (laneInput) laneInput.value = lane;
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = '';
+  renderLaneTemplates(lane);
+}
+
+function renderLaneTemplates(lane) {
+  const data = BUILD_LANES[lane];
+  const wrap = document.getElementById('bld-template-wrap');
+  const grid = document.getElementById('bld-template-grid');
+  if (!wrap || !grid) return;
+  if (!data) { wrap.style.display = 'none'; return; }
+  grid.innerHTML = data.templates.map(tpl => `
+    <div class="choice-card" style="text-align:left;" onclick="selectTemplate(this,'${lane}','${tpl.id}')">
+      <div class="choice-label" style="margin-bottom:4px;">${tpl.name}${tpl.ready ? ' <span style="font-size:11px;font-weight:600;color:var(--green);">✓ ready to fork</span>' : ''}</div>
+      <div class="choice-sub">${tpl.tag}</div>
+    </div>`).join('');
+  wrap.style.display = '';
+}
+
+function selectTemplate(el, lane, id) {
+  const grid = document.getElementById('bld-template-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const tpl = (BUILD_LANES[lane]?.templates || []).find(t => t.id === id);
+  if (!tpl) return;
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = id;
+  // Pre-fill the "Describe your app idea" box with a seed for this app.
+  const desc = document.getElementById('bld-description');
+  if (desc) desc.value = tpl.seed;
+  // Auto-select "Starting from scratch" so the wizard can proceed; audience is still the user's choice.
+  const modeInput = document.getElementById('bld-mode');
+  if (modeInput) modeInput.value = 'scratch';
+  const sitGrid = document.getElementById('bld-situation-grid');
+  if (sitGrid) {
+    sitGrid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+    const scratchCard = sitGrid.querySelector('.choice-card');
+    if (scratchCard) scratchCard.classList.add('selected-green');
+  }
+  if (typeof syncBldExistingUI === 'function') syncBldExistingUI('scratch');
+  updateBldNextState();
+  if (typeof persistBuildDraft === 'function') persistBuildDraft();
+}
+
 // ── BRAINSTORM WIZARD ──
 let bwizCurrentStep = 1;
 
@@ -3447,6 +3580,15 @@ function resetBuildWizard() {
   document.querySelectorAll('#bld-1 .choice-card').forEach(c => {
     c.classList.remove('selected', 'selected-green', 'selected-purple');
   });
+  // Clear lane-picker state too
+  const laneInput = document.getElementById('bld-lane');
+  if (laneInput) laneInput.value = '';
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = '';
+  const tplWrap = document.getElementById('bld-template-wrap');
+  if (tplWrap) tplWrap.style.display = 'none';
+  const tplGrid = document.getElementById('bld-template-grid');
+  if (tplGrid) tplGrid.innerHTML = '';
   const desc = document.getElementById('bld-description');
   const users = document.getElementById('bld-users');
   const code = document.getElementById('bld-exist-code');
