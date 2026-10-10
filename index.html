@@ -687,6 +687,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 <script src="orca-sentry.js" defer></script>
 <script src="orca-sw-register.js?v=9" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="keiko-pay.js"></script>
 <script type="module">
   try {
@@ -2033,6 +2034,10 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
           <div id="bld-template-wrap" style="display:none;margin-top:16px;">
             <div class="field-sub" id="bld-template-hint" style="margin-bottom:10px;">Remix one of these — it fills in your idea below so you don't start from a blank page. You can edit it after.</div>
             <div class="choice-grid" id="bld-template-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-bottom:0;"></div>
+            <div id="bld-fork-wrap" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,0.02);">
+              <div class="field-sub" style="margin-bottom:10px;">This one's <strong>ready to fork</strong> — download your own copy, already personalized, that you can deploy to any static host. Everything runs in your browser; nothing is uploaded.</div>
+              <button type="button" class="btn" id="bld-fork-btn" onclick="openForkModal()" style="width:auto;">📦 Download your copy</button>
+            </div>
           </div>
           <input type="hidden" id="bld-lane" value="">
           <input type="hidden" id="bld-template" value="">
@@ -2814,9 +2819,9 @@ const BUILD_LANES = {
   money: { templates: [
     { id:'lighttube', name:'LightTube', tag:'On-chain video platform', ready:true,
       seed:'An on-chain video app like LightTube: creators upload videos stored fully on-chain, viewers watch them in a clean feed, and creators earn LCAI/KEIKO tips. Include wallet connect and a creator dashboard.' },
-    { id:'lighttunes', name:'LightTunes', tag:'On-chain music',
+    { id:'lighttunes', name:'LightTunes', tag:'On-chain music', ready:true,
       seed:'An on-chain music app like LightTunes: artists upload tracks stored on-chain, listeners stream them, and fans tip artists in LCAI/KEIKO. Include wallet connect and an artist page.' },
-    { id:'orcamint', name:'OrcaMint', tag:'NFT mint + marketplace',
+    { id:'orcamint', name:'OrcaMint', tag:'NFT mint + marketplace', ready:true,
       seed:'An NFT minting and marketplace app like OrcaMint: users mint NFTs, list them for sale, make and accept offers, and browse a gallery. Include wallet connect.' },
     { id:'lightstudio', name:'LightStudio', tag:'AI media studio',
       seed:'An AI media studio like LightStudio: users generate images, video, or audio from a text prompt using the AIVM, pay per generation in LCAI, and download or publish the result.' },
@@ -2824,7 +2829,7 @@ const BUILD_LANES = {
   business: { templates: [
     { id:'orcalearn', name:'OrcaLearn', tag:'AI tutor / courses',
       seed:'An AI learning app like OrcaLearn: users pick a topic and the AIVM teaches it step by step with quizzes and explanations. Good for onboarding or training a business audience.' },
-    { id:'orcavault', name:'OrcaVault', tag:'Encrypted file storage',
+    { id:'orcavault', name:'OrcaVault', tag:'Encrypted file storage', ready:true,
       seed:'A secure file app like OrcaVault: users store and share encrypted files on-chain, with a paid one-click relay for larger transfers. Include wallet connect.' },
     { id:'orcaguard', name:'OrcaGuard', tag:'Community / Discord security',
       seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord or group, run by an admin. Include wallet connect and an admin panel.' },
@@ -2832,11 +2837,11 @@ const BUILD_LANES = {
       seed:'A smart-contract explainer like SC Explainer: a user pastes a contract address or code and the AIVM returns a plain-English explanation of what it does and any risks.' },
   ]},
   personal: { templates: [
-    { id:'myice', name:'MyICE', tag:'In-case-of-emergency card',
+    { id:'myice', name:'MyICE', tag:'In-case-of-emergency card', ready:true,
       seed:'A personal in-case-of-emergency app like MyICE: the owner stores key emergency info and contacts privately and can share a quick-access card. Data stays private to them.' },
     { id:'lightweather', name:'LightWeather', tag:'Weather',
       seed:'A clean weather app like LightWeather: the user sees current conditions and a forecast for their location, with a simple, fast interface.' },
-    { id:'orcamail', name:'OrcaMail', tag:'Wallet-to-wallet messaging',
+    { id:'orcamail', name:'OrcaMail', tag:'Wallet-to-wallet messaging', ready:true,
       seed:'A messaging app like OrcaMail: users send messages wallet-to-wallet, keeping their own inbox. Include wallet connect.' },
   ]},
   fun: { templates: [
@@ -2852,7 +2857,7 @@ const BUILD_LANES = {
       seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord, DAO, or club, run by an admin. Include wallet connect and an admin panel.' },
     { id:'lightjury', name:'LightJury', tag:'Group dispute verdicts',
       seed:'A group dispute app like LightJury: members submit a dispute and a jury of several independent AIs deliberates and returns a verdict the group can act on.' },
-    { id:'orcamail', name:'OrcaMail', tag:'Group messaging',
+    { id:'orcamail', name:'OrcaMail', tag:'Group messaging', ready:true,
       seed:'A group messaging app like OrcaMail: members message wallet-to-wallet within a community, each keeping their own inbox. Include wallet connect.' },
   ]},
 };
@@ -2903,8 +2908,133 @@ function selectTemplate(el, lane, id) {
     if (scratchCard) scratchCard.classList.add('selected-green');
   }
   if (typeof syncBldExistingUI === 'function') syncBldExistingUI('scratch');
+  // Reveal the "Download your copy" fork panel for templates that are ready to fork.
+  const forkWrap = document.getElementById('bld-fork-wrap');
+  if (forkWrap) {
+    if (tpl.ready) {
+      window.__forkTemplateId = id;
+      window.__forkTemplateName = tpl.name;
+      forkWrap.style.display = '';
+    } else {
+      forkWrap.style.display = 'none';
+    }
+  }
   updateBldNextState();
   if (typeof persistBuildDraft === 'function') persistBuildDraft();
+}
+
+// ── FORK A TEMPLATE (browser-only: fetch files, fill placeholders, zip, download) ──
+const FORK_TEMPLATE_BASE = './templates/';
+function _forkIsTextFile(path) {
+  const p = path.toLowerCase();
+  if (p.endsWith('.nojekyll') || p.endsWith('.gitignore') || p.endsWith('_redirects') || p.endsWith('cname')) return true;
+  const ext = (p.split('.').pop() || '');
+  return ['html','htm','js','mjs','json','sol','md','txt','css','svg','xml','toml','service','sh','yml','yaml'].includes(ext);
+}
+function _forkLabel(ph) {
+  if (ph === 'your-domain.example') return { label: 'Your domain', hint: 'e.g. myapp.example (leave blank to decide later)' };
+  if (ph === 'YOUR_HANDLE') return { label: 'Your X / social handle', hint: 'without the @ (or leave blank to remove the link)' };
+  if (ph === 'YOUR_GH_USER') return { label: 'Your GitHub username', hint: 'the user/org that will host the repo' };
+  if (ph === 'YOUR_REPO') return { label: 'Your repo name', hint: 'the repository name on GitHub' };
+  if (ph === 'YOUR_SERVER_URL') return { label: 'Your backend URL (optional)', hint: 'only if you run the optional backend; otherwise leave blank' };
+  if (/CONTRACT$/.test(ph)) return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), hint: 'paste the deployed contract address (fill in after you deploy)' };
+  if (/WALLET$/.test(ph)) return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), hint: 'a wallet address you control' };
+  return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' '), hint: '' };
+}
+let _forkCtx = null;
+async function openForkModal() {
+  const id = window.__forkTemplateId;
+  const name = window.__forkTemplateName || id;
+  if (!id) return;
+  const modal = document.getElementById('fork-modal');
+  const body = document.getElementById('fork-modal-body');
+  const titleEl = document.getElementById('fork-modal-title');
+  if (!modal || !body) return;
+  titleEl.textContent = 'Download your ' + name;
+  body.innerHTML = '<div style="padding:18px 0;text-align:center;opacity:0.7;">Loading template…</div>';
+  modal.style.display = 'flex';
+  try {
+    const base = FORK_TEMPLATE_BASE + id + '/';
+    const files = await (await fetch(base + 'files.json', { cache: 'no-store' })).json();
+    const texts = {};
+    const placeholders = new Set();
+    for (const f of files) {
+      if (f === 'files.json') continue;
+      if (_forkIsTextFile(f)) {
+        const t = await (await fetch(base + f, { cache: 'no-store' })).text();
+        texts[f] = t;
+        (t.match(/YOUR_[A-Z0-9_]+/g) || []).forEach(p => placeholders.add(p));
+        if (t.indexOf('your-domain.example') !== -1) placeholders.add('your-domain.example');
+      }
+    }
+    _forkCtx = { id, name, base, files, texts };
+    const order = Array.from(placeholders).sort((a, b) => {
+      const rank = x => x === 'YOUR_HANDLE' ? 0 : x === 'YOUR_GH_USER' ? 1 : x === 'YOUR_REPO' ? 2 : x === 'your-domain.example' ? 3 : /CONTRACT$/.test(x) ? 4 : /WALLET$/.test(x) ? 5 : 6;
+      return rank(a) - rank(b) || a.localeCompare(b);
+    });
+    let html = '<div class="field-sub" style="margin-bottom:14px;">Fill in what you can. Anything you leave blank keeps a placeholder you can edit later — nothing breaks, that feature just won\'t point anywhere yet.</div>';
+    order.forEach(ph => {
+      const info = _forkLabel(ph);
+      html += '<div style="margin-bottom:12px;">'
+        + '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">' + info.label + '</label>'
+        + '<input type="text" data-ph="' + ph + '" class="fork-field" placeholder="' + ph + '" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;">'
+        + (info.hint ? '<div style="font-size:11px;opacity:0.6;margin-top:3px;">' + info.hint + '</div>' : '')
+        + '</div>';
+    });
+    html += '<button type="button" class="btn" onclick="generateForkZip()" style="width:100%;margin-top:6px;">📦 Build &amp; download my copy</button>';
+    html += '<div id="fork-status" style="font-size:12px;opacity:0.7;margin-top:10px;text-align:center;"></div>';
+    body.innerHTML = html;
+  } catch (e) {
+    body.innerHTML = '<div style="padding:18px 0;color:var(--red,#e05555);">Could not load this template. Please try again.</div>';
+  }
+}
+function closeForkModal() {
+  const modal = document.getElementById('fork-modal');
+  if (modal) modal.style.display = 'none';
+}
+async function generateForkZip() {
+  if (!_forkCtx) return;
+  const status = document.getElementById('fork-status');
+  const setStatus = m => { if (status) status.textContent = m; };
+  if (typeof JSZip === 'undefined') { setStatus('Zip library still loading — try again in a moment.'); return; }
+  // Collect user values.
+  const vals = {};
+  document.querySelectorAll('#fork-modal-body .fork-field').forEach(inp => {
+    const v = (inp.value || '').trim();
+    if (v) vals[inp.getAttribute('data-ph')] = v.replace(/^@/, '');
+  });
+  const applyVals = s => {
+    Object.keys(vals).forEach(ph => {
+      s = s.split(ph).join(vals[ph]);
+    });
+    return s;
+  };
+  try {
+    setStatus('Building your copy…');
+    const zip = new JSZip();
+    const { base, files, texts } = _forkCtx;
+    // GitHub Pages won't serve dotfiles, so synthesize an empty .nojekyll for the fork.
+    zip.file('.nojekyll', '');
+    for (const f of files) {
+      if (f === 'files.json') continue;
+      if (texts[f] !== undefined) {
+        zip.file(f, applyVals(texts[f]));
+      } else {
+        const buf = await (await fetch(base + f, { cache: 'no-store' })).arrayBuffer();
+        zip.file(f, buf);
+      }
+    }
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = _forkCtx.id + '-app.zip';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    setStatus('Done — check your Downloads for ' + _forkCtx.id + '-app.zip');
+  } catch (e) {
+    setStatus('Something went wrong building the zip. Please try again.');
+  }
 }
 
 // ── BRAINSTORM WIZARD ──
@@ -3589,6 +3719,9 @@ function resetBuildWizard() {
   if (tplWrap) tplWrap.style.display = 'none';
   const tplGrid = document.getElementById('bld-template-grid');
   if (tplGrid) tplGrid.innerHTML = '';
+  const forkWrap = document.getElementById('bld-fork-wrap');
+  if (forkWrap) forkWrap.style.display = 'none';
+  window.__forkTemplateId = null;
   const desc = document.getElementById('bld-description');
   const users = document.getElementById('bld-users');
   const code = document.getElementById('bld-exist-code');
@@ -5049,5 +5182,15 @@ async function doSendKeikoTip(amount) {
 <!-- dev contact footer -->
 <div style="text-align:center;padding:8px 16px 16px;font-size:13px;opacity:0.5;">Questions or ideas? <a href="#" onclick="(function(){navigator.clipboard.writeText('0xA3a653a8cBA0710ff57Ac34E2278C603B4259FD3').catch(function(){});window.open('https://orcamail.ai','_blank');var t=document.getElementById('_dctoast');if(t){t.style.display='block';setTimeout(function(){t.style.display='none'},3000);}})();return false;" style="color:#6c47ff;font-weight:600;text-decoration:none;">Contact Developer via OrcaMail &#x1F42C;</a></div>
 <div id="_dctoast" style="display:none;position:fixed;bottom:24px;right:24px;background:#6c47ff;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 2px 16px rgba(0,0,0,.4);">Wallet copied! Opening OrcaMail&#x2026;</div>
+<!-- Fork-a-template modal -->
+<div id="fork-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeForkModal()">
+  <div style="background:var(--card,#161b22);border:1px solid var(--border,#30363d);border-radius:16px;max-width:460px;width:100%;max-height:85vh;overflow:auto;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div id="fork-modal-title" style="font-size:18px;font-weight:700;">Download your copy</div>
+      <button type="button" onclick="closeForkModal()" style="background:none;border:none;color:var(--text,#e6edf3);font-size:22px;cursor:pointer;line-height:1;opacity:.7;">&times;</button>
+    </div>
+    <div id="fork-modal-body"></div>
+  </div>
+</div>
 </body>
 </html>

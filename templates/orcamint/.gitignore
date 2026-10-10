@@ -1,0 +1,11 @@
+node_modules/
+www/
+android/
+ios/
+dist/
+public/
+.capacitor/
+.grok/
+.wrangler/
+__pycache__/
+*.pyc
