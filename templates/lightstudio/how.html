@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How this all works — LightStudio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B3%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f1ecfb; --panel:#ffffff; --panel2:#e8e1f6; --border:#e1d9f1;
+    --text:#241b33; --muted:#665d7a; --accent:#7c5cfc; --accent2:#a78bfa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#efe7fb 0%,var(--bg) 55%);
+    color:var(--text);font:17px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;max-width:900px;margin:0 auto}
+  .brandwrap{display:flex;align-items:center;gap:13px;text-decoration:none;color:inherit}
+  .logo-img{height:46px;width:auto;flex:none}
+  .brand{font-weight:800;font-size:27px;letter-spacing:.3px}
+  .brand span{color:var(--accent)}
+  .tag{color:var(--muted);font-size:14px;margin-top:3px}
+  .btn{background:var(--accent);color:#ffffff;border:none;font-weight:700;font-size:17px;padding:13px 20px;
+    border-radius:12px;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-block;text-align:center}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--border)}
+  .btn.ghost:hover{border-color:var(--accent);background:rgba(124,92,252,.08);filter:none}
+  .wrap{max-width:900px;margin:0 auto;padding:12px 20px 60px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 2px 14px rgba(36,27,51,.05)}
+  .card h2{margin:0 0 8px;font-size:20px}
+  .card p{margin:0 0 10px;color:var(--muted)}
+  .card p:last-of-type{margin-bottom:0}
+  .price{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .pill{background:var(--panel2);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:14px}
+  .pill b{color:var(--accent)}
+  .steps{margin:12px 0 0;padding:0;list-style:none;counter-reset:step}
+  .steps li{position:relative;padding:12px 0 12px 44px;border-top:1px solid var(--border);color:var(--muted)}
+  .steps li:first-child{border-top:none}
+  .steps li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:12px;
+    width:28px;height:28px;line-height:28px;text-align:center;border-radius:50%;
+    background:var(--panel2);border:1px solid var(--border);color:var(--accent);font-weight:800;font-size:14px}
+  .steps strong{color:var(--text)}
+  .intro{font-size:18px;color:var(--text);margin:0 0 18px}
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:28px}
+  a{color:var(--accent)}
+  ::selection{background:var(--accent);color:#ffffff}
+  html{scrollbar-width:thin;scrollbar-color:var(--accent2) var(--panel)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+  @media (max-width:640px){
+    header{flex-wrap:wrap;gap:12px}
+    header .btn{width:100%}
+  }
+</style>
+</head>
+<body>
+<header>
+  <a class="brandwrap" href="./index.html">
+    <img src="./lcai-symbol.svg?v=2" alt="LCAI" class="logo-img">
+    <div>
+      <div class="brand">Light<span>Studio</span></div>
+      <div class="tag">No account. No email. Pay with your wallet.</div>
+    </div>
+  </a>
+  <a class="btn ghost" href="./index.html">Back to studio</a>
+</header>
+
+<div class="wrap">
+  <p class="intro">A quick tour of what you can make here, and what it costs. No sign-up — just connect a wallet when you’re ready to pay.</p>
+
+  <div class="card">
+    <h2>The basics</h2>
+    <p>There is no account and no email. You connect a wallet, look at a free preview, and pay a small amount in LCAI only if you want the clean file.</p>
+    <p>Every paid creation starts with a <strong>free watermarked preview</strong>. If you like it, you pay to unlock the watermark-free version. If you don’t, you owe nothing.</p>
+  </div>
+
+  <div class="card">
+    <h2>Image</h2>
+    <p>Type what you want to see and get a picture. Standard is the everyday option. Premium is the higher-quality pass when you want extra polish.</p>
+    <div class="price">
+      <span class="pill">Standard <b>$0.10</b></span>
+      <span class="pill">Premium <b>$1.00</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Edit</h2>
+    <p>Upload a photo and describe the change — a new background, a different mood, keep the person, and so on. You get an edited picture back.</p>
+    <div class="price">
+      <span class="pill"><b>$0.10</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Video</h2>
+    <p>Type a scene and get a short video. Standard is the everyday clip. Premium is the higher-quality pass, and that’s the one that can include sound.</p>
+    <div class="price">
+      <span class="pill">Standard <b>$0.20</b></span>
+      <span class="pill">Premium <b>$2.00</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Animate</h2>
+    <p>Upload a still photo and it comes to life as a short 5-second clip. Handy for stickers, posts, or a little motion on a portrait.</p>
+    <div class="price">
+      <span class="pill"><b>$0.20</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Voice</h2>
+    <p>Type the words and hear them spoken. You pick the language, the speaker, a feeling (happy, sad, angry, or calm), and how fast they talk.</p>
+    <p>Each speaker is labeled <strong>name · who they sound like · accent · style</strong>. The name is just a label — pick by how it sounds.</p>
+    <p><strong>UGC</strong> means a casual, conversational voice, like a person talking on their phone. <strong>Advertisement</strong> means a polished commercial read, like a radio or TV spot.</p>
+    <div class="price">
+      <span class="pill"><b>$0.05</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Song</h2>
+    <p>Type a topic and get full lyrics for <strong>free</strong>. You can edit them. When you’re happy, pay once to turn them into a real sung track.</p>
+    <p>Choose up to three genres, a length (from a short 6-second clip up to 3:30), a language, and optionally an artist or band style.</p>
+    <div class="price">
+      <span class="pill">Lyrics <b>free</b></span>
+      <span class="pill">Sung track <b>$0.06</b></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Combine</h2>
+    <p>Lay a song or a spoken clip onto a video. This step is <strong>free</strong> — you already paid for both pieces. Do both in the same visit.</p>
+    <ol class="steps">
+      <li><strong>Make a video first.</strong> Use the Video tab (or Animate), generate the preview, and pay to unlock it.</li>
+      <li><strong>Then make a song or a voice clip.</strong> Song tab for music, Voice tab for spoken words. Generate, then pay to unlock.</li>
+      <li><strong>Tap “Add audio to video.”</strong> The free button appears once both are unlocked, and your song or voice is laid onto the video.</li>
+    </ol>
+    <div class="price">
+      <span class="pill"><b>Free</b></span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <a class="btn" href="./index.html">Back to studio</a>
+    <p style="margin-top:16px">Wallet-only — no email, no phone.</p>
+  </div>
+</div>
+</body>
+</html>

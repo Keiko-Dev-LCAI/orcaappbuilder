@@ -1,0 +1,12 @@
+[
+  "Dockerfile",
+  "Procfile",
+  "README.md",
+  "aivm_client.py",
+  "ethers-6.13.2.umd.min.js",
+  "how.html",
+  "index.html",
+  "lcai-symbol.svg",
+  "requirements.txt",
+  "server.py"
+]

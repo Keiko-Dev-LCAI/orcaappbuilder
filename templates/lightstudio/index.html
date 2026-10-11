@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LightStudio — Create with your wallet</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%B3%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f1ecfb; --panel:#ffffff; --panel2:#e8e1f6; --border:#e1d9f1;
+    --text:#241b33; --muted:#665d7a; --accent:#7c5cfc; --accent2:#a78bfa;
+    --good:#1f9d57; --bad:#d6455d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#efe7fb 0%,var(--bg) 55%);
+    color:var(--text);font:17px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;max-width:1300px;margin:0 auto}
+  .brandwrap{display:flex;align-items:center;gap:13px}
+  .logo-img{height:46px;width:auto;flex:none}
+  .brand{font-weight:800;font-size:27px;letter-spacing:.3px}
+  .brand span{color:var(--accent)}
+  .tag{color:var(--muted);font-size:14px;margin-top:3px}
+  .btn{background:var(--accent);color:#ffffff;border:none;font-weight:700;font-size:17px;padding:13px 20px;
+    border-radius:12px;cursor:pointer;white-space:nowrap;transition:filter .15s,background .15s,border-color .15s}
+  .btn:hover:not(:disabled){filter:brightness(1.08)}
+  .btn:active:not(:disabled){filter:brightness(.95)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--border)}
+  .btn.ghost:hover:not(:disabled){border-color:var(--accent);background:rgba(124,92,252,.08);filter:none}
+  .wrap{max-width:1300px;margin:0 auto;padding:10px 20px 20px}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+  .tab{min-width:110px}
+  .tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;
+    border:1.5px solid var(--border);border-radius:12px;background:var(--panel);cursor:pointer;
+    font:inherit;font-size:16px;font-weight:700;color:var(--muted);transition:color .15s,border-color .15s,background .15s}
+  .tab svg{width:20px;height:20px;flex:none}
+  .tab:hover{color:var(--text);border-color:var(--accent2)}
+  .tab.active{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
+  .tierrow{display:flex;gap:8px;margin:2px 0 4px}
+  .tierbtn{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:11px;background:var(--panel);
+    cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:var(--muted);
+    transition:color .15s,border-color .15s,background .15s;display:flex;flex-direction:column;gap:2px;align-items:center}
+  .tierbtn small{font-size:12px;font-weight:600;color:var(--muted)}
+  .tierbtn:hover{color:var(--text);border-color:var(--accent2)}
+  .tierbtn.active{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
+  .tierbtn.active small{color:var(--accent)}
+  .opt-song{flex-direction:column;align-items:stretch;gap:0}
+  .modetoggle{display:flex;gap:8px;margin:2px 0 4px}
+  .modebtn{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:11px;background:var(--panel);
+    cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:var(--muted);
+    transition:color .15s,border-color .15s,background .15s}
+  .modebtn:hover{color:var(--text);border-color:var(--accent2)}
+  .modebtn.active{background:var(--panel2);color:var(--accent);border-color:var(--accent)}
+  .chiprow{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}
+  .chip{padding:8px 14px;border:1.5px solid var(--border);border-radius:999px;background:var(--panel);
+    cursor:pointer;font:inherit;font-size:14px;font-weight:600;color:var(--muted);transition:color .15s,border-color .15s,background .15s}
+  .chip:hover{border-color:var(--accent2);color:var(--text)}
+  .chip.active{background:var(--accent);border-color:var(--accent);color:#ffffff}
+  .chip.disabled{opacity:.4;cursor:default}
+  .chip.disabled:hover{border-color:var(--border);color:var(--muted)}
+  .lenrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:7px}
+  .lenpill{padding:9px 16px;border:1.5px solid var(--border);border-radius:11px;background:var(--panel);
+    cursor:pointer;font:inherit;font-size:15px;font-weight:700;color:var(--muted);transition:color .15s,border-color .15s,background .15s}
+  .lenpill:hover{border-color:var(--accent2);color:var(--text)}
+  .lenpill.active{background:var(--panel2);border-color:var(--accent);color:var(--accent)}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 14px rgba(36,27,51,.05)}
+  label{display:block;font-size:14px;color:var(--muted);margin:9px 0 6px;font-weight:600}
+  textarea,select,input{width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--border);
+    border-radius:12px;padding:13px;font:inherit;font-size:16px;caret-color:var(--accent);transition:border-color .15s}
+  textarea:focus,select:focus,input:focus{border-color:var(--accent)}
+  textarea::placeholder{color:var(--muted)}
+  textarea{min-height:62px;resize:vertical}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>div{flex:1;min-width:140px}
+  .hint{font-size:13px;color:var(--muted);margin-top:10px}
+  .price{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+  .pill{background:var(--panel2);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:14px}
+  .pill b{color:var(--accent)}
+  .preview{margin-top:16px;text-align:center}
+  .preview img,.preview video{max-width:100%;border-radius:12px;border:1px solid var(--border)}
+  .status{margin-top:12px;font-size:14px;min-height:20px}
+  .status.err{color:var(--bad)} .status.ok{color:var(--good)}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .paybtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .anon{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:12px;margin-top:6px}
+  .foot{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
+  .wallet{font-size:13px;color:var(--muted);margin-top:4px}
+  .header-actions{display:flex;flex-direction:row;align-items:center;gap:10px}
+  a.how-btn{font-size:14px;padding:8px 14px;text-decoration:none;display:inline-block;text-align:center}
+  @media (max-width:640px){
+    header{flex-wrap:wrap;gap:12px}
+    .header-actions{width:100%;flex-direction:column;align-items:stretch}
+    .header-actions .btn{width:100%}
+  }
+  a{color:var(--accent)}
+  ::selection{background:var(--accent);color:#ffffff}
+  html{scrollbar-width:thin;scrollbar-color:var(--accent2) var(--panel)}
+  ::-webkit-scrollbar{width:11px;height:11px}
+  ::-webkit-scrollbar-track{background:var(--panel)}
+  ::-webkit-scrollbar-thumb{background:var(--accent2);border-radius:999px;border:3px solid var(--panel)}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+  #enhance{accent-color:var(--accent)}
+  .foot-links{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .foot-link{background:none;border:none;color:var(--accent);font:inherit;font-size:14px;cursor:pointer;text-decoration:none;padding:0}
+  .foot-link:hover{text-decoration:underline}
+  .modal-overlay{position:fixed;inset:0;background:rgba(8,6,18,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:16px;max-width:560px;width:100%;max-height:88vh;display:flex;flex-direction:column}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid var(--border)}
+  .modal-head h2{margin:0;font-size:19px}
+  .modal-close{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+  .modal-close:hover{color:var(--text)}
+  .modal-body{padding:18px 22px;overflow-y:auto;text-align:left}
+  .modal-body h3{font-size:13px;font-weight:700;color:var(--text);margin:16px 0 6px}
+  .modal-body h3:first-child{margin-top:0}
+  .modal-body p{font-size:13px;line-height:1.6;color:var(--muted);margin:0 0 8px}
+  .modal-body strong{color:var(--text)}
+  .modal-updated{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent);color:#ffffff;
+    padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:200;display:none}
+  .promo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:4px 0 16px}
+  .promo-card{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px 20px;
+    box-shadow:0 2px 14px rgba(36,27,51,.05);cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+  .promo-card:hover{border-color:var(--accent2)}
+  .promo-card h3{margin:0 0 6px;font-size:16px;color:var(--accent)}
+  .promo-card p{margin:0;font-size:15px;color:var(--muted);font-weight:400}
+  .promo-band{background:var(--panel2);border:1px solid var(--border);border-radius:18px;padding:22px 24px;margin:4px 0 16px;text-align:center}
+  .promo-band h3{margin:0 0 6px;font-size:20px}
+  .promo-band p{margin:0;color:var(--muted)}
+  .promo-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:8px}
+  .nudge{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.5}
+  .nudge-jump{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+  .nudge-jump .btn{font-size:14px;padding:8px 14px}
+  /* Three-column layout: promo rails fill the empty space either side of the
+     studio card so the page never grows taller / scrolls on desktop. */
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,600px) minmax(0,1fr);gap:18px;align-items:start}
+  .center{min-width:0}
+  .rail{display:flex;flex-direction:column;gap:8px;min-width:0}
+  .rail-head{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin:2px 2px 0}
+  .rail .promo-card,.rail .promo-band{margin:0;padding:10px 14px}
+  .rail .promo-card h3{font-size:15px;margin:0 0 2px}
+  .rail .promo-card p{font-size:13px;line-height:1.35}
+  .rail .promo-band{padding:12px 14px}
+  .rail .promo-band h3{font-size:16px;margin:0 0 3px}
+  .rail .promo-band p{font-size:13px;line-height:1.35}
+  @media (max-width:1080px){
+    /* Below the three-column breakpoint, fold the rails under the studio and
+       let them wrap into a tidy grid (mobile-friendly). */
+    .layout{grid-template-columns:1fr;max-width:640px;margin:0 auto}
+    .rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:4px}
+    .rail-head{grid-column:1/-1}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brandwrap">
+    <img src="./lcai-symbol.svg?v=2" alt="LCAI" class="logo-img">
+    <div>
+      <div class="brand">Light<span>Studio</span></div>
+      <div class="tag">No account. No email. Pay with your wallet.</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <a class="btn ghost how-btn" href="./how.html">How this all works</a>
+    <button class="btn" id="connectBtn">Connect Wallet</button>
+    <div class="wallet" id="walletLabel"></div>
+  </div>
+</header>
+
+<div class="wrap">
+ <div class="layout">
+  <aside class="rail rail-left" aria-label="What you can make">
+    <div class="rail-head">What you can make</div>
+    <button type="button" class="promo-card" data-jump="animate"><h3>Animate</h3><p>Bring a photo to life. Turn any picture into a short animated clip — perfect for stickers.</p></button>
+    <button type="button" class="promo-card" data-jump="edit"><h3>Edit</h3><p>Change any photo just by describing it.</p></button>
+    <button type="button" class="promo-card" data-jump="image"><h3>Image</h3><p>Describe it, get a picture.</p></button>
+    <button type="button" class="promo-card" data-jump="song"><h3>Song</h3><p>Write a song free, then hear it actually sung.</p></button>
+    <div class="promo-band">
+      <h3>Create anonymously</h3>
+      <p>No account, no email, no sign-up, no tracking. Connect a wallet and create.</p>
+    </div>
+  </aside>
+  <main class="center">
+  <div class="tabs" role="tablist" aria-label="Choose what to create">
+    <button type="button" class="tab active" data-m="image" role="tab" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 15l-5-5L5 20"/></svg>Image</button>
+    <button type="button" class="tab" data-m="edit" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 15l7-7 2 2-7 7H12z"/></svg>Edit</button>
+    <button type="button" class="tab" data-m="video" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>Video</button>
+    <button type="button" class="tab" data-m="animate" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 9l8 3-8 3z"/></svg>Animate</button>
+    <button type="button" class="tab" data-m="voice" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>Voice</button>
+    <button type="button" class="tab" data-m="song" role="tab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>Song</button>
+  </div>
+
+  <div class="card">
+    <!-- quality tier (user choice: cheap vs premium model) -->
+    <div id="tierWrap">
+      <label style="margin-top:0">Quality</label>
+      <div class="tierrow" role="tablist" aria-label="Quality">
+        <button type="button" class="tierbtn active" data-t="standard" role="tab" aria-selected="true">Standard<small id="tierStdPrice"></small></button>
+        <button type="button" class="tierbtn" data-t="premium" role="tab" aria-selected="false">Premium<small id="tierPremPrice"></small></button>
+      </div>
+    </div>
+
+    <label id="promptLabel">Describe the image you want</label>
+    <textarea id="prompt" placeholder="A neon koi swimming through a city of light, cinematic, shallow depth of field"></textarea>
+
+    <!-- image options -->
+    <div class="row opt opt-image">
+      <div>
+        <label>Aspect ratio</label>
+        <select id="img_ar"><option>1:1</option><option>16:9</option><option>9:16</option><option>4:3</option><option>3:2</option></select>
+      </div>
+    </div>
+
+    <!-- edit photo -->
+    <div class="opt opt-edit" style="display:none;flex-direction:column;align-items:stretch">
+      <label>Photo to edit</label>
+      <input type="file" id="edit_file" accept="image/jpeg,image/png,image/webp">
+      <div class="hint">JPG, PNG or WebP · max 8 MB. The upload is deleted after the job.</div>
+    </div>
+
+    <!-- animate photo -->
+    <div class="opt opt-animate" style="display:none;flex-direction:column;align-items:stretch">
+      <label>Photo to animate</label>
+      <input type="file" id="animate_file" accept="image/jpeg,image/png,image/webp">
+      <label>Clip length</label>
+      <div class="lenrow" id="animLenRow"></div>
+      <div class="hint">720p clip. JPG, PNG or WebP · max 8 MB. The upload is deleted after the job.</div>
+    </div>
+
+    <!-- voice options -->
+    <div class="opt opt-voice" style="display:none;flex-direction:column;align-items:stretch">
+      <div class="row">
+        <div>
+          <label>Language</label>
+          <select id="voice_lang"></select>
+        </div>
+        <div>
+          <label>Speaker</label>
+          <select id="voice_id"></select>
+        </div>
+      </div>
+      <label>Emotion</label>
+      <div class="chiprow" id="voiceEmotionRow"></div>
+      <label>Speed</label>
+      <div class="chiprow" id="voiceSpeedRow"></div>
+    </div>
+
+    <!-- video options -->
+    <div class="row opt opt-video" style="display:none">
+      <div>
+        <label>Aspect ratio</label>
+        <select id="vid_ar"><option>16:9</option><option>9:16</option><option>1:1</option></select>
+      </div>
+      <div id="vid_sound_wrap">
+        <label>Sound</label>
+        <select id="vid_sound"><option value="on">On</option><option value="off">Off</option></select>
+      </div>
+    </div>
+    <div class="opt opt-video" style="display:none;flex-direction:column;align-items:stretch">
+      <label>Clip length</label>
+      <div class="lenrow" id="vidLenRow"></div>
+    </div>
+
+    <!-- song options -->
+    <div class="opt opt-song" style="display:none">
+      <label style="margin-top:0">Lyrics</label>
+      <div class="modetoggle" role="tablist" aria-label="Lyrics source">
+        <button type="button" class="modebtn active" data-sm="song">Write lyrics for me</button>
+        <button type="button" class="modebtn" data-sm="own">I'll paste my own</button>
+      </div>
+
+      <label>Track length</label>
+      <div class="lenrow" id="songLenRow"></div>
+
+      <label>Genres <span style="font-weight:400">(pick up to 3)</span></label>
+      <div class="chiprow" id="songGenreRow"></div>
+
+      <div class="row" style="margin-top:4px">
+        <div>
+          <label>Language</label>
+          <select id="song_lang"></select>
+        </div>
+        <div>
+          <label>Artist / band style <span style="font-weight:400">(optional)</span></label>
+          <input id="song_artist" placeholder="e.g. Daft Punk, Johnny Cash">
+        </div>
+      </div>
+    </div>
+
+    <div class="anon" id="enhanceWrap" style="display:none">
+      <input type="checkbox" id="enhance" style="width:auto">
+      <label for="enhance" style="margin:0">Enhance my prompt with Lightchain AIVM (on-chain)</label>
+    </div>
+
+    <div class="price" id="priceRow"></div>
+
+    <button class="btn" id="genBtn" style="width:100%;padding:11px">Generate Preview (free)</button>
+
+    <div class="status" id="status"></div>
+    <div class="preview" id="preview"></div>
+
+    <div id="payArea" style="display:none">
+      <div class="hint">Love it? Pay to unlock the clean, watermark-free file.</div>
+      <div class="paybtns">
+        <button class="btn" id="payLcai">Pay in LCAI</button>
+      </div>
+    </div>
+
+    <div id="doneArea" style="display:none"></div>
+    <div id="combineArea" style="display:none"></div>
+
+    <!-- song: editable lyrics + make-song (paid) -->
+    <div id="songOut" style="display:none">
+      <label>Your lyrics — edit freely before making the song</label>
+      <textarea id="songLyrics" style="min-height:230px"></textarea>
+      <div class="hint">Lyrics are free. Pay once to render the finished MP3.</div>
+      <div class="price" id="songPriceRow"></div>
+      <div class="paybtns">
+        <button class="btn" id="songPayLcai">Make Song — Pay in LCAI</button>
+      </div>
+    </div>
+    <div class="status" id="songStatus"></div>
+    <div class="preview" id="songPreview"></div>
+    <div id="songDone" style="display:none"></div>
+  </div>
+  </main>
+  <aside class="rail rail-right" aria-label="More ways to create">
+    <button type="button" class="promo-card" data-jump="video"><h3>Video</h3><p>Type a scene, get a video.</p></button>
+    <button type="button" class="promo-card" data-jump="voice"><h3>Voice</h3><p>Turn words into a real voice — pick the speaker, accent, and mood.</p></button>
+    <button type="button" class="promo-card" data-jump="video"><h3>Combine</h3><p>Add your song or voice to your video, free.</p></button>
+    <div class="rail-head">Why LightStudio</div>
+    <div class="promo-card" style="cursor:default"><h3>Simple pricing</h3><p>Pay in LCAI.</p></div>
+    <div class="promo-card" style="cursor:default"><h3>See it before you pay</h3><p>Every creation shows a free preview first.</p></div>
+    <div class="promo-card" style="cursor:default"><h3>Yours to keep</h3><p>Download the clean, watermark-free file.</p></div>
+  </aside>
+ </div>
+
+  <div class="foot">
+    Wallet-only login — no email, no phone, nothing reaches the AI provider.<br>
+    Payments settle on Lightchain in LCAI and are final. Files delivered to you directly.
+    <div class="foot-links">
+      <button type="button" class="foot-link" id="legalBtn">Legal &amp; Policies</button>
+    </div>
+  </div>
+</div>
+
+<!-- Legal & Policies -->
+<div class="modal-overlay" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="legalTitle">Legal &amp; Policies</h2>
+      <button type="button" class="modal-close" id="legalClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-updated">Last updated: September 26, 2026 · By using LightStudio you agree to the terms below.</p>
+
+      <h3>Terms of Use</h3>
+      <p>LightStudio is an anonymous, wallet-only interface for generating images, video, and voice with AI. The service is provided <strong>“as is”</strong> without warranties of any kind. AI output quality, accuracy, availability, and uptime are <strong>not guaranteed</strong>. You use LightStudio at your own risk.</p>
+
+      <h3>Your Prompts &amp; Generated Files</h3>
+      <p>You are responsible for what you type and what you generate. Do <strong>not</strong> create content that is illegal, infringing, or that depicts or exploits minors. AI output may unintentionally resemble existing works; confirming you have the right to use what you generate is your responsibility. Files you unlock are yours to use at your own risk.</p>
+
+      <h3>Payments</h3>
+      <p>Previews are free and watermarked. You pay only to unlock the clean file. <strong>Unlock payments are final and non-refundable</strong> — blockchain transactions are irreversible. LCAI prices float with market value. <strong>Prices may change at any time</strong>; the price shown at unlock applies to that unlock. LightStudio is not a bank, escrow, or money transmitter.</p>
+
+      <h3>Not Professional Advice</h3>
+      <p>AI output is for creative use only and is <strong>not</strong> professional, legal, financial, or medical advice.</p>
+
+      <h3>Privacy &amp; Anonymity</h3>
+      <p>There is no account, email, or phone — your wallet is the only identity. Your prompts and generated files are held only in memory and a temporary job folder and are <strong>purged automatically</strong> after a short window. We do not log prompt or output contents and do not sell data. Third parties (your wallet app, RPC providers, the AI provider, and the hosting relay) have their own policies.</p>
+
+      <h3>Age</h3>
+      <p>You must be <strong>18 or older</strong> (or the age of majority in your region) to use LightStudio.</p>
+
+      <h3>Limitation of Liability</h3>
+      <p>To the fullest extent permitted by law, LightStudio and its operators are not liable for any indirect, incidental, or consequential damages arising from use of the service, including lost funds, failed generations, or reliance on AI output. Your sole remedy for dissatisfaction is to stop using LightStudio.</p>
+
+      <h3>Contact</h3>
+      <p>Questions or legal notices: contact the operator of this app through your own published channel.</p>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast">Copied</div>
+
+<script src="./ethers-6.13.2.umd.min.js"></script>
+<script>
+// Backend API. Frontend is served as a static site; all /api, /preview and
+// /file calls go to the backend you deploy. Set this to your backend's public
+// URL (no trailing slash).
+const BACKEND = "https://YOUR_SERVER_URL";
+
+const $ = s => document.querySelector(s);
+let CFG = null, MOD = "image", TIER = "standard", JOB = null, ADDR = null, signer = null;
+
+// current tier's price block, falling back to standard
+function tierPrice(mod, tier){
+  if(!CFG || !CFG.modalities[mod]) return null;
+  const t = CFG.modalities[mod];
+  return t[tier] || t.standard || null;
+}
+
+const LABELS = {
+  image: "Describe the image you want",
+  video: "Describe the video you want",
+  voice: "Type the words to speak",
+  edit: "Describe the edit",
+  animate: "How should this photo move?",
+};
+const PLACEHOLDERS = {
+  image: "A neon koi swimming through a city of light, cinematic, shallow depth of field",
+  video: "An orca leaping through a splash of light, slow motion, cinematic",
+  voice: "Type exactly what you want spoken aloud.",
+  edit: "Change the background to a neon city at night, keep the subject",
+  animate: "The subject turns toward the camera, gentle motion, cinematic",
+};
+
+// ── song state ──
+let SONG_MODE = "song", SONG_LEN = "2:00", SONG_GENRES = [], LYRICS = null;
+const SONG_GENRE_LIST = ["Pop","Rock","Hip-Hop","Rap","R&B","Country","EDM","Dance","House",
+  "Techno","Trap","Lo-fi","Jazz","Blues","Soul","Funk","Reggae","Reggaeton","Latin","Afrobeat",
+  "Folk","Indie","Metal","Punk","Gospel","Classical","Ambient","Disco","K-Pop"];
+const CLIP_SECS = [5, 10, 12];
+let CLIP_DUR = 5;
+const SONG_LENGTHS = ["fit","1:00","1:30","2:00","2:30","3:00","3:30"];
+function clipLabel(n){ return "0:" + String(n).padStart(2,"0"); }
+function songLenLabel(l){ return l==="fit" ? clipLabel(CLIP_DUR)+" · fit video" : l; }
+function songLengthPayload(){ return SONG_LEN==="fit" ? (CLIP_DUR+"s") : SONG_LEN; }
+
+let VOICE_EMO = "neutral", VOICE_SPEED = 1.0;
+let LAST_VIDEO = null, LAST_AUDIO = null;
+// Per-tab prompt text so switching tabs doesn't carry one tab's text into
+// another (e.g. song lyrics bleeding into the Video describe box).
+let PROMPTS = {};
+const SONG_LANGS = ["English","Spanish","French","German","Italian","Portuguese","Dutch","Russian",
+  "Japanese","Korean","Chinese","Hindi","Arabic","Turkish","Polish","Swedish"];
+
+function setSongStatus(msg,kind){ const s=$("#songStatus"); s.innerHTML=msg||""; s.className="status "+(kind||""); }
+function updateGenBtn(){ $("#genBtn").textContent = (MOD==="song") ? "Generate Lyrics (free)" : "Generate Preview (free)"; }
+
+function applySongLabel(){
+  if(SONG_MODE==="own"){
+    $("#promptLabel").textContent = "Paste your lyrics";
+    $("#prompt").placeholder = "Paste the lyrics you want sung — we keep the meaning and set them to your genre.";
+  }else{
+    $("#promptLabel").textContent = "What should the song be about?";
+    $("#prompt").placeholder = "A road trip under neon skies. Add section hints in brackets like [Chorus: big and anthemic].";
+  }
+}
+
+function syncClipPills(){
+  document.querySelectorAll("#vidLenRow .lenpill, #animLenRow .lenpill").forEach(x=>{
+    x.classList.toggle("active", parseInt(x.dataset.dur,10)===CLIP_DUR);
+  });
+  const fit = $("#songLenRow") && $("#songLenRow").querySelector('.lenpill[data-len="fit"]');
+  if(fit) fit.textContent = songLenLabel("fit");
+}
+function buildClipControls(){
+  const html = CLIP_SECS.map(n=>`<button type="button" class="lenpill${n===CLIP_DUR?' active':''}" data-dur="${n}">${n}s</button>`).join("");
+  ["vidLenRow","animLenRow"].forEach(id=>{
+    const el = $("#"+id);
+    if(!el) return;
+    el.innerHTML = html;
+    el.querySelectorAll(".lenpill").forEach(b=>b.onclick=()=>{
+      CLIP_DUR = parseInt(b.dataset.dur,10) || 5;
+      syncClipPills();
+    });
+  });
+}
+function buildSongControls(){
+  const lr = $("#songLenRow");
+  lr.innerHTML = SONG_LENGTHS.map(l=>`<button type="button" class="lenpill${l===SONG_LEN?' active':''}" data-len="${l}">${songLenLabel(l)}</button>`).join("");
+  lr.querySelectorAll(".lenpill").forEach(b=>b.onclick=()=>{
+    SONG_LEN=b.dataset.len; lr.querySelectorAll(".lenpill").forEach(x=>x.classList.toggle("active",x===b));
+  });
+  const gr = $("#songGenreRow");
+  gr.innerHTML = SONG_GENRE_LIST.map(g=>`<button type="button" class="chip" data-g="${g}">${g}</button>`).join("");
+  gr.querySelectorAll(".chip").forEach(b=>b.onclick=()=>toggleGenre(b));
+  $("#song_lang").innerHTML = SONG_LANGS.map(l=>`<option>${l}</option>`).join("");
+  document.querySelectorAll(".modebtn").forEach(b=>b.onclick=()=>{
+    SONG_MODE=b.dataset.sm;
+    document.querySelectorAll(".modebtn").forEach(x=>x.classList.toggle("active",x===b));
+    applySongLabel(); resetOutput();
+  });
+}
+function toggleGenre(b){
+  const g=b.dataset.g;
+  if(b.classList.contains("active")){ b.classList.remove("active"); SONG_GENRES=SONG_GENRES.filter(x=>x!==g); }
+  else{ if(SONG_GENRES.length>=3) return; b.classList.add("active"); SONG_GENRES.push(g); }
+  const full = SONG_GENRES.length>=3;
+  $("#songGenreRow").querySelectorAll(".chip").forEach(c=>{
+    c.classList.toggle("disabled", full && !c.classList.contains("active"));
+  });
+}
+
+function buildVoiceControls(){
+  const langs = (CFG && CFG.voices && CFG.voices.languages) || ["english"];
+  const langSel = $("#voice_lang");
+  if(langSel && !langSel.dataset.ready){
+    langSel.innerHTML = langs.map(l=>{
+      const label = l.charAt(0).toUpperCase()+l.slice(1);
+      return `<option value="${l}">${label}</option>`;
+    }).join("");
+    langSel.value = "english";
+    langSel.onchange = ()=>loadVoices();
+    langSel.dataset.ready = "1";
+  }
+  const emos = (CFG && CFG.voices && CFG.voices.emotions) || ["neutral","happy","sad","angry"];
+  const er = $("#voiceEmotionRow");
+  er.innerHTML = emos.map(e=>`<button type="button" class="chip${e===VOICE_EMO?' active':''}" data-e="${e}">${e}</button>`).join("");
+  er.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+    VOICE_EMO=b.dataset.e;
+    er.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));
+  });
+  const speeds = (CFG && CFG.voices && CFG.voices.speeds) || [0.8,1.0,1.2];
+  const sr = $("#voiceSpeedRow");
+  sr.innerHTML = speeds.map(s=>`<button type="button" class="chip${Number(s)===VOICE_SPEED?' active':''}" data-s="${s}">${s}×</button>`).join("");
+  sr.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+    VOICE_SPEED=Number(b.dataset.s);
+    sr.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));
+  });
+  loadVoices();
+}
+
+async function loadVoices(){
+  const sel = $("#voice_id");
+  if(!sel) return;
+  const lang = ($("#voice_lang") && $("#voice_lang").value) || "english";
+  sel.innerHTML = `<option value="">Loading…</option>`;
+  try{
+    const r = await fetch(BACKEND+"/api/voices?language="+encodeURIComponent(lang));
+    const d = await r.json();
+    const voices = d.voices || [];
+    if(!voices.length){
+      sel.innerHTML = `<option value="">Default studio voice</option>`;
+      return;
+    }
+    sel.innerHTML = voices.map(v=>{
+      const bits = [v.name, v.gender, v.accent, v.style].filter(Boolean).join(" · ");
+      const id = String(v.id||"").replace(/"/g,"");
+      return `<option value="${id}">${bits}</option>`;
+    }).join("");
+  }catch(e){
+    sel.innerHTML = `<option value="">Default studio voice</option>`;
+  }
+}
+
+async function loadConfig(){
+  try { CFG = await (await fetch(BACKEND+"/api/config")).json(); }
+  catch(e){ CFG = null; }
+  if (CFG && CFG.aivm_enhance) $("#enhanceWrap").style.display = "flex";
+  buildSongControls();
+  buildClipControls();
+  buildVoiceControls();
+  updateGenBtn();
+  renderPrice();
+}
+
+function renderTier(){
+  // voice has a single tier — hide the chooser
+  const mod = CFG && CFG.modalities[MOD] ? CFG.modalities[MOD] : null;
+  const hasPrem = !!(mod && mod.premium);
+  $("#tierWrap").style.display = hasPrem ? "block" : "none";
+  if(!hasPrem){ TIER = "standard"; }
+  if(mod){
+    const std = mod.standard, prem = mod.premium;
+    $("#tierStdPrice").textContent = std ? ` · ${std.lcai} LCAI` : "";
+    $("#tierPremPrice").textContent = prem ? ` · ${prem.lcai} LCAI` : "";
+  }
+  document.querySelectorAll(".tierbtn").forEach(b=>{
+    const on = b.dataset.t === TIER;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  // Standard video uses the cheap model which has no audio, so hide Sound and
+  // force it Off. Only Premium (audio-capable model) shows the Sound chooser.
+  const sw = $("#vid_sound_wrap");
+  if(sw){
+    const showSound = (MOD === "video" && TIER === "premium");
+    sw.style.display = showSound ? "" : "none";
+    if(!showSound && $("#vid_sound")) $("#vid_sound").value = "off";
+  }
+}
+
+function renderPrice(){
+  renderTier();
+  if(!CFG){ $("#priceRow").innerHTML = ""; return; }
+  if(MOD==="song"){
+    const s = (CFG.song && CFG.song.enabled) ? CFG.song : null;
+    const html = s
+      ? `<span class="pill">Song price</span>`+
+        `<span class="pill"><b>${s.lcai}</b> LCAI</span>`
+      : `<span class="pill">Lyrics are free</span>`;
+    $("#priceRow").innerHTML = html;
+    $("#songPriceRow").innerHTML = html;
+    return;
+  }
+  const p = tierPrice(MOD, TIER);
+  if(!p){ $("#priceRow").innerHTML = ""; return; }
+  $("#priceRow").innerHTML =
+    `<span class="pill">Unlock price</span>`+
+    `<span class="pill"><b>${p.lcai}</b> LCAI</span>`;
+}
+
+// ── tier chooser ──
+document.querySelectorAll(".tierbtn").forEach(b=>{
+  b.onclick = ()=>{ TIER = b.dataset.t; resetOutput(); renderPrice(); };
+});
+
+// ── tabs ──
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(x=>{x.classList.remove("active");x.setAttribute("aria-selected","false");});
+    t.classList.add("active"); t.setAttribute("aria-selected","true");
+    // Save the text for the tab we're leaving before switching.
+    PROMPTS[MOD] = $("#prompt").value;
+    MOD = t.dataset.m;
+    TIER = "standard";
+    document.querySelectorAll(".opt").forEach(o=>o.style.display="none");
+    const box = document.querySelector(".opt-"+MOD);
+    if(box) box.style.display = "flex";
+    if(MOD==="song"){ applySongLabel(); }
+    else { $("#promptLabel").textContent = LABELS[MOD]; $("#prompt").placeholder = PLACEHOLDERS[MOD]||""; }
+    // Restore this tab's own text (blank if it was never typed in).
+    $("#prompt").value = PROMPTS[MOD] || "";
+    updateGenBtn();
+    resetOutput(); renderPrice();
+  };
+});
+document.querySelectorAll(".promo-card[data-jump]").forEach(b=>{
+  b.onclick = ()=>jumpTab(b.dataset.jump);
+});
+
+function resetOutput(){
+  JOB=null; $("#preview").innerHTML=""; $("#payArea").style.display="none";
+  $("#doneArea").style.display="none"; $("#doneArea").innerHTML=""; setStatus("");
+  // song output areas
+  LYRICS=null;
+  $("#songOut").style.display="none";
+  $("#songDone").style.display="none"; $("#songDone").innerHTML="";
+  $("#songPreview").innerHTML=""; setSongStatus("");
+  renderCombine();
+}
+function setStatus(msg,kind){ const s=$("#status"); s.textContent=msg||""; s.className="status "+(kind||""); }
+
+// ── wallet ──
+async function connect(){
+  if(!window.ethereum){ setStatus("No wallet found. Install a Lightchain-compatible wallet.","err"); return; }
+  try{
+    const accts = await window.ethereum.request({method:"eth_requestAccounts"});
+    ADDR = accts[0];
+    const prov = new ethers.BrowserProvider(window.ethereum);
+    await ensureChain(prov);
+    signer = await prov.getSigner();
+    $("#walletLabel").textContent = ADDR.slice(0,6)+"…"+ADDR.slice(-4);
+    $("#connectBtn").textContent = "Connected";
+  }catch(e){ setStatus(e.message||"Wallet connection failed","err"); }
+}
+async function ensureChain(prov){
+  if(!CFG) return;
+  const hex = "0x"+CFG.chain_id.toString(16);
+  try{
+    const net = await prov.getNetwork();
+    if(Number(net.chainId) !== CFG.chain_id){
+      await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:hex}]});
+    }
+  }catch(e){ /* user can switch manually */ }
+}
+$("#connectBtn").onclick = connect;
+
+// ── generate ──
+$("#genBtn").onclick = async ()=>{
+  if(MOD==="song"){ return generateLyrics(); }
+  const prompt = $("#prompt").value.trim();
+  if(!prompt){ setStatus("Type a prompt first.","err"); return; }
+  if(MOD==="edit" && !($("#edit_file") && $("#edit_file").files && $("#edit_file").files[0])){
+    setStatus("Upload a photo first.","err"); return;
+  }
+  if(MOD==="animate" && !($("#animate_file") && $("#animate_file").files && $("#animate_file").files[0])){
+    setStatus("Upload a photo first.","err"); return;
+  }
+  resetOutput();
+  $("#genBtn").disabled = true;
+  // Video and animate run through Topview and genuinely take several minutes;
+  // image/edit/voice are fast. Set honest expectations so users don't think
+  // it's stuck.
+  const slowMod = (MOD==="video" || MOD==="animate");
+  const timeHint = slowMod ? "this can take a few minutes or more — it's working, don't close this."
+                           : "this should take about a minute.";
+  setStatus("Generating your "+MOD+"… "+timeHint);
+  const options = buildOptions();
+  try{
+    let r;
+    if(MOD==="edit" || MOD==="animate"){
+      const fd = new FormData();
+      fd.append("modality", MOD);
+      fd.append("tier", TIER);
+      fd.append("prompt", prompt);
+      fd.append("options", JSON.stringify(options));
+      fd.append("image", $(MOD==="edit" ? "#edit_file" : "#animate_file").files[0]);
+      r = await fetch(BACKEND+"/api/generate",{method:"POST", body:fd});
+    }else{
+      r = await fetch(BACKEND+"/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({modality:MOD,tier:TIER,prompt,options})});
+    }
+    const d = await r.json();
+    if(!r.ok){ setStatus(d.error||"Generation failed","err"); return; }
+    JOB = d;
+    showPreview(d);
+    setStatus("Here's your watermarked preview.","ok");
+    $("#payArea").style.display = "block";
+  }catch(e){ setStatus("Network error — try again.","err"); }
+  finally{ $("#genBtn").disabled = false; }
+};
+
+function buildOptions(){
+  // model / resolution / duration are fixed by the chosen tier on the server;
+  // only the cost-neutral options are sent from here.
+  const o = { enhance: $("#enhance") && $("#enhance").checked };
+  if(MOD==="image"){ o.aspect_ratio=$("#img_ar").value; }
+  if(MOD==="video"){ o.aspect_ratio=$("#vid_ar").value; o.sound=$("#vid_sound").value; o.duration=CLIP_DUR; }
+  if(MOD==="animate"){ o.duration=CLIP_DUR; }
+  if(MOD==="voice"){
+    o.voice_id = ($("#voice_id") && $("#voice_id").value) || "";
+    o.emotion = VOICE_EMO;
+    o.speed = VOICE_SPEED;
+  }
+  return o;
+}
+
+function showPreview(d){
+  const u = BACKEND + d.preview_url;
+  if(MOD==="image" || MOD==="edit") $("#preview").innerHTML = `<img src="${u}">`;
+  else if(MOD==="video" || MOD==="animate") $("#preview").innerHTML = `<video src="${u}" controls autoplay muted loop></video>`;
+  else $("#preview").innerHTML = `<audio src="${u}" controls style="width:100%"></audio>`;
+}
+
+// ── pay + unlock ──
+$("#payLcai").onclick = ()=>pay("lcai");
+
+async function pay(currency){
+  if(!JOB){ return; }
+  if(!signer){ await connect(); if(!signer) return; }
+  // use the price the server locked onto this job, so it always matches unlock
+  const p = (JOB && JOB.price) ? JOB.price : tierPrice(MOD, TIER);
+  try{
+    setStatus(`<span class="spinner"></span>Confirm the ${currency.toUpperCase()} payment in your wallet…`);
+    const tx = await signer.sendTransaction({to:CFG.owner_wallet, value:ethers.parseEther(String(p.lcai))});
+    setStatus(`<span class="spinner"></span>Payment sent. Waiting for confirmation…`);
+    await tx.wait();
+    setStatus(`<span class="spinner"></span>Verifying on-chain and unlocking…`);
+    const r = await fetch(BACKEND+"/api/unlock",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({job_id:JOB.job_id,currency,wallet:ADDR,tx_hash:tx.hash})});
+    const d = await r.json();
+    if(!r.ok){ setStatus(d.error||"Could not verify payment","err"); return; }
+    unlockUI(BACKEND + d.file_url);
+  }catch(e){
+    setStatus((e && (e.shortMessage||e.message)) || "Payment cancelled","err");
+  }
+}
+
+function fileRefFromUrl(jobId, fileUrl){
+  try{
+    const u = new URL(fileUrl, BACKEND);
+    return {job_id: jobId, token: u.searchParams.get("token")||"", url: fileUrl};
+  }catch(e){ return null; }
+}
+
+function unlockUI(fileUrl){
+  setStatus("Unlocked! Your clean file is ready.","ok");
+  $("#payArea").style.display="none";
+  const label = (MOD==="image"||MOD==="edit")?"Download image":(MOD==="video"||MOD==="animate")?"Download video":"Download audio";
+  $("#doneArea").style.display="block";
+  $("#doneArea").innerHTML = `<a class="btn" href="${fileUrl}" style="display:inline-block;margin-top:10px">${label}</a>`;
+  if(JOB && JOB.job_id){
+    const ref = fileRefFromUrl(JOB.job_id, fileUrl);
+    if(MOD==="video" || MOD==="animate") LAST_VIDEO = ref;
+    if(MOD==="voice") LAST_AUDIO = ref;
+  }
+  renderCombine();
+}
+
+function jumpTab(mod){
+  const t = document.querySelector('.tab[data-m="'+mod+'"]');
+  if(t) t.click();
+}
+
+function renderCombine(){
+  const host = $("#combineArea");
+  if(!host) return;
+  if(LAST_VIDEO && LAST_AUDIO){
+    host.style.display="block";
+    host.innerHTML =
+      `<div class="hint">You have an unlocked video and unlocked audio in this session. Combining is free.</div>`+
+      `<button type="button" class="btn ghost" id="combineBtn" style="margin-top:10px">Add audio to video</button>`+
+      `<div class="status" id="combineStatus"></div>`+
+      `<div class="preview" id="combinePreview"></div>`;
+    $("#combineBtn").onclick = combineAudio;
+    return;
+  }
+  if(LAST_VIDEO && !LAST_AUDIO){
+    host.style.display="block";
+    host.innerHTML =
+      `<div class="nudge">➕ Add music or a voice — make one in the Song or Voice tab, then combine them free.</div>`+
+      `<div class="nudge-jump">`+
+        `<button type="button" class="btn ghost" data-jump="song">Song tab</button>`+
+        `<button type="button" class="btn ghost" data-jump="voice">Voice tab</button>`+
+      `</div>`;
+    host.querySelectorAll("[data-jump]").forEach(b=>b.onclick=()=>jumpTab(b.dataset.jump));
+    return;
+  }
+  if(LAST_AUDIO && !LAST_VIDEO){
+    host.style.display="block";
+    host.innerHTML =
+      `<div class="nudge">➕ Add this to a video — make one in the Video or Animate tab, then combine them free.</div>`+
+      `<div class="nudge-jump">`+
+        `<button type="button" class="btn ghost" data-jump="video">Video tab</button>`+
+        `<button type="button" class="btn ghost" data-jump="animate">Animate tab</button>`+
+      `</div>`;
+    host.querySelectorAll("[data-jump]").forEach(b=>b.onclick=()=>jumpTab(b.dataset.jump));
+    return;
+  }
+  host.style.display="none";
+  host.innerHTML="";
+}
+
+async function combineAudio(){
+  const st = $("#combineStatus");
+  if(!LAST_VIDEO || !LAST_AUDIO){ st.textContent="Unlock a video and a song or voice first."; st.className="status err"; return; }
+  $("#combineBtn").disabled = true;
+  st.textContent = "Muxing audio onto the video…"; st.className="status";
+  try{
+    const r = await fetch(BACKEND+"/api/combine",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        video_job_id: LAST_VIDEO.job_id, video_token: LAST_VIDEO.token,
+        audio_job_id: LAST_AUDIO.job_id, audio_token: LAST_AUDIO.token
+      })});
+    const d = await r.json();
+    if(!r.ok){ st.textContent = d.error||"Combine failed"; st.className="status err"; return; }
+    const url = BACKEND + d.file_url;
+    $("#combinePreview").innerHTML = `<video src="${url}" controls autoplay style="max-width:100%"></video>`;
+    st.innerHTML = `Done. <a class="btn" href="${url}" style="display:inline-block;margin-top:8px">Download mix</a>`;
+    st.className="status ok";
+  }catch(e){ st.textContent="Network error — try again."; st.className="status err"; }
+  finally{ $("#combineBtn").disabled = false; }
+}
+
+// ── song: free lyrics (AIVM) then paid MP3 (AIML) ──
+async function generateLyrics(){
+  const prompt = $("#prompt").value.trim();
+  if(!prompt){ setSongStatus(SONG_MODE==="own"?"Paste your lyrics first.":"Tell me what the song's about first.","err"); return; }
+  resetOutput();
+  $("#genBtn").disabled = true;
+  setSongStatus(`<span class="spinner"></span>Writing your lyrics… free, just a few seconds.`);
+  try{
+    const r = await fetch(BACKEND+"/api/lyrics",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({mode:SONG_MODE,prompt,genres:SONG_GENRES,
+        artist:$("#song_artist").value.trim(),language:$("#song_lang").value,length:songLengthPayload()})});
+    const d = await r.json();
+    if(!r.ok){ setSongStatus(d.error||"Lyrics generation failed","err"); return; }
+    let lyrics = d.lyrics || "";
+    if(!lyrics && d.job_id){
+      const deadline = Date.now() + 240000;
+      while(Date.now() < deadline){
+        await new Promise(res => setTimeout(res, 4000));
+        const p = await fetch(BACKEND+"/api/lyrics/status?job_id="+encodeURIComponent(d.job_id));
+        const pd = await p.json();
+        if(pd.status === "done"){ lyrics = pd.lyrics || ""; break; }
+        if(pd.status === "error"){ setSongStatus(pd.error||"Lyrics generation failed","err"); return; }
+      }
+    }
+    if(!lyrics){ setSongStatus("Lyrics generation timed out — try again.","err"); return; }
+    LYRICS = lyrics;
+    $("#songLyrics").value = LYRICS;
+    $("#songOut").style.display = "block";
+    renderPrice();
+    setSongStatus("Lyrics ready — tweak them if you like, then make the song.","ok");
+  }catch(e){ setSongStatus("Network error — try again.","err"); }
+  finally{ $("#genBtn").disabled = false; }
+}
+
+$("#songPayLcai").onclick = ()=>songPay("lcai");
+
+async function songPay(currency){
+  const lyrics = $("#songLyrics").value.trim();
+  if(!lyrics){ setSongStatus("No lyrics yet — generate them first.","err"); return; }
+  const s = (CFG && CFG.song && CFG.song.enabled) ? CFG.song : null;
+  if(!s){ setSongStatus("Song rendering isn't enabled yet.","err"); return; }
+  if(!signer){ await connect(); if(!signer) return; }
+  try{
+    setSongStatus(`<span class="spinner"></span>Confirm the ${currency.toUpperCase()} payment in your wallet…`);
+    const tx = await signer.sendTransaction({to:CFG.owner_wallet, value:ethers.parseEther(String(s.lcai))});
+    setSongStatus(`<span class="spinner"></span>Payment sent. Rendering your song — this can take a couple of minutes…`);
+    await tx.wait();
+    const r = await fetch(BACKEND+"/api/song",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({lyrics,genres:SONG_GENRES,artist:$("#song_artist").value.trim(),
+        language:$("#song_lang").value,length:songLengthPayload(),currency,wallet:ADDR,tx_hash:tx.hash})});
+    const d = await r.json();
+    if(!r.ok){ setSongStatus(d.error||"Could not make the song","err"); return; }
+    const url = BACKEND + d.song_url;
+    $("#songOut").style.display = "none";
+    $("#songPreview").innerHTML = `<audio src="${url}" controls autoplay style="width:100%"></audio>`;
+    $("#songDone").style.display = "block";
+    $("#songDone").innerHTML = `<a class="btn" href="${url}" style="display:inline-block;margin-top:10px">Download song (MP3)</a>`;
+    setSongStatus("Done! Your song is ready.","ok");
+    const sid = (d.song_url||"").split("/file/")[1]||"";
+    const jobId = sid.split("?")[0];
+    LAST_AUDIO = fileRefFromUrl(jobId, url);
+    renderCombine();
+  }catch(e){
+    setSongStatus((e && (e.shortMessage||e.message)) || "Payment cancelled","err");
+  }
+}
+
+// ── legal modal ──
+const legalModal = $("#legalModal");
+function openLegal(){ legalModal.classList.add("open"); }
+function closeLegal(){ legalModal.classList.remove("open"); }
+$("#legalBtn").onclick = openLegal;
+$("#legalClose").onclick = closeLegal;
+legalModal.onclick = e => { if(e.target === legalModal) closeLegal(); };
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeLegal(); });
+
+loadConfig();
+</script>
+</body>
+</html>

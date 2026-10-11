@@ -1,0 +1,17 @@
+[
+  "Procfile",
+  "README.md",
+  "apple-touch-icon.png",
+  "favicon-32.png",
+  "i18n-ui.js",
+  "icon-152.png",
+  "icon-167.png",
+  "icon-192.png",
+  "icon-512.png",
+  "index.html",
+  "languages.py",
+  "manifest.json",
+  "requirements.txt",
+  "server.py",
+  "sw.js"
+]

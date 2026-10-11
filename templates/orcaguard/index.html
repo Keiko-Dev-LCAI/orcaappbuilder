@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>OrcaGuard — Crypto Safety Assistant</title>
+<style>
+  :root {
+  --on-accent: #0a0f1e;
+    --bg: #0a0f1a;
+    --surface: #0f1828;
+    --border: rgba(255,255,255,0.08);
+    --cyan: #00d4ff;
+    --green: #00e676;
+    --red: #ff4444;
+    --yellow: #ffaa00;
+    --muted: #6b8099;
+    --text: #e0eaf5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 18px; min-height: 100vh; overflow: hidden; }
+
+  /* ── SIDEBAR LOGO ───────────────────────────────────────────────────── */
+  .sidebar-logo { padding: 18px 22px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
+  .sidebar-logo:hover { background: rgba(255,255,255,0.04); }
+  .sidebar-logo-img-wrap { width: 56px; height: 56px; border-radius: 14px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow:none; background: #8dcbd4; margin-bottom: 8px; }
+  .sidebar-logo-img { width: 56px; height: 56px; object-fit: cover; border-radius: 14px; }
+  .sidebar-logo-name { font-size: 28px; font-weight: 800; color: var(--cyan); letter-spacing: -0.3px; margin-bottom: 6px; line-height: 1.1; }
+  .header-badge { background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); color: var(--green); font-size: 17px; font-weight: 600; padding: 5px 12px; border-radius: 20px; display: inline-block; }
+
+  .layout { display: flex; height: 100vh; overflow: hidden; }
+  .sidebar { width: 360px; flex-shrink: 0; background: rgba(0,0,0,0.2); border-right: 1px solid var(--border); padding: 0; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  .sidebar-nav { flex: 1; min-height: 0; overflow-y: auto; }
+  .sidebar-label { font-size: 18px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 24px 6px; margin-top: 10px; }
+  .sidebar-label:first-of-type { margin-top: 12px; }
+  .nav-item { display: flex; align-items: center; gap: 14px; padding: 13px 24px; cursor: pointer; font-size: 24px; color: var(--muted); border-left: 0 solid transparent; transition: all 0.15s; line-height: 1.2; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+  .nav-item.active { background: rgba(0,212,255,0.08); color: var(--cyan);  }
+  .nav-icon { font-size: 26px; width: 32px; text-align: center; flex-shrink: 0; }
+
+
+  .lang-section { padding: 14px 22px 18px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .mobile-lang-bar { display: none; padding: 12px 0 16px; margin-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .lang-section-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .lang-section-sub { font-size: 14px; color: var(--muted); margin-bottom: 10px; line-height: 1.45; }
+  .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lang-btn { padding: 10px 8px; border-radius: 10px; border: 2px solid var(--border);
+    background: rgba(0,0,0,0.25); color: var(--text); font-size: 14px; cursor: pointer; font-family: inherit; }
+  .lang-btn.active { border-color: var(--cyan); background: rgba(0,212,255,0.12); }
+
+  .android-install { padding: 14px 22px 18px; border-top: 1px solid var(--border); flex-shrink: 0; }
+  .android-install-btn { display: block; text-align: center; background: var(--cyan); color: #000; font-weight: 800; font-size: 17px; padding: 12px 14px; border-radius: 10px; text-decoration: none; }
+  .android-install-btn:hover { opacity: 0.9; }
+  .android-install-hint { margin-top: 8px; font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  .main { flex: 1; padding: 28px 40px; overflow-y: auto; height: 100vh; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-title { font-size: 36px; font-weight: 800; margin-bottom: 6px; }
+  .page-sub { font-size: 20px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+
+  .check-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 26px; margin-bottom: 20px; }
+  .check-label { font-size: 18px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+
+  .input-row { display: flex; gap: 12px; }
+  .check-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; color: var(--text); font-size: 18px; font-family: monospace; outline: none; transition: border-color 0.15s; }
+  .check-input:focus { border-color: var(--cyan); }
+  .check-input::placeholder { color: var(--muted); }
+  .check-btn { background: var(--cyan); color: #000; border: none; border-radius: 8px; padding: 14px 28px; font-weight: 700; font-size: 18px; cursor: pointer; white-space: nowrap; transition: opacity 0.15s; }
+  .check-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .check-btn:hover:not(:disabled) { opacity: 0.85; }
+
+  .result-box { margin-top: 16px; border-radius: 12px; padding: 20px 22px; display: none; }
+  .result-safe { background: rgba(0,230,118,0.07); border: 1px solid rgba(0,230,118,0.3); }
+  .result-caution { background: rgba(255,170,0,0.07); border: 1px solid rgba(255,170,0,0.3); }
+  .result-danger { background: rgba(255,68,68,0.07); border: 1px solid rgba(255,68,68,0.3); }
+  .result-pending { background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.2); }
+  .result-invalid { background: rgba(255,170,0,0.07); border: 1px solid rgba(255,170,0,0.2); }
+  .verdict-badge { display: inline-block; font-size: 20px; font-weight: 800; margin-bottom: 10px; }
+  .result-text { font-size: 18px; line-height: 1.7; white-space: pre-wrap; }
+  .result-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .result-link { font-size: 18px; color: var(--cyan); text-decoration: none; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.2); border-radius: 4px; padding: 5px 12px; }
+  .result-link:hover { background: rgba(0,212,255,0.2); }
+
+  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 16px; }
+  .info-card-title { font-weight: 700; font-size: 22px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .info-card p { font-size: 18px; color: var(--muted); line-height: 1.7; margin-bottom: 8px; }
+  .info-card code { color: var(--cyan); font-family: monospace; font-size: 18px; background: rgba(0,212,255,0.08); padding: 3px 8px; border-radius: 4px; word-break: break-all; }
+
+  .warning-banner { background: rgba(255,68,68,0.08); border: 1px solid rgba(255,68,68,0.3); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; }
+  .warning-banner-title { font-weight: 700; color: #ff6666; margin-bottom: 8px; font-size: 20px; }
+  .warning-banner p { font-size: 18px; color: #cc8888; line-height: 1.6; }
+
+  .safe-banner { background: rgba(0,230,118,0.07); border: 1px solid rgba(0,230,118,0.25); border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; }
+  .safe-banner-title { font-weight: 700; color: var(--green); margin-bottom: 8px; font-size: 20px; }
+  .safe-banner p { font-size: 18px; color: #88bb99; line-height: 1.6; }
+  .safe-banner a { color: var(--cyan); }
+
+  .scam-list { list-style: none; display: grid; gap: 12px; }
+  .scam-list li { background: rgba(255,68,68,0.06); border: 1px solid rgba(255,68,68,0.2); border-radius: 10px; padding: 16px 20px; font-size: 18px; display: flex; align-items: flex-start; gap: 14px; }
+  .scam-list li .icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .scam-list li .desc { color: #cc9999; line-height: 1.6; }
+  .scam-list li strong { color: #ff8888; }
+
+  /* ── HOME PAGE CARDS ──────────────────────────────────────────────── */
+  .home-intro { font-size: 20px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+  .section-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+  .section-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .section-card:hover { border-color: rgba(0,212,255,0.4); background: rgba(0,212,255,0.05); }
+  .section-card-icon { font-size: 28px; margin-bottom: 8px; }
+  .section-card-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .section-card-desc { font-size: 18px; color: var(--muted); line-height: 1.45; }
+
+  /* AI Chat */
+  .ai-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .ai-messages { height: 420px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .ai-msg { max-width: 85%; padding: 14px 18px; border-radius: 12px; font-size: 18px; line-height: 1.7; white-space: pre-wrap; }
+  .ai-msg.bot { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); align-self: flex-start; color: var(--text); }
+  .ai-msg.user { background: rgba(255,255,255,0.06); border: 1px solid var(--border); align-self: flex-end; color: var(--text); }
+  .ai-input-row { border-top: 1px solid var(--border); padding: 14px; display: flex; gap: 10px; }
+  .ai-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; color: var(--text); font-size: 18px; outline: none; resize: none; height: 50px; font-family: inherit; }
+  .ai-input:focus { border-color: var(--cyan); }
+  .ai-send { background: var(--cyan); color: #000; border: none; border-radius: 8px; padding: 12px 22px; font-weight: 700; font-size: 18px; cursor: pointer; }
+  .ai-send:disabled { opacity: 0.5; }
+
+  /* ── MOBILE NAV ───────────────────────────────────────────────────── */
+  .mobile-nav {
+    display: none;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(8,12,22,0.98);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    overflow-x: auto; overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    z-index: 200;
+    backdrop-filter: blur(12px);
+  }
+  .mobile-nav::-webkit-scrollbar { display: none; }
+  .mobile-nav-inner { display: flex; min-width: max-content; }
+  .mobile-nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    padding: 10px 16px 12px;
+    border: none; background: none; cursor: pointer;
+    color: var(--muted); font-size: 18px; font-weight: 600;
+    font-family: inherit; min-width: 70px;
+    transition: color 0.15s; white-space: nowrap;
+    border-top: 2px solid transparent;
+  }
+  .mobile-nav-btn .mnav-icon { font-size: 24px; line-height: 1; }
+  .mobile-nav-btn.active { color: var(--cyan); border-top-color: var(--cyan); }
+  .mobile-nav-btn:active { background: rgba(255,255,255,0.05); }
+
+  /* ── MOBILE RESPONSIVE ────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    body { overflow: auto; }
+
+    /* Layout */
+    .sidebar { display: none; }
+    .mobile-lang-bar { display: block; }
+    .mobile-nav { display: block; }
+    .layout { height: auto; min-height: 100vh; overflow: visible; }
+    .main { padding: 16px 14px 100px; max-width: 100%; overflow-x: hidden; overflow-y: visible; height: auto; }
+
+    /* Page headings */
+    .page-title { font-size: 28px; line-height: 1.3; margin-bottom: 8px; }
+    .page-sub { font-size: 18px; margin-bottom: 18px; line-height: 1.55; }
+
+    /* Input rows — stack vertically */
+    .input-row { flex-direction: column; gap: 10px; }
+    .check-input { width: 100%; font-size: 18px; }
+    .check-btn { width: 100%; padding: 14px; font-size: 18px; }
+
+    /* Cards */
+    .check-box { padding: 18px; }
+    .info-card { padding: 18px 20px; }
+    .info-card p { font-size: 18px; }
+    .info-card code { word-break: break-all; display: block; font-size: 16px; }
+    .info-card-title { font-size: 20px; }
+
+    /* Banners */
+    .warning-banner { padding: 16px 18px; }
+    .warning-banner-title { font-size: 18px; }
+    .warning-banner p { font-size: 18px; }
+    .safe-banner { padding: 16px 18px; }
+    .safe-banner p { font-size: 18px; }
+
+    /* Results */
+    .result-text { font-size: 18px; word-break: break-word; }
+    .result-box { padding: 16px 18px; }
+    .verdict-badge { font-size: 18px; }
+
+    /* Scam list */
+    .scam-list li { padding: 14px 16px; font-size: 18px; }
+
+    /* AI Chat */
+    .ai-messages { height: 280px; padding: 14px; }
+    .ai-msg { font-size: 18px; max-width: 92%; }
+    .ai-input-row { padding: 10px; gap: 8px; }
+    .ai-input { font-size: 18px; }
+    .ai-send { padding: 10px 16px; font-size: 18px; }
+
+    /* Wallet audit grid */
+    #auditResults > div { flex-direction: column; }
+
+    /* Home cards */
+    .section-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .section-card { padding: 16px; }
+    .section-card-icon { font-size: 26px; margin-bottom: 8px; }
+    .section-card-title { font-size: 18px; }
+    .section-card-desc { font-size: 18px; }
+  }
+</style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00b4a2">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <script type="module">
+    try {
+      const { EthereumProvider } = await import('https://esm.sh/@walletconnect/ethereum-provider@2.17.3');
+      window.WCEthereumProvider = EthereumProvider;
+    } catch(e) { console.warn('WalletConnect unavailable:', e); }
+  </script>
+</head>
+<body>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-logo" onclick="showPage('home')">
+      <div class="sidebar-logo-img-wrap">
+        <img src="orca-mascot.png" class="sidebar-logo-img" alt="OrcaGuard">
+      </div>
+      <div class="sidebar-logo-name">OrcaGuard</div>
+      <div class="header-badge" id="serverBadge">● Checking...</div>
+    </div>
+    <div id="nav-home" style="display:none"></div>
+    <div class="sidebar-nav">
+    <div class="sidebar-label" id="sidebarLabelChecks">Safety Checks</div>
+    <div class="nav-item" onclick="showPage('contract')" id="nav-contract">
+      <span class="nav-icon">🔍</span><span id="navContract">Check a Contract</span>
+    </div>
+    <div class="nav-item" onclick="showPage('url')" id="nav-url">
+      <span class="nav-icon">🔗</span><span id="navUrl">Check a Website</span>
+    </div>
+    <div class="nav-item" onclick="showPage('wallet')" id="nav-wallet">
+      <span class="nav-icon">📬</span><span id="navWallet">Verify a Wallet</span>
+    </div>
+    <div class="nav-item" onclick="showPage('audit')" id="nav-audit">
+      <span class="nav-icon">🔐</span><span id="navAudit">Wallet Audit</span>
+    </div>
+    <div class="nav-item" onclick="showPage('breach')" id="nav-breach">
+      <span class="nav-icon">🔓</span><span id="navBreach">Breach Check</span>
+    </div>
+    <div class="sidebar-label" id="sidebarLabelResources">Resources</div>
+    <div class="nav-item" onclick="showPage('buylcai')" id="nav-buylcai">
+      <span class="nav-icon">💰</span><span id="navBuylcai">Buy &amp; Bridge LCAI</span>
+    </div>
+    <div class="nav-item" onclick="showPage('scams')" id="nav-scams">
+      <span class="nav-icon">🚨</span><span id="navScams">Common Scams</span>
+    </div>
+    <div class="nav-item" onclick="showPage('tips')" id="nav-tips">
+      <span class="nav-icon">💡</span><span id="navTips">Tips &amp; Help</span>
+    </div>
+    <div class="sidebar-label" id="sidebarLabelAi">AI Assistant</div>
+    <div class="nav-item" onclick="showPage('ask')" id="nav-ask">
+      <span class="nav-icon">🤖</span><span id="navAsk">Ask OrcaGuard</span>
+    </div>
+    </div>
+    <div class="lang-section">
+      <div class="lang-section-title" id="langTitle">Language</div>
+      <div class="lang-section-sub" id="langSub">Change the whole app — navigation, guides, and buttons.</div>
+      <div class="lang-grid" id="langGrid"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="mobile-lang-bar">
+      <div class="lang-section-title" id="mobileLangTitle">Language</div>
+      <div class="lang-section-sub" id="mobileLangSub">Change the whole app — navigation, guides, and buttons.</div>
+      <div class="lang-grid" id="mobileLangGrid"></div>
+    </div>
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="page-title" id="homeTitle">🛡️ Welcome to OrcaGuard</div>
+      <div class="page-sub" id="homeSub">Your crypto safety companion for the Lightchain AI (LCAI) community. Before you buy a token, connect to a site, or send funds anywhere — run it through here first. It takes seconds and could save you everything.</div>
+
+      <p class="home-intro" id="homeIntro">OrcaGuard puts eight safety tools in one place. From checking unknown contracts and phishing URLs, to auditing your own wallet and learning how scams work — everything is explained in plain English, no technical background needed.</p>
+
+      <div class="section-cards">
+        <div class="section-card" onclick="showPage('contract')">
+          <div class="section-card-icon">🔍</div>
+          <div class="section-card-title" id="cardContractT">Contract Checker</div>
+          <div class="section-card-desc" id="cardContractD">Paste any token address to instantly see if it's safe, suspicious, or a known scam.</div>
+        </div>
+        <div class="section-card" onclick="showPage('url')">
+          <div class="section-card-icon">🔗</div>
+          <div class="section-card-title" id="cardUrlT">Website Checker</div>
+          <div class="section-card-desc" id="cardUrlD">Verify a URL before connecting your wallet — one wrong site can drain it in seconds.</div>
+        </div>
+        <div class="section-card" onclick="showPage('wallet')">
+          <div class="section-card-icon">📬</div>
+          <div class="section-card-title" id="cardWalletT">Wallet Verifier</div>
+          <div class="section-card-desc" id="cardWalletD">Confirm a destination address is valid before sending crypto you can never get back.</div>
+        </div>
+        <div class="section-card" onclick="showPage('audit')">
+          <div class="section-card-icon">🔐</div>
+          <div class="section-card-title" id="cardAuditT">Wallet Audit</div>
+          <div class="section-card-desc" id="cardAuditD">Connect your wallet for an instant health check — balances, network, and scam token scan.</div>
+        </div>
+        <div class="section-card" onclick="showPage('breach')">
+          <div class="section-card-icon">🔓</div>
+          <div class="section-card-title" id="cardBreachT">Breach Check</div>
+          <div class="section-card-desc" id="cardBreachD">Find out if your email has appeared in a known data breach using Have I Been Pwned.</div>
+        </div>
+        <div class="section-card" onclick="showPage('buylcai')">
+          <div class="section-card-icon">💰</div>
+          <div class="section-card-title" id="cardBuylcaiT">Buy &amp; Bridge LCAI</div>
+          <div class="section-card-desc" id="cardBuylcaiD">Buy ERC-20, bridge to native LCAI for gas &amp; dApps — official links only, and fakes to avoid.</div>
+        </div>
+        <div class="section-card" onclick="showPage('scams')">
+          <div class="section-card-icon">🚨</div>
+          <div class="section-card-title" id="cardScamsT">Common Scams</div>
+          <div class="section-card-desc" id="cardScamsD">Know the most common tactics scammers use to steal from crypto holders.</div>
+        </div>
+        <div class="section-card" onclick="showPage('tips')">
+          <div class="section-card-icon">💡</div>
+          <div class="section-card-title" id="cardTipsT">Tips &amp; Help</div>
+          <div class="section-card-desc" id="cardTipsD">Gas fees, slippage, wallet connections, and transaction signing — explained simply.</div>
+        </div>
+        <div class="section-card" onclick="showPage('ask')">
+          <div class="section-card-icon">🤖</div>
+          <div class="section-card-title" id="cardAskT">Ask OrcaGuard</div>
+          <div class="section-card-desc" id="cardAskD">Describe any situation and get a plain-English safety verdict powered by Lightchain AIVM.</div>
+        </div>
+      </div>
+
+      <div class="info-card" style="border-color:rgba(0,212,255,0.25);background:rgba(0,212,255,0.04);padding:14px 20px;margin-bottom:0">
+        <div class="info-card-title" style="font-size:20px;margin-bottom:8px" id="homeGuideTitle">🧭 Not sure where to start?</div>
+        <div id="homeGuideBody" style="display:grid;gap:6px">
+          <div style="font-size:18px;color:var(--text);line-height:1.5">📋 <strong style="color:#fff">Got a token address?</strong> &rarr; <span style="color:var(--cyan);cursor:pointer" onclick="showPage('contract')">Contract Checker</span></div>
+          <div style="font-size:18px;color:var(--text);line-height:1.5">🌐 <strong style="color:#fff">Not sure about a website?</strong> &rarr; <span style="color:var(--cyan);cursor:pointer" onclick="showPage('url')">Website Checker</span></div>
+          <div style="font-size:18px;color:var(--text);line-height:1.5">🔐 <strong style="color:#fff">Want to see what's in your wallet?</strong> &rarr; <span style="color:var(--cyan);cursor:pointer" onclick="showPage('audit')">Wallet Audit</span></div>
+          <div style="font-size:18px;color:var(--text);line-height:1.5">🌱 <strong style="color:#fff">New to crypto?</strong> &rarr; <span style="color:var(--cyan);cursor:pointer" onclick="showPage('scams')">Common Scams</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CONTRACT CHECK -->
+    <div class="page" id="page-contract">
+      <div class="page-title" id="contractTitle">🔍 Check a Contract Address</div>
+      <div class="page-sub" id="contractSub">Paste any token contract address before you buy, approve, or interact with it. OrcaGuard checks known lists, live explorer data when possible, and AI analysis — then gives a plain-English SAFE / CAUTION / DANGER verdict.</div>
+
+      <div class="check-box">
+        <div class="check-label" id="contractLabel">Token or Contract Address</div>
+        <div class="input-row">
+          <input class="check-input" id="contractInput" placeholder="0x9cA8530CA349c966Fe9ef903Df17a75B8A778927" />
+          <button class="check-btn" id="contractBtn" onclick="checkContract()">Check It</button>
+        </div>
+        <div style="font-size:18px;color:var(--muted);margin-top:8px" id="contractHint">Paste the full contract address starting with 0x</div>
+        <div class="result-box" id="contractResult"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="contractInfo1Title">💡 Why contract addresses matter</div>
+        <div id="contractInfo1Body"><p>Scammers create tokens with the same name and ticker as real projects — like a fake "LCAI" token. The only way to tell the real one from a fake is the contract address. Two tokens can have the same name but they'll never have the same address.</p>
+        <p>Always verify the contract address before buying. Get it from CoinMarketCap, CoinGecko, or the project's official website — never from a chat message or social media post.</p></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="contractInfo2Title">✅ Official LCAI Contract (Ethereum)</div>
+        <div id="contractInfo2Body"><p>If you're looking for LCAI on Ethereum, here is the verified contract address:</p>
+        <p style="margin-top:8px"><code><a href="https://etherscan.io/token/0x9cA8530CA349c966Fe9ef903Df17a75B8A778927" target="_blank" style="color:var(--cyan);text-decoration:none">0x9cA8530CA349c966Fe9ef903Df17a75B8A778927</a></code></p>
+        <p style="margin-top:8px">Any other token claiming to be LCAI with a different address is a scam.</p></div>
+      </div>
+
+      <div class="info-card" style="border-color:rgba(0,212,255,0.2);background:rgba(0,212,255,0.04)">
+        <div class="info-card-title" id="contractInfo3Title">💡 Native LCAI on Lightchain Mainnet has no contract address — and that's normal</div>
+        <div id="contractInfo3Body"><p>LCAI exists in two forms. On <strong style="color:#fff">Lightchain Mainnet</strong>, LCAI is the native currency of the blockchain — the same way ETH is native to Ethereum. Native currencies don't have contract addresses because they're built into the chain itself, not issued by a smart contract.</p>
+        <p style="margin-top:8px">On <strong style="color:#fff">Ethereum</strong>, LCAI exists as an ERC-20 token (the contract address above). This is the version you buy on Uniswap and bridge over to Lightchain.</p>
+        <p style="margin-top:8px">⚠️ <strong style="color:var(--yellow)">If anyone gives you a "contract address for native LCAI on Lightchain," it is a scam.</strong> Native tokens don't have one — there's nothing to find.</p></div>
+      </div>
+    </div>
+
+    <!-- URL CHECK -->
+    <div class="page" id="page-url">
+      <div class="page-title" id="urlTitle">🔗 Check a Website</div>
+      <div class="page-sub" id="urlSub">Before connecting your wallet to any website, paste the URL here first. One wrong click on a phishing site can drain your entire wallet in seconds.</div>
+
+      <div class="check-box">
+        <div class="check-label" id="urlLabel">Website URL</div>
+        <div class="input-row">
+          <input class="check-input" id="urlInput" placeholder="https://app.uniswap.org" />
+          <button class="check-btn" id="urlBtn" onclick="checkURL()">Check It</button>
+        </div>
+        <div style="font-size:18px;color:var(--muted);margin-top:8px" id="urlHint">Paste the full URL from your browser's address bar</div>
+        <div class="result-box" id="urlResult"></div>
+      </div>
+
+      <div class="warning-banner">
+        <div class="warning-banner-title" id="urlWarnTitle">⚠️ Never connect your wallet to a site you're not sure about</div>
+        <div id="urlWarnBody">Scammers buy Google and social media ads for fake versions of Uniswap, MetaMask, and other tools. The fake site looks identical. Once you connect and approve a transaction, your wallet is drained instantly and can't be recovered.</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="urlOfficialTitle">✅ Official Lightchain Sites</div>
+        <div id="urlOfficialBody"><p>Only connect your wallet to these official / verified domains:</p>
+        <div style="display:grid;gap:8px;margin-top:12px">
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">lightchain.ai</a> — Official site</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://lightdex.app/" target="_blank" rel="noopener" style="color:var(--green)">lightdex.app</a> — Official LCAI Swap (native)</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://bridge.lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">bridge.lightchain.ai</a> — Official bridge</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://workers.lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">workers.lightchain.ai</a> — Worker explorer</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://dao.lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">dao.lightchain.ai</a> — Governance</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://docs.lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">docs.lightchain.ai</a> — Docs</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" style="color:var(--green)">hub.lightchain.ai</a> — dApp hub</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener" style="color:var(--green)">mainnet.lightscan.app</a> — Explorer</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://app.uniswap.org" target="_blank" rel="noopener" style="color:var(--green)">app.uniswap.org</a> — Uniswap (ERC-20 LCAI)</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://filament.exchange" target="_blank" rel="noopener" style="color:var(--green)">filament.exchange</a> — Filament (community DEX/forge)</div>
+          <div style="font-size:18px;color:var(--green)">✅ <a href="https://your-domain.example" target="_blank" rel="noopener" style="color:var(--green)">your-domain.example</a> — This app</div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- WALLET CHECK -->
+    <div class="page" id="page-wallet">
+      <div class="page-title" id="walletTitle">📬 Verify a Wallet Address</div>
+      <div class="page-sub" id="walletSub">Before sending crypto anywhere, verify the destination address. One wrong character and your funds are gone forever — there's no bank to call, no reversal.</div>
+
+      <div class="check-box">
+        <div class="check-label" id="walletLabel">Destination Wallet Address</div>
+        <div class="input-row">
+          <input class="check-input" id="walletInput" placeholder="0x..." />
+          <button class="check-btn" id="walletBtn" onclick="checkWallet()">Verify</button>
+        </div>
+        <div style="font-size:18px;color:var(--muted);margin-top:8px" id="walletHint">Paste the address you're about to send crypto to</div>
+        <div class="result-box" id="walletResult"></div>
+      </div>
+
+      <div class="check-box" style="margin-top:24px">
+        <div class="check-label" id="walletBotLabel">🤖 Trading Bot Detector</div>
+        <div style="font-size:18px;color:var(--muted);margin-bottom:12px;line-height:1.6" id="walletBotDesc">Paste any wallet address to check if it looks like a trading bot. OrcaGuard will check on-chain activity on both Ethereum and Lightchain, then give you a plain-English verdict.</div>
+        <div class="input-row">
+          <input class="check-input" id="botInput" placeholder="0x..." />
+          <button class="check-btn" id="botBtn" onclick="checkBot()">Check for Bot</button>
+        </div>
+        <div class="result-box" id="botResult"></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="walletInfoTitle">💡 Always verify before you send</div>
+        <div id="walletInfoBody"><p>Malware on your computer can silently replace wallet addresses you copy from the clipboard. You copy one address, paste a different one. Always check the first 6 and last 6 characters of the address in your wallet app before confirming.</p>
+        <p style="margin-top:8px">On large amounts, send a small test transaction first and confirm it arrived before sending the rest.</p></div>
+      </div>
+
+      <div class="warning-banner">
+        <div class="warning-banner-title" id="walletWarnTitle">🚨 Never send to an address from a DM</div>
+        <div id="walletWarnBody">If anyone sends you a wallet address in Discord, Telegram, or Twitter DMs and asks you to send them crypto — it's a scam. Legitimate projects never ask you to send funds to verify a transaction, claim a reward, or unlock your account.</div>
+      </div>
+    </div>
+
+    <!-- WALLET AUDIT -->
+    <div class="page" id="page-audit">
+      <div class="page-title" id="auditTitle">🔐 Wallet Audit</div>
+      <div class="page-sub" id="auditSub">Connect your wallet for an instant health check — network, balances, and a hygiene report. Nothing is stored or sent anywhere. All checks run directly from your browser.</div>
+
+      <div class="check-box" id="auditConnectBox">
+        <div style="text-align:center;padding:24px 0">
+          <div style="font-size:52px;margin-bottom:16px">🔐</div>
+          <div style="font-size:19px;font-weight:700;margin-bottom:8px;color:#fff" id="auditConnectTitle">Connect your wallet to start</div>
+          <div style="font-size:18px;color:var(--muted);margin-bottom:24px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.6" id="auditConnectDesc">Works with MetaMask and Trust Wallet browser. We only read your public address and balances — we never request transaction approval.</div>
+          <button class="check-btn" onclick="connectWalletAudit()" id="auditConnectBtn" style="padding:15px 44px;font-size:18px">Connect Wallet</button>
+          <div id="auditConnectError" style="margin-top:14px;font-size:18px;color:var(--yellow);display:none"></div>
+        </div>
+      </div>
+
+      <div id="auditResults" style="display:none">
+        <div class="check-box" style="margin-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px" id="auditConnectedLabel">Connected Wallet</div>
+              <div id="auditAddress" style="font-family:monospace;font-size:18px;color:var(--cyan)"></div>
+            </div>
+            <button id="auditDisconnectBtn" onclick="disconnectAudit()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:18px">Disconnect</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px">
+          <div class="info-card" style="padding:18px 20px">
+            <div style="font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px" id="auditNetworkLabel">Network</div>
+            <div id="auditNetwork" style="font-size:18px;font-weight:700;margin-bottom:8px"></div>
+            <button id="auditSwitchEth" onclick="switchAuditNetwork('0x1','Ethereum Mainnet')" style="display:none;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:var(--cyan);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:18px;font-weight:600">↔ Switch to Ethereum</button>
+            <button id="auditSwitchLcai" onclick="switchAuditNetwork('0x23f0','Lightchain Mainnet')" style="display:none;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:var(--cyan);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:18px;font-weight:600">↔ Switch to Lightchain</button>
+          </div>
+          <div class="info-card" style="padding:18px 20px">
+            <div style="font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px" id="auditEthLabel">ETH Balance</div>
+            <div id="auditEth" style="font-size:18px;font-weight:700"></div>
+          </div>
+          <div class="info-card" style="padding:18px 20px">
+            <div style="font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px" id="auditLcaiLabel">LCAI Balance</div>
+            <div id="auditLcai" style="font-size:18px;font-weight:700"></div>
+          </div>
+        </div>
+
+        <div id="auditChecks" style="display:grid;gap:10px;margin-bottom:20px"></div>
+
+        <!-- Lightchain / Filament holdings (from Lightscan — includes KEIKO) -->
+        <div class="check-box" style="margin-bottom:20px">
+          <div class="check-label" id="auditHoldingsLabel">🪙 Lightchain token holdings</div>
+          <div style="font-size:17px;color:var(--muted);margin-bottom:12px;line-height:1.55" id="auditHoldingsDesc">Pulled from Lightscan for this address (Filament coins like <strong style="color:#fff">KEIKO</strong>, plus other Lightchain tokens). Native LCAI is separate above.</div>
+          <div id="auditHoldings" style="font-size:17px;color:var(--muted)">Connect to load…</div>
+        </div>
+
+        <!-- Airdrop Scanner -->
+        <div class="check-box" style="margin-bottom:20px">
+          <div class="check-label" id="auditAirdropLabel">🪂 Airdrop Scam Scanner</div>
+          <div style="font-size:18px;color:var(--muted);margin-bottom:14px;line-height:1.6" id="auditAirdropDesc">Scammers airdrop fake tokens into wallets to trick you into visiting phishing sites or approving malicious contracts. This scanner checks tokens on <strong style="color:#fff">Ethereum and Lightchain</strong> (including Filament) and flags suspicious names. Known community tokens (e.g. <strong style="color:#fff">KEIKO</strong>) are not treated as scams. Native LCAI has no contract — it appears in the LCAI balance card above, not in this list.</div>
+          <button class="check-btn" id="airdropScanBtn" onclick="scanAirdrops()">Scan for Scam Tokens</button>
+          <div id="airdropResult" style="margin-top:16px"></div>
+        </div>
+
+        <div class="info-card" style="border-color:rgba(0,212,255,0.2)">
+          <div class="info-card-title" id="auditRevokeTitle">🔍 Check Your Token Approvals</div>
+          <div id="auditRevokeBody"><p>Token approvals are permissions you've given to smart contracts to spend your tokens. Old or unlimited approvals are a security risk — a compromised contract could drain your wallet.</p>
+          <p style="margin-top:8px">Use <strong style="color:#fff">Revoke.cash</strong> — a trusted, free tool — to see all your active approvals and cancel the ones you don't need:</p></div>
+          <a href="https://revoke.cash" target="_blank" class="check-btn" id="auditRevokeBtn" style="display:inline-block;margin-top:14px;text-decoration:none;padding:12px 28px">Open Revoke.cash →</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="auditWhatTitle">💡 What we check</div>
+        <p id="auditWhatBody">When you connect, OrcaGuard automatically checks: which network you're on, your ETH balance (needed for gas), your LCAI balance, and flags any immediate concerns. For a full approval audit, we link you to Revoke.cash — the gold standard for approval management.</p>
+      </div>
+
+      <div class="info-card" style="border-color:rgba(255,170,0,0.25);background:rgba(255,170,0,0.04)">
+        <div class="info-card-title" id="auditTrustTitle">📱 Trust Wallet tip — portfolio view vs. DApp browser</div>
+        <div id="auditTrustBody"><p>Trust Wallet has <strong style="color:#fff">two separate network settings</strong> that can show different things at the same time:</p>
+        <p style="margin-top:10px">• <strong style="color:#fff">Portfolio view</strong> (the main wallet screen) — shows your tokens across whatever network you're viewing. You can flip between Ethereum and Lightchain here without affecting anything else.</p>
+        <p style="margin-top:8px">• <strong style="color:#fff">DApp browser connection</strong> — when you open a website inside Trust Wallet's built-in browser, the wallet connects on whichever network the DApp browser is set to. This is what OrcaGuard reads.</p>
+        <p style="margin-top:10px">If OrcaGuard shows Lightchain but your portfolio shows Ethereum, it means your DApp browser is still on Lightchain. Use the <strong style="color:#fff">↔ Switch to Ethereum</strong> button above to fix it — or inside Trust Wallet go to the DApp browser, tap the network icon in the address bar, and switch there.</p></div>
+      </div>
+    </div>
+
+    <!-- BUY & BRIDGE LCAI -->
+    <div class="page" id="page-buylcai">
+      <div class="page-title" id="buylcaiTitle">💰 Buy &amp; Bridge LCAI</div>
+      <div class="page-sub" id="buylcaiSub">Buy real LCAI safely, then bridge ERC-20 → <strong style="color:#fff">native LCAI</strong> for gas, votes, and Lightchain dApps. Official links only — scammers clone the name.</div>
+
+      <div class="safe-banner">
+        <div class="safe-banner-title" id="buylcaiSafeTitle">✅ Official LCAI Contract (Ethereum Mainnet)</div>
+        <div id="buylcaiSafeBody"><p>Before buying anywhere, verify the contract address matches exactly:</p>
+        <p style="margin-top:8px"><code style="color:var(--cyan);font-family:monospace;font-size:18px;word-break:break-all">0x9cA8530CA349c966Fe9ef903Df17a75B8A778927</code></p>
+        <p style="margin-top:8px">Verify at: <a href="https://coinmarketcap.com/currencies/lightchain-ai/" target="_blank">CoinMarketCap</a> · <a href="https://etherscan.io/token/0x9cA8530CA349c966Fe9ef903Df17a75B8A778927" target="_blank">Etherscan</a></p></div>
+      </div>
+
+      <!-- Bridge first (most-needed for Lightchain) -->
+      <div class="safe-banner" style="border-color:rgba(0,212,255,0.35)" id="buylcaiBridgeSection">
+        <div class="safe-banner-title" id="buylcaiBridgeTitle">🌉 How to bridge ERC-20 LCAI → native LCAI</div>
+        <div id="buylcaiBridgeBody"><p><strong style="color:#fff">Why bridge?</strong> Uniswap and many CEXs deal in <strong>ERC-20 LCAI on Ethereum</strong>. Lightchain dApps (gas, workers, votes, etc.) need <strong>native LCAI on Lightchain Mainnet (9200)</strong>. They are related but not interchangeable until you bridge.</p>
+        <p style="margin-top:12px"><a href="https://bridge.lightchain.ai/" target="_blank" rel="noopener" class="check-btn" style="display:inline-block;text-decoration:none;padding:12px 22px">Open official bridge →</a></p>
+        <div style="display:grid;gap:10px;margin-top:14px">
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">1. Hold official ERC-20 LCAI on Ethereum</div><p style="margin:0">Buy on Uniswap with the official contract, or withdraw from a verified CEX to your Ethereum wallet. Confirm the token address is exactly <code style="color:var(--cyan);font-size:15px;word-break:break-all">0x9cA8530CA349c966Fe9ef903Df17a75B8A778927</code>.</p></div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">2. Wallet on Ethereum Mainnet</div><p style="margin:0">In MetaMask / Trust / etc., select <strong style="color:#fff">Ethereum Mainnet</strong>. Keep a little ETH for Ethereum gas (approvals + bridge tx).</p></div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">3. Open only the official bridge</div><p style="margin:0">Go to <a href="https://bridge.lightchain.ai/" target="_blank" rel="noopener" style="color:var(--cyan)">bridge.lightchain.ai</a> — bookmark it. Do <strong>not</strong> use Google ads, Discord “support” links, or lookalike domains.</p></div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">4. Bridge LCAI to Lightchain</div><p style="margin:0">Connect your wallet → choose LCAI from Ethereum to Lightchain → enter amount → approve if asked → confirm the bridge transaction. Wait until the bridge shows complete (can take several minutes).</p></div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">5. Switch to Lightchain Mainnet (9200)</div><p style="margin:0">Add/switch network to Lightchain Mainnet in your wallet. You should see <strong style="color:#fff">native LCAI</strong> balance. Check on <a href="https://mainnet.lightscan.app" target="_blank" rel="noopener" style="color:var(--cyan)">mainnet.lightscan.app</a> if needed.</p></div>
+          <div style="background:rgba(0,0,0,0.25);border-radius:10px;padding:12px 14px"><div style="font-weight:700;color:#fff;margin-bottom:4px">6. Use native LCAI</div><p style="margin:0">Gas for dApps, and swaps on <a href="https://lightdex.app/" target="_blank" rel="noopener" style="color:var(--cyan)">lightdex.app</a>. Native LCAI has <strong>no ERC-20 contract address</strong> on Lightchain — anyone giving you a “native LCAI contract” is scamming.</p></div>
+        </div>
+        <p style="margin-top:14px;color:var(--yellow)">⚠️ Never bridge through a random website. Never send ERC-20 LCAI to a Lightchain address on the wrong network. If the bridge fails, use official Discord/docs — never seed phrases.</p></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="buylcaiWaysTitle">✅ Safe Ways to Buy LCAI</div>
+        <div id="buylcaiWaysBody"><p><strong style="color:#fff">1. Official Lightchain DEX — LCAI Swap (native)</strong> — Best for <strong>native LCAI</strong> on Lightchain Mainnet (chain <strong>9200</strong>): gas, dApps, minting. Use only <a href="https://lightdex.app/" target="_blank" rel="noopener" style="color:var(--cyan)">lightdex.app</a>. Bookmark it. This is <strong>not</strong> the same as ERC-20 LCAI on Ethereum.</p>
+        <p style="margin-top:10px"><strong style="color:#fff">2. Uniswap on Ethereum (ERC-20 LCAI)</strong> — For the <strong>Ethereum</strong> token only: <a href="https://app.uniswap.org" target="_blank" rel="noopener" style="color:var(--cyan)">app.uniswap.org</a>. Search by the <strong>contract address above</strong>, never by name alone. Slippage 1–2%. ERC-20 LCAI on Ethereum <strong>cannot</strong> pay gas on Lightchain until you bridge.</p>
+        <p style="margin-top:10px"><strong style="color:#fff">3. Bridge ERC-20 → native</strong> — After you hold official ERC-20 LCAI on Ethereum, use the official bridge (steps above) to receive <strong>native LCAI</strong> on Lightchain.</p>
+        <p style="margin-top:10px"><strong style="color:#fff">4. Centralized exchanges</strong> — e.g. BitMart and others listed on <a href="https://coinmarketcap.com/currencies/lightchain-ai/" target="_blank" rel="noopener" style="color:var(--cyan)">CoinMarketCap</a>. Always match the official contract. Withdraw carefully (network selection matters).</p></div>
+      </div>
+
+      <div class="warning-banner">
+        <div class="warning-banner-title" id="buylcaiWarn1Title">🚨 LCAI is NOT on Coinbase</div>
+        <div id="buylcaiWarn1Body">Lightchain AI (LCAI) is not listed on Coinbase. If you search "LCAI" on Coinbase and find a result, it is a scam token with the same name. Do not buy it. Always verify the contract address.</div>
+      </div>
+
+      <div class="warning-banner">
+        <div class="warning-banner-title" id="buylcaiWarn2Title">🚨 Watch out for fake Uniswap</div>
+        <div id="buylcaiWarn2Body">Scammers run ads for fake versions of Uniswap. The only real Uniswap is <strong>app.uniswap.org</strong>. Bookmark it. Never click a Uniswap link from a search engine result or social media post.</div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-card-title" id="buylcaiVerifyTitle">💡 How to verify any token before buying</div>
+        <div id="buylcaiVerifyBody"><p>1. Go to <a href="https://coinmarketcap.com" target="_blank" style="color:var(--cyan)">CoinMarketCap.com</a> or <a href="https://coingecko.com" target="_blank" style="color:var(--cyan)">CoinGecko.com</a></p>
+        <p>2. Search for the token by name</p>
+        <p>3. Find the "Contract" address on the token's page</p>
+        <p>4. Compare that address character by character with what the exchange shows you</p>
+        <p>5. If they don't match exactly — do not buy</p></div>
+      </div>
+    </div>
+
+    <!-- COMMON SCAMS -->
+    <div class="page" id="page-scams">
+      <div class="page-title" id="scamsTitle">🚨 Common Crypto Scams</div>
+      <div class="page-sub" id="scamsSub">These are the most common ways crypto holders lose money. Knowing these patterns is your best protection.</div>
+
+      <ul class="scam-list" id="scamsList">
+        <li>
+          <span class="icon">💧</span>
+          <div class="desc"><strong>Airdrop Scams</strong> — Random tokens appear in your wallet. Never interact with, approve, or try to sell them. Just touching these tokens can trigger approvals that drain your wallet. Ignore them completely.</div>
+        </li>
+        <li>
+          <span class="icon">🪤</span>
+          <div class="desc"><strong>Honeypot Tokens</strong> — You can buy them but can't sell. Looks like the price is rising, but once you buy, you're trapped. Always check a contract before buying using the contract checker on this site.</div>
+        </li>
+        <li>
+          <span class="icon">🎭</span>
+          <div class="desc"><strong>Fake Token Same Name</strong> — Scammers create tokens with the exact same name and ticker as real projects. <strong>LCAI is not on Coinbase</strong> — any "LCAI" there is fake. Always verify by contract address.</div>
+        </li>
+        <li>
+          <span class="icon">🌐</span>
+          <div class="desc"><strong>Phishing Sites</strong> — Fake versions of Uniswap, MetaMask, Lightchain, etc. run Google ads. The site looks identical. Once you connect and approve, your wallet is drained. Always bookmark official sites.</div>
+        </li>
+        <li>
+          <span class="icon">💬</span>
+          <div class="desc"><strong>Fake Support DMs</strong> — Someone messages you on Discord or Telegram offering to help with a wallet problem. They will ask for your seed phrase or private key. This is always a scam. Real support never asks for these.</div>
+        </li>
+        <li>
+          <span class="icon">🔑</span>
+          <div class="desc"><strong>Seed Phrase / Private Key Requests</strong> — Never share your seed phrase or private key with anyone, ever, for any reason. Anyone asking for it is a scammer. Your seed phrase = complete control of your wallet.</div>
+        </li>
+        <li>
+          <span class="icon">📋</span>
+          <div class="desc"><strong>Clipboard Hijacking</strong> — Malware replaces wallet addresses you copy with the scammer's address. Always check the first and last 6 characters of an address after pasting before confirming any transaction.</div>
+        </li>
+        <li>
+          <span class="icon">💸</span>
+          <div class="desc"><strong>Send Crypto to Receive More</strong> — "Send 1 ETH and get 2 back." "Send LCAI to unlock your reward." This is always a scam. Legitimate projects never ask you to send crypto to receive more.</div>
+        </li>
+        <li>
+          <span class="icon">✅</span>
+          <div class="desc"><strong>Unlimited Token Approvals</strong> — A dApp asks to approve spending of unlimited tokens. This gives the contract permission to take everything in your wallet at any time. Only approve the exact amount you need, or use a trusted revoke tool to cancel old approvals.</div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- TIPS & HELP -->
+    <div class="page" id="page-tips">
+      <div class="page-title" id="tipsTitle">💡 Tips &amp; Help</div>
+      <div class="page-sub" id="tipsSub">Stuck connecting your wallet? Confused by gas fees? These are the most common problems crypto holders run into — and how to fix them.</div>
+
+      <!-- WALLET CONNECTION -->
+      <div class="info-card" style="border-color:rgba(0,212,255,0.2)">
+        <div class="info-card-title" id="tipsWalletTitle">🔌 Can't Connect Your Wallet to a Lightchain Site?</div>
+        <p id="tipsWalletIntro">This is one of the most common issues, especially on mobile. Desktop browsers handle wallet connections differently than phones, and some sites don't support all methods equally.</p>
+        <div id="tipsWalletContent" style="display:grid;gap:10px;margin-top:14px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">✅ Use the built-in browser inside your wallet app</div>
+            <p style="margin:0">The most reliable fix. In <strong style="color:#fff">Trust Wallet</strong>: tap the browser icon at the bottom → type the site address. In <strong style="color:#fff">MetaMask mobile</strong>: tap the menu → Browser. These browsers connect automatically because the wallet is already built in.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🖥️ On desktop — try a different browser</div>
+            <p style="margin:0">If MetaMask isn't connecting in Chrome, try Firefox (or vice versa). Sometimes browser extensions conflict. Also try disabling other extensions temporarily.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🔄 Disconnect and reconnect</div>
+            <p style="margin:0">In your wallet app, go to Settings → Connected Sites (or Wallet Connect) and disconnect from the site. Then try connecting again from scratch. A stale connection is a very common cause of this problem.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🌐 Make sure you're on the right network</div>
+            <p style="margin:0">Lightchain dApps (bridge, governance, workers) require <strong style="color:#fff">Lightchain Mainnet</strong>. Uniswap requires <strong style="color:#fff">Ethereum Mainnet</strong>. If your wallet is on the wrong network the site will either refuse to connect or show strange errors. Switch networks inside your wallet before connecting.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🗑️ Clear your browser cache</div>
+            <p style="margin:0">Sometimes old cached data causes connection failures. In Chrome: Settings → Privacy → Clear browsing data → Cached images and files. Then reload the page and try again.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAS FEES -->
+      <div class="info-card" style="border-color:rgba(255,170,0,0.2)">
+        <div class="info-card-title" id="tipsGasTitle">⛽ Understanding Gas Fees</div>
+        <p id="tipsGasIntro">Gas is the fee you pay to the network to process your transaction. Think of it like a tip to the validators who keep the network running. On Ethereum, gas is paid in ETH — and it can get expensive.</p>
+        <div id="tipsGasContent" style="display:grid;gap:10px;margin-top:14px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">💸 Ethereum gas can be $5 to $50+ for one transaction</div>
+            <p style="margin:0">Gas prices change constantly based on network demand. During busy periods (big news, market moves, NFT drops) fees spike dramatically. A simple token swap that costs $3 one day might cost $40 the next.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">⏱️ You can wait for gas to come down</div>
+            <p style="margin:0">There's no rush. Gas fees are usually lower on <strong style="color:#fff">weekends</strong> and <strong style="color:#fff">late at night (US Eastern time)</strong> when fewer people are transacting. Check current fees at <a href="https://etherscan.io/gastracker" target="_blank" style="color:var(--cyan)">etherscan.io/gastracker</a> before you transact. If the fee seems high, come back in a few hours.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🟢 Gas on Lightchain Mainnet is very cheap</div>
+            <p style="margin:0">Once you bridge your LCAI to Lightchain Mainnet, transactions there cost a tiny fraction of a cent in native LCAI. Bridging itself (on Ethereum) still costs Ethereum gas — but after that, you're on a much cheaper network.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">⚠️ Don't set gas too low</div>
+            <p style="margin:0">Some wallets let you manually set gas. If you set it too low, your transaction will sit pending forever or eventually fail — and you may still lose the gas fee. Stick with the wallet's recommended setting unless you know what you're doing.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIPPAGE -->
+      <div class="info-card" style="border-color:rgba(0,230,118,0.2)">
+        <div class="info-card-title" id="tipsSlippageTitle">📊 What Is Slippage — and How to Set It</div>
+        <p id="tipsSlippageIntro">Slippage is the difference between the price you expect to pay and the price you actually pay when your transaction goes through. Crypto prices move constantly, so by the time your transaction is confirmed, the price may have shifted slightly.</p>
+        <div id="tipsSlippageContent" style="display:grid;gap:10px;margin-top:14px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🎯 Recommended slippage for LCAI on Uniswap: 1–2%</div>
+            <p style="margin:0">On Uniswap, click the gear icon (⚙️) and set slippage to 1% or 2%. This means you're OK paying up to 2% more than the quoted price. If the price moves more than that before your transaction confirms, it will automatically cancel (protecting you from a bad fill).</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">❌ Transaction keeps failing? Try raising slippage</div>
+            <p style="margin:0">If your swap transaction keeps failing or reverting, the most common fix is to increase slippage to 3–5%. This gives the transaction more room to go through even if the price moves. Just know that higher slippage means you might get a slightly worse price.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">🚨 Never set slippage above 10–15%</div>
+            <p style="margin:0">Very high slippage leaves you vulnerable to "sandwich attacks" where bots see your pending transaction, buy the token first to push the price up, let your transaction fill at the worse price, then sell. Keep slippage reasonable.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUST WALLET TIPS -->
+      <div class="info-card">
+        <div class="info-card-title" id="tipsTrustTitle">📱 Trust Wallet Tips</div>
+        <div id="tipsTrustContent" style="display:grid;gap:10px;margin-top:10px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">Can't see your LCAI after an update?</div>
+            <p style="margin:0">After Trust Wallet updates, tokens sometimes get hidden. Tap the icon in the top right to manage your token list. Look for a show/hide toggle next to LCAI and make sure it's visible. If you don't see it, search by the contract address: <code style="color:var(--cyan);font-size:18px">0x9cA8530CA349c966Fe9ef903Df17a75B8A778927</code></p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">Always require signature for transactions</div>
+            <p style="margin:0">In Trust Wallet settings, make sure transaction signing is required — meaning the app asks you to confirm before any transaction goes out. This is your last line of defense against a bad approval. Never approve a transaction you didn't initiate.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:6px;font-size:18px">Use the in-app browser for Lightchain sites</div>
+            <p style="margin:0">As mentioned above — if you're having trouble connecting on mobile, the Trust Wallet browser (tap the compass/browser icon) will connect to Lightchain sites reliably without any extra setup.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- GENERAL SAFETY TIPS -->
+      <div class="info-card">
+        <div class="info-card-title" id="tipsGeneralTitle">🛡️ General Safety Reminders</div>
+        <div id="tipsGeneralContent" style="display:grid;gap:8px;margin-top:10px">
+          <div style="font-size:18px;color:var(--text);line-height:1.6">✅ Bookmark the official sites — never navigate to them from a search engine result or link in a message.</div>
+          <div style="font-size:18px;color:var(--text);line-height:1.6">✅ On large transactions, always send a small test amount first and confirm it arrived before sending the rest.</div>
+          <div style="font-size:18px;color:var(--text);line-height:1.6">✅ Check the URL in your browser bar every time before you connect your wallet — one character difference is a phishing site.</div>
+          <div style="font-size:18px;color:var(--text);line-height:1.6">✅ Revoke old token approvals regularly using a trusted revoke tool like <a href="https://revoke.cash" target="_blank" style="color:var(--cyan)">revoke.cash</a>. Unlimited approvals are a security risk.</div>
+          <div style="font-size:18px;color:var(--text);line-height:1.6">✅ Your seed phrase and private key are never needed by any legitimate website. If a site asks for them — leave immediately.</div>
+        </div>
+      </div>
+
+      <!-- TRANSACTION SAFETY -->
+      <div class="info-card" style="border-color:rgba(255,68,68,0.2)">
+        <div class="info-card-title" id="tipsTxTitle">📋 Before You Sign Any Transaction — Read This</div>
+        <p id="tipsTxIntro">Every transaction your wallet asks you to sign is a request to do something with your money or permissions. Most wallet drains happen because someone signed something without understanding what it was.</p>
+        <div id="tipsTxContent" style="display:grid;gap:10px;margin-top:14px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:var(--green);margin-bottom:6px;font-size:18px">✅ Signs you're probably safe</div>
+            <div style="font-size:18px;color:var(--muted);line-height:1.7">
+              • You initiated this action yourself (you clicked something on a site you trust)<br>
+              • The transaction shows a specific token amount — not "unlimited"<br>
+              • The gas fee is reasonable (a few dollars or less on Lightchain, variable on Ethereum)<br>
+              • The destination address matches what you expect
+            </div>
+          </div>
+          <div style="background:rgba(255,68,68,0.07);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,68,68,0.2)">
+            <div style="font-weight:700;color:var(--red);margin-bottom:6px;font-size:18px">🚨 Stop and don't sign if you see any of these</div>
+            <div style="font-size:18px;color:#cc9999;line-height:1.7">
+              • The approval amount says "unlimited" or shows a huge number (115792089...)<br>
+              • The transaction popped up without you clicking anything<br>
+              • It's asking you to <strong style="color:#ff8888">setApprovalForAll</strong> (gives complete control of your NFTs)<br>
+              • The gas fee is extremely high for something that should be simple<br>
+              • The site URL has anything suspicious — even one wrong character<br>
+              • Someone told you to approve this in a chat message or DM
+            </div>
+          </div>
+          <div style="background:rgba(255,170,0,0.07);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,170,0,0.2)">
+            <div style="font-weight:700;color:var(--yellow);margin-bottom:6px;font-size:18px">⚠️ What "Approve" and "Permit" really mean</div>
+            <p style="font-size:18px;color:#bb9955;line-height:1.7;margin:0">These give a smart contract permission to spend your tokens. Legitimate DeFi apps (like Uniswap) need a one-time approval before a swap — that's normal. But always set the approval amount to just what you need for that transaction, not unlimited. After the trade, that approval stays active forever unless you revoke it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA BREACH CHECK -->
+    <div class="page" id="page-breach">
+      <div class="page-title" id="breachTitle">🔓 Data Breach Check</div>
+      <div class="page-sub" id="breachSub">Find out if your email address has appeared in a known data breach — password leaks, hacked databases, and more. Powered by Have I Been Pwned, the most trusted breach database in the world.</div>
+
+      <div class="check-box">
+        <div class="check-label" id="breachLabel">Email Address</div>
+        <div class="input-row">
+          <input class="check-input" id="breachInput" placeholder="your@email.com" type="email" />
+          <button class="check-btn" id="breachBtn" onclick="checkBreach()">Check for Breaches</button>
+        </div>
+        <div style="font-size:18px;color:var(--muted);margin-top:8px" id="breachHint">Validates your email, shows safety steps, then opens Have I Been Pwned (trusted third party) — OrcaGuard never stores your email.</div>
+        <div class="result-box" id="breachResult" style="display:none"></div>
+      </div>
+
+      <div class="info-card" style="border-color:rgba(0,212,255,0.25);background:rgba(0,212,255,0.04)">
+        <div class="info-card-title" id="breachAboutTitle">🌐 About Have I Been Pwned</div>
+        <div id="breachAboutBody"><p>Have I Been Pwned is a free service run by respected security researcher Troy Hunt. It aggregates billions of records from hundreds of real-world data breaches — including leaked passwords, email addresses, and personal data from hacked databases around the world.</p>
+        <p style="margin-top:8px">If your email shows up in a breach, <strong style="color:#fff">change that password immediately</strong> — and anywhere else you've reused it. Password reuse is one of the most dangerous habits in online security.</p></div>
+      </div>
+
+      <div class="info-card" style="border-color:rgba(255,170,0,0.25);background:rgba(255,170,0,0.04)">
+        <div class="info-card-title" id="breachActionTitle">⚠️ What to do if you're in a breach</div>
+        <div id="breachActionBody" style="display:grid;gap:10px;margin-top:12px">
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:4px;font-size:18px">1. Change your password on that site immediately</div>
+            <p style="margin:0;font-size:18px">Log in to the breached service and update your password to something strong and unique — a mix of letters, numbers, and symbols, at least 12 characters long.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:4px;font-size:18px">2. If you reused that password anywhere else, change it there too</div>
+            <p style="margin:0;font-size:18px">Attackers take leaked passwords and try them on other services (called credential stuffing). If you used the same password on your email, exchange, or wallet — change those now.</p>
+          </div>
+          <div style="background:rgba(0,0,0,0.2);border-radius:10px;padding:14px 16px">
+            <div style="font-weight:700;color:#fff;margin-bottom:4px;font-size:18px">3. Turn on two-factor authentication wherever possible</div>
+            <p style="margin:0;font-size:18px">2FA means even if someone has your password, they can't get in without also having your phone. Enable it on your email, crypto exchanges, and any financial account.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ASK ORCAGUARD -->
+    <div class="page" id="page-ask">
+      <div class="page-title" id="askTitle">🤖 Ask OrcaGuard</div>
+      <div class="page-sub" id="askSub">Not sure if something is safe? Describe it and ask. OrcaGuard will give you a plain-English verdict powered by Lightchain AIVM — the same network you're protecting yourself to participate in.</div>
+
+      <div class="ai-panel">
+        <div class="ai-messages" id="aiMessages">
+          <div class="ai-msg bot" id="aiWelcome">Hey! I'm OrcaGuard. I help protect crypto holders from scams, phishing, and bad contracts.
+
+Ask me anything:
+• "Is this contract address safe?" (paste it)
+• "I got a random token airdropped — what do I do?"
+• "Is this website the real Uniswap?"
+• "Someone in Discord is asking for my seed phrase"
+• "Where can I safely buy LCAI?"
+
+I'll give you a straight answer in plain English. 🛡️</div>
+        </div>
+        <div class="ai-input-row">
+          <textarea class="ai-input" id="aiInput" placeholder="Describe what you're unsure about..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAsk();}"></textarea>
+          <button class="ai-send" id="aiSend" onclick="sendAsk()">Send</button>
+        </div>
+      </div>
+      <div style="font-size:18px;color:var(--muted);margin-top:10px" id="askPowered">Powered by Lightchain AIVM · Free to use</div>
+    </div>
+
+<div style="text-align:center;padding:8px;padding-bottom:72px;font-size:18px;">
+  <a href="#" onclick="applyI18n();document.getElementById('orca-terms-overlay').style.display='flex';return false;" style="color:#4a6080;text-decoration:none;"><span id="footerTerms">📋 Terms &amp; Disclaimer</span></a>
+</div>
+
+
+  </div>
+</div>
+
+<script src="i18n-ui.js?v=20261003-1"></script>
+<script>
+const BACKEND_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:8186'
+  : 'YOUR_SERVER_URL';
+
+// ── Navigation ─────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-btn').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  const mb = document.querySelector('.mobile-nav-btn[data-page="' + id + '"]');
+  if(mb) mb.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Server health check ────────────────────────────────────────────────
+function updateServerBadge() {
+  const badge = document.getElementById('serverBadge');
+  if (!badge) return;
+  const txt = badge.textContent || '';
+  if (txt.includes('Checking') || txt.includes('Comprobando') || txt.includes('检查') || txt.includes('Vérification')) {
+    badge.textContent = t('server_checking');
+  }
+}
+
+async function checkServerHealth() {
+  const badge = document.getElementById('serverBadge');
+  badge.textContent = t('server_checking');
+  try {
+    const r = await fetch(BACKEND_URL + '/api/health');
+    const d = await r.json();
+    badge.textContent = t('server_online');
+    badge.style.background = 'rgba(0,230,118,0.1)';
+    badge.style.borderColor = 'rgba(0,230,118,0.3)';
+    badge.style.color = 'var(--green)';
+  } catch (e) {
+    badge.textContent = t('server_offline');
+    badge.style.background = 'rgba(255,68,68,0.1)';
+    badge.style.borderColor = 'rgba(255,68,68,0.3)';
+    badge.style.color = 'var(--red)';
+  }
+}
+checkServerHealth();
+setInterval(checkServerHealth, 30000);
+
+function resetActionButtons() {
+  const map = [
+    ['contractBtn', 'contract_btn'], ['urlBtn', 'url_btn'], ['walletBtn', 'wallet_btn'],
+    ['botBtn', 'wallet_bot_btn'], ['auditConnectBtn', 'audit_connect_btn'],
+    ['auditDisconnectBtn', 'audit_disconnect'], ['airdropScanBtn', 'audit_airdrop_btn'],
+    ['breachBtn', 'breach_btn'], ['aiSend', 'ask_send'], ['termsCloseBtn', 'terms_close']
+  ];
+  map.forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (el && !el.disabled) el.textContent = t(key);
+  });
+  const eth = document.getElementById('auditSwitchEth');
+  const lc = document.getElementById('auditSwitchLcai');
+  if (eth && !eth.disabled) eth.textContent = t('audit_switch_eth');
+  if (lc && !lc.disabled) lc.textContent = t('audit_switch_lcai');
+}
+
+// ── Result rendering ───────────────────────────────────────────────────
+function showResult(boxId, verdict, content, links) {
+  const box = document.getElementById(boxId);
+  const cls = verdict === 'safe' ? 'result-safe'
+            : verdict === 'danger' ? 'result-danger'
+            : verdict === 'caution' ? 'result-caution'
+            : verdict === 'invalid' ? 'result-invalid'
+            : 'result-pending';
+  const emoji = verdict === 'safe' ? t('verdict_safe')
+              : verdict === 'danger' ? t('verdict_danger')
+              : verdict === 'caution' ? t('verdict_caution')
+              : verdict === 'invalid' ? t('verdict_invalid')
+              : t('verdict_analyzing');
+  let html = '<div class="verdict-badge">' + emoji + '</div>'
+           + '<div class="result-text">' + content + '</div>';
+  if (links && links.length) {
+    html += '<div class="result-links">';
+    links.forEach(l => { html += '<a href="' + l + '" target="_blank" class="result-link">' + l.replace('https://', '') + '</a>'; });
+    html += '</div>';
+  }
+  box.className = 'result-box ' + cls;
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+// ── Poll job ──────────────────────────────────────────────────────────
+async function pollJob(jobId, onDone, onError, maxWait = 360000) {
+  const start = Date.now();
+  let notFoundStreak = 0;
+  while (Date.now() - start < maxWait) {
+    await new Promise(r => setTimeout(r, 3000));
+    try {
+      const r = await fetch(BACKEND_URL + '/api/job?id=' + jobId);
+      if (r.status === 404) {
+        // Job not found — server may have restarted
+        notFoundStreak++;
+        if (notFoundStreak >= 3) {
+          onError(t('msg_poll_restart'));
+          return;
+        }
+        continue;
+      }
+      notFoundStreak = 0;
+      const d = await r.json();
+      if (d.status === 'done') { onDone(d.answer); return; }
+      if (d.status === 'error') { onError(d.error || t('msg_poll_unknown')); return; }
+    } catch (e) {}
+  }
+  onError(t('msg_poll_timeout'));
+}
+
+// ── Contract checker ───────────────────────────────────────────────────
+async function checkContract() {
+  const input = document.getElementById('contractInput').value.trim();
+  const btn   = document.getElementById('contractBtn');
+  if (!input) return;
+
+  btn.disabled = true; btn.textContent = t('btn_checking');
+  showResult('contractResult', 'pending', t('msg_checking_contract'), null);
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/check-contract', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({address: input, lang: currentLang()})
+    });
+    const d = await r.json();
+
+    if (d.limitReached) {
+      showResult('contractResult', 'caution', d.error, []);
+    } else if (d.quick) {
+      showResult('contractResult', d.verdict, d.note || d.name, d.links || []);
+    } else if (d.jobId) {
+      const liveLinks = [d.etherscanUrl, d.lightscanUrl].filter(Boolean);
+      showResult('contractResult', 'pending', t('msg_analyzing_ai'), liveLinks.length ? liveLinks : null);
+      pollJob(d.jobId,
+        answer => showResult('contractResult', guessVerdict(answer), answer, liveLinks),
+        err    => showResult('contractResult', 'caution', t('msg_ai_failed', {err: err}), liveLinks)
+      );
+    }
+  } catch (e) {
+    showResult('contractResult', 'caution', t('msg_server_unavailable'), []);
+  }
+  btn.disabled = false; btn.textContent = t('contract_btn');
+}
+
+// ── URL checker ────────────────────────────────────────────────────────
+async function checkURL() {
+  const input = document.getElementById('urlInput').value.trim();
+  const btn   = document.getElementById('urlBtn');
+  if (!input) return;
+
+  btn.disabled = true; btn.textContent = t('btn_checking');
+  showResult('urlResult', 'pending', t('msg_checking_url'), null);
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/check-url', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url: input, lang: currentLang()})
+    });
+    const d = await r.json();
+
+    if (d.limitReached) {
+      showResult('urlResult', 'caution', d.error, []);
+    } else if (d.quick) {
+      const msg = d.name ? (d.verdict === 'safe' ? t('msg_url_safe') : (d.note || t('msg_url_caution')))
+                         : (d.note || (d.warnings ? d.warnings.join('\n') : ''));
+      showResult('urlResult', d.verdict, msg, []);
+    } else if (d.jobId) {
+      showResult('urlResult', 'pending', t('msg_analyzing_ai'), null);
+      pollJob(d.jobId,
+        answer => showResult('urlResult', guessVerdict(answer), answer, []),
+        err    => showResult('urlResult', 'caution', t('msg_ai_failed', {err: err}), [])
+      );
+    }
+  } catch (e) {
+    showResult('urlResult', 'caution', t('msg_server_unavailable'), []);
+  }
+  btn.disabled = false; btn.textContent = t('url_btn');
+}
+
+// ── Wallet verifier ────────────────────────────────────────────────────
+async function checkWallet() {
+  const input = document.getElementById('walletInput').value.trim();
+  const btn = document.getElementById('walletBtn');
+  if (!input) return;
+
+  if (!input.match(/^0x[0-9a-fA-F]{40}$/)) {
+    showResult('walletResult', 'invalid', t('msg_wallet_invalid'), []);
+    return;
+  }
+
+  const addr = input;
+  if (btn) { btn.disabled = true; btn.textContent = t('btn_checking'); }
+  showResult('walletResult', 'pending', t('msg_wallet_checking') || 'Checking on-chain activity…', null);
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/check-wallet', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: addr, lang: currentLang() })
+    });
+    const d = await r.json();
+    if (d.note || d.verdict) {
+      showResult('walletResult', d.verdict || 'caution', d.note || d.error || '', d.links || []);
+    } else {
+      showResult('walletResult', 'caution', t('msg_server_unavailable'), []);
+    }
+  } catch (e) {
+    // Offline fallback — format only
+    const tip = t('msg_wallet_valid', { first6: addr.slice(0, 8), last6: addr.slice(-6) });
+    showResult('walletResult', 'caution', tip, [
+      'https://etherscan.io/address/' + addr,
+      'https://mainnet.lightscan.app/address/' + addr
+    ]);
+  }
+  if (btn) { btn.disabled = false; btn.textContent = t('wallet_btn'); }
+}
+
+// ── Bot Detector ───────────────────────────────────────────────────────
+async function checkBot() {
+  const input = document.getElementById('botInput').value.trim();
+  const btn   = document.getElementById('botBtn');
+  if (!input) return;
+
+  if (!input.match(/^0x[0-9a-fA-F]{40}$/)) {
+    showResult('botResult', 'invalid', t('msg_bot_invalid'), []);
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = t('btn_checking');
+  showResult('botResult', 'pending', t('msg_bot_checking'), null);
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/check-bot', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({address: input, lang: currentLang()})
+    });
+    const d = await r.json();
+    if (d.limitReached) {
+      showResult('botResult', 'caution', d.error, []);
+    } else if (d.jobId) {
+      const esUrl = d.etherscanUrl || '';
+      showResult('botResult', 'pending', t('msg_bot_checking_ai'), null);
+      btn.disabled = false; btn.textContent = t('wallet_bot_btn');
+      pollJob(d.jobId,
+        answer => showResult('botResult', guessVerdict(answer), answer, esUrl ? [esUrl] : []),
+        err    => showResult('botResult', 'caution', t('msg_bot_failed', {err: err}), esUrl ? [esUrl] : [])
+      );
+      return;
+    } else if (d.error) {
+      showResult('botResult', 'caution', d.error, []);
+    }
+  } catch (e) {
+    showResult('botResult', 'caution', t('msg_bot_server'), []);
+  }
+  btn.disabled = false; btn.textContent = t('wallet_bot_btn');
+}
+
+// ── Ask OrcaGuard ──────────────────────────────────────────────────────
+let _askActive = false;
+
+function addMsg(text, type) {
+  const msgs = document.getElementById('aiMessages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + type;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+async function sendAsk() {
+  if (_askActive) return;
+  const input = document.getElementById('aiInput');
+  const btn   = document.getElementById('aiSend');
+  const q = input.value.trim();
+  if (!q) return;
+
+  _askActive = true;
+  input.disabled = true;
+  btn.disabled = true;
+  input.value = '';
+
+  addMsg(q, 'user');
+  const loading = addMsg(t('msg_ask_analyzing'), 'bot');
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/ask', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question: q, lang: currentLang()})
+    });
+    const d = await r.json();
+    if (d.limitReached) { loading.textContent = '⚠️ ' + d.error; return; }
+    if (!d.jobId) throw new Error('No job ID');
+    loading.textContent = t('msg_ask_progress', {job: d.jobId});
+
+    pollJob(d.jobId,
+      answer => { loading.textContent = answer; },
+      err    => { loading.textContent = t('msg_ask_error', {err: err}); }
+    );
+  } catch (e) {
+    loading.textContent = t('msg_ask_unavailable');
+  }
+
+  _askActive = false;
+  input.disabled = false;
+  btn.disabled = false;
+  input.focus();
+}
+
+function guessVerdict(text) {
+  const txt = text.toLowerCase();
+  if (txt.includes('🔴') || txt.includes('danger') || txt.includes('scam') || txt.includes('do not') || txt.includes('avoid')) return 'danger';
+  if (txt.includes('🟡') || txt.includes('caution') || txt.includes('suspicious') || txt.includes('careful')) return 'caution';
+  if (txt.includes('🟢') || txt.includes('safe') || txt.includes('official') || txt.includes('verified') || txt.includes('legitimate')) return 'safe';
+  return 'caution';
+}
+
+// ── Wallet Audit ────────────────────────────────────────────────────────
+let _auditAddress = '';
+function netInfo(chainId) {
+  if (chainId === '0x1') return { name: t('net_eth'), ok: true, color: 'var(--green)' };
+  if (chainId === '0x23f0') return { name: t('net_lcai'), ok: true, color: 'var(--cyan)' };
+  return { name: t('net_unknown', {chain: chainId}), ok: false, color: 'var(--red)' };
+}
+const LCAI_CONTRACT = '0x9cA8530CA349c966Fe9ef903Df17a75B8A778927';
+
+let _wcProv = null;
+
+async function connectViaWalletConnect() {
+  if (!window.WCEthereumProvider) { return false; }
+  const btn = document.getElementById('auditConnectBtn');
+  const errEl = document.getElementById('auditConnectError');
+  errEl.style.display = 'none';
+  try {
+    _wcProv = await window.WCEthereumProvider.init({
+      projectId: 'YOUR_WC_PROJECT_ID',
+      chains: [1], optionalChains: [9200], showQrModal: true,
+      metadata: { name: 'OrcaGuard', description: 'Wallet & Contract Security Checker', url: 'https://your-domain.example', icons: ['https://your-domain.example/orca-mascot.png'] },
+      rpcMap: { 9200: 'https://rpc.mainnet.lightchain.ai' }
+    });
+    await _wcProv.enable();
+    window.ethereum = _wcProv;
+    return true;
+  } catch(e) {
+    if (!e || e.message?.includes('User rejected') || e.message?.includes('rejected') || e.code === 4001) return false;
+    errEl.textContent = t('msg_audit_wc_failed');
+    errEl.style.display = 'block';
+    return false;
+  }
+}
+
+async function connectWalletAudit() {
+  const btn = document.getElementById('auditConnectBtn');
+  const errEl = document.getElementById('auditConnectError');
+  errEl.style.display = 'none';
+
+  if (!window.ethereum) {
+    if (window.WCEthereumProvider) {
+      const ok = await connectViaWalletConnect();
+      if (!ok) return;
+    } else {
+      errEl.textContent = t('msg_audit_no_wallet');
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
+  btn.disabled = true;
+  btn.textContent = t('btn_connecting');
+
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const address  = accounts[0];
+    const chainId  = (await window.ethereum.request({ method: 'eth_chainId' })).toLowerCase();
+
+    // Native balance of the *currently selected* network
+    const balHex   = await window.ethereum.request({ method: 'eth_getBalance', params: [address, 'latest'] });
+    const nativeBal = (parseInt(balHex, 16) / 1e18);
+
+    // Labels differ by chain: ETH mainnet vs Lightchain native LCAI
+    let ethLabel = '—';
+    let lcaiLabel = '—';
+    if (chainId === '0x1') {
+      ethLabel = nativeBal.toFixed(4) + ' ETH';
+      try {
+        const data   = '0x70a08231' + address.slice(2).padStart(64, '0');
+        const lcaiHex = await window.ethereum.request({ method: 'eth_call', params: [{ to: LCAI_CONTRACT, data }, 'latest'] });
+        lcaiLabel = (parseInt(lcaiHex, 16) / 1e18).toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' LCAI (ERC-20)';
+      } catch(e) { lcaiLabel = 'Error'; }
+    } else if (chainId === '0x23f0') {
+      ethLabel = t('audit_eth_switch_hint') || 'Switch to Ethereum to read ETH';
+      lcaiLabel = nativeBal.toFixed(4) + ' LCAI ' + t('native_suffix');
+    } else {
+      ethLabel = nativeBal.toFixed(4) + ' (native)';
+    }
+
+    // Display
+    _auditAddress = address;
+    document.getElementById('auditAddress').textContent = address.slice(0,8) + '...' + address.slice(-6);
+    document.getElementById('auditConnectBox').style.display = 'none';
+    document.getElementById('auditResults').style.display = 'block';
+
+    const net = netInfo(chainId);
+    document.getElementById('auditNetwork').innerHTML = '<span style="color:' + net.color + '">' + net.name + '</span>';
+    document.getElementById('auditEth').textContent = ethLabel;
+    document.getElementById('auditLcai').textContent = lcaiLabel;
+
+    // Show switch-network button for known chains
+    document.getElementById('auditSwitchEth').style.display  = (chainId !== '0x1')     ? 'inline-block' : 'none';
+    document.getElementById('auditSwitchLcai').style.display = (chainId !== '0x23f0')  ? 'inline-block' : 'none';
+
+    // Health checks
+    const checks = [];
+
+    if (net.ok) {
+      checks.push({ ok: true,  text: t('audit_check_connected', {network: net.name}) });
+    } else {
+      checks.push({ ok: false, text: t('audit_check_wrong_net', {network: net.name}) });
+    }
+
+    if (chainId === '0x1' && nativeBal < 0.005) {
+      checks.push({ ok: false, text: t('audit_check_low_eth', {bal: nativeBal.toFixed(4)}) });
+    } else if (chainId === '0x1') {
+      checks.push({ ok: true, text: t('audit_check_eth_ok') });
+    }
+
+    if (chainId === '0x23f0') {
+      if (nativeBal > 0) {
+        checks.push({ ok: true, text: t('audit_check_lcai_native') || 'Native LCAI balance found — you can pay gas on Lightchain dApps.' });
+      } else {
+        checks.push({ ok: false, text: t('audit_check_lcai_native_low') || 'No native LCAI yet — bridge from Ethereum or buy on lightdex.app for gas.' });
+      }
+    }
+
+    if (chainId === '0x1' && lcaiLabel !== '—' && lcaiLabel !== 'Error' && parseFloat(String(lcaiLabel).replace(/,/g,'')) > 0) {
+      checks.push({ ok: true, text: t('audit_check_lcai') });
+    }
+
+    checks.push({ ok: null, text: t('audit_check_revoke') });
+
+    const checksEl = document.getElementById('auditChecks');
+    checksEl.innerHTML = checks.map(c => {
+      const icon  = c.ok === null ? '🔗' : (c.ok ? '✅' : '⚠️');
+      const color = c.ok === null ? 'rgba(0,212,255,0.08)' : (c.ok ? 'rgba(0,230,118,0.07)' : 'rgba(255,170,0,0.07)');
+      const border= c.ok === null ? 'rgba(0,212,255,0.2)' : (c.ok ? 'rgba(0,230,118,0.25)' : 'rgba(255,170,0,0.3)');
+      return '<div style="background:' + color + ';border:1px solid ' + border + ';border-radius:10px;padding:14px 16px;font-size:18px;display:flex;gap:12px;align-items:flex-start"><span style="font-size:18px;flex-shrink:0">' + icon + '</span><span style="line-height:1.6">' + c.text + '</span></div>';
+    }).join('');
+
+    // Load Lightchain / Filament holdings (KEIKO etc.) from Lightscan via backend
+    try { loadAuditHoldings(address); } catch (e) {}
+
+  } catch(e) {
+    errEl.textContent = e.code === 4001 ? t('msg_audit_cancelled') : t('msg_audit_error', {err: e.message});
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = t('audit_connect_btn');
+  }
+}
+
+function _fmtTokenBal(n) {
+  if (n == null || isNaN(n)) return '';
+  if (n >= 1e6) return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  if (n >= 1) return n.toLocaleString(undefined, { maximumFractionDigits: 4 });
+  return n.toLocaleString(undefined, { maximumFractionDigits: 6 });
+}
+
+function _renderTokenCards(tokens, emptyMsg) {
+  const list = tokens || [];
+  if (!list.length) {
+    return '<div style="color:var(--muted);line-height:1.5">' + (emptyMsg || 'No tokens found.') + '</div>';
+  }
+  return '<div style="display:grid;gap:8px">' + list.map(function (tok) {
+    const sym = tok.symbol || '?';
+    const name = tok.knownName || tok.name || sym;
+    const chain = tok.chain ? ('[' + tok.chain + '] ') : '';
+    const bal = tok.balance != null ? _fmtTokenBal(tok.balance) + ' ' : '';
+    const badge = tok.knownSafe
+      ? '<span style="color:var(--green);font-size:14px;font-weight:700"> · known safe</span>'
+      : (tok.suspicious ? '<span style="color:#ff8888;font-size:14px;font-weight:700"> · review name</span>' : '');
+    return '<div style="background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;padding:12px 14px">' +
+      '<div style="font-weight:700;color:#fff;font-size:18px">' + bal + sym + badge + '</div>' +
+      '<div style="font-size:15px;color:var(--muted);margin-top:4px">' + chain + name + '</div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-top:4px;font-family:monospace;word-break:break-all">' + (tok.contract || '') + '</div>' +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function _renderHoldingsList(tokens) {
+  const lc = (tokens || []).filter(function (t) { return (t.chain || '') === 'Lightchain'; });
+  return _renderTokenCards(
+    lc,
+    'No Lightchain contract tokens found for this address on Lightscan (native LCAI is above). If Filament shows a balance, refresh or check Lightscan.'
+  );
+}
+
+async function loadAuditHoldings(address) {
+  const el = document.getElementById('auditHoldings');
+  if (!el || !address) return;
+  el.innerHTML = '<div style="color:var(--muted)">Loading Lightchain holdings from Lightscan…</div>';
+  try {
+    const r = await fetch(BACKEND_URL + '/api/scan-airdrops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: address, lang: currentLang() }),
+    });
+    const d = await r.json();
+    if (!d.ok && !d.tokens) {
+      el.innerHTML = '<div style="color:var(--yellow)">Could not load holdings: ' + (d.error || d.message || 'unknown') + '</div>';
+      return;
+    }
+    // If AI job path, still use tokens array when present
+    const tokens = d.tokens || [];
+    el.innerHTML = _renderHoldingsList(tokens);
+    // If job started without tokens in first response, wait briefly
+    if (d.jobId && !tokens.length) {
+      el.innerHTML = '<div style="color:var(--muted)">Scanning…</div>';
+      for (let i = 0; i < 20; i++) {
+        await new Promise(function (res) { setTimeout(res, 2000); });
+        const jr = await fetch(BACKEND_URL + '/api/job?id=' + d.jobId);
+        const jd = await jr.json();
+        if (jd.tokens && jd.tokens.length) {
+          el.innerHTML = _renderHoldingsList(jd.tokens);
+          return;
+        }
+        if (jd.status === 'done' || jd.status === 'error') {
+          el.innerHTML = _renderHoldingsList(jd.tokens || d.tokens || []);
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    el.innerHTML = '<div style="color:var(--red)">Holdings load failed: ' + (e.message || e) + '</div>';
+  }
+}
+
+async function scanAirdrops() {
+  if (!_auditAddress) {
+    alert(t('msg_connect_wallet_first'));
+    return;
+  }
+  const btn = document.getElementById('airdropScanBtn');
+  const out  = document.getElementById('airdropResult');
+  btn.disabled = true;
+  btn.textContent = t('btn_scanning');
+  out.innerHTML = '<div style="color:var(--muted);font-size:18px;padding:10px 0">' + t('msg_airdrop_fetching') + '</div>';
+
+  try {
+    const r = await fetch(BACKEND_URL + '/api/scan-airdrops', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: _auditAddress, lang: currentLang() }),
+    });
+    const d = await r.json();
+
+    if (d.limitReached) {
+      out.innerHTML = '<div style="color:var(--yellow);font-size:18px;padding:10px 0">' + t('msg_airdrop_limit', {msg: d.message || d.error || ''}) + '</div>';
+      if (d.flagged && d.flagged.length) {
+        out.innerHTML += _renderFlaggedTokens(d.flagged, false);
+      }
+      btn.disabled = false;
+      btn.textContent = t('audit_airdrop_btn');
+      return;
+    }
+
+    if (!d.ok) {
+      out.innerHTML = '<div style="color:var(--red);font-size:18px;padding:10px 0">' + t('msg_audit_error', {err: d.error || t('msg_poll_unknown')}) + '</div>';
+      btn.disabled = false;
+      btn.textContent = t('audit_airdrop_btn');
+      return;
+    }
+
+    if (!d.jobId) {
+      out.innerHTML = _renderScanResult(null, d);
+      btn.disabled = false;
+      btn.textContent = t('btn_scan_again');
+      return;
+    }
+
+    out.innerHTML = '<div style="color:var(--muted);font-size:18px;padding:10px 0">' + t('msg_airdrop_ai', {count: d.flaggedCount, job: d.jobId}) + '</div>';
+    for (let i = 0; i < 60; i++) {
+      await new Promise(res => setTimeout(res, 3000));
+      const jr = await fetch(BACKEND_URL + '/api/job?id=' + d.jobId);
+      const jd = await jr.json();
+      if (jd.status === 'done') {
+        out.innerHTML = _renderScanResult(jd.answer, jd);
+        btn.disabled = false;
+        btn.textContent = t('btn_scan_again');
+        return;
+      }
+      if (jd.status === 'error') {
+        out.innerHTML = '<div style="color:var(--red);font-size:18px;padding:10px 0">' + t('msg_ask_error', {err: jd.error || t('msg_poll_unknown')}) + '</div>';
+        btn.disabled = false;
+        btn.textContent = t('audit_airdrop_btn');
+        return;
+      }
+    }
+    out.innerHTML = '<div style="color:var(--yellow);font-size:18px;padding:10px 0">' + t('msg_airdrop_timeout') + '</div>';
+    btn.disabled = false;
+    btn.textContent = t('audit_airdrop_btn');
+  } catch(e) {
+    out.innerHTML = '<div style="color:var(--red);font-size:18px;padding:10px 0">' + t('msg_audit_error', {err: e.message}) + '</div>';
+    btn.disabled = false;
+    btn.textContent = t('audit_airdrop_btn');
+  }
+}
+
+function _renderFlaggedTokens(tokens, withBorder) {
+  if (!tokens || !tokens.length) return '';
+  return '<div style="display:grid;gap:8px;margin-top:10px">' +
+    tokens.map(tok =>
+      '<div style="background:rgba(255,68,68,0.07);border:1px solid rgba(255,68,68,0.25);border-radius:8px;padding:12px 14px">' +
+      '<div style="font-weight:700;color:#ff8888;font-size:18px">⚠️ [' + (tok.chain || '?') + '] ' + (tok.name || '?') + ' (' + (tok.symbol || '?') + ')</div>' +
+      '<div style="font-size:18px;color:var(--muted);margin-top:4px;font-family:monospace;word-break:break-all">' + tok.contract + '</div>' +
+      '</div>'
+    ).join('') +
+  '</div>';
+}
+
+function _renderAllTokensList(tokens) {
+  if (!tokens || !tokens.length) return '';
+  return '<div style="margin-top:12px"><div style="font-weight:700;color:#fff;margin-bottom:8px;font-size:16px">Tokens found</div>' +
+    _renderTokenCards(tokens) + '</div>';
+}
+
+function _renderScanResult(aiText, data) {
+  const total   = data.total || 0;
+  const flagged = data.flagged || [];
+  const msg     = data.message || '';
+  const tokens  = data.tokens || [];
+
+  if (total === 0) {
+    return '<div style="background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:10px;padding:16px 18px;font-size:18px;color:#88bb99;margin-top:8px">' + t('msg_scan_no_tokens') + '</div>';
+  }
+
+  if (!flagged.length) {
+    return '<div style="background:rgba(0,230,118,0.07);border:1px solid rgba(0,230,118,0.25);border-radius:10px;padding:16px 18px;font-size:18px;line-height:1.6;margin-top:8px">' +
+      '<div style="font-weight:700;color:var(--green);margin-bottom:6px">' + t('msg_scan_clean_title') + '</div>' +
+      '<div style="color:#88bb99">' + (msg || t('msg_scan_clean', {total: total})) + '</div>' +
+      _renderAllTokensList(tokens) +
+      '</div>';
+  }
+
+  let html = '<div style="background:rgba(255,68,68,0.07);border:1px solid rgba(255,68,68,0.3);border-radius:10px;padding:16px 18px;margin-top:8px">' +
+    '<div style="font-weight:700;color:#ff6666;font-size:18px;margin-bottom:8px">' + t('msg_scan_found', {flagged: flagged.length, total: total}) + '</div>';
+
+  if (aiText) {
+    html += '<div style="font-size:18px;line-height:1.8;color:var(--text);white-space:pre-wrap;margin-bottom:12px">' + aiText + '</div>';
+  }
+
+  html += _renderFlaggedTokens(flagged, false);
+  html += _renderAllTokensList(tokens.filter(function (t) { return !t.suspicious; }));
+  html += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,68,68,0.2);font-size:18px;color:#cc8888;line-height:1.6">' + t('msg_scan_warning') + '</div>';
+  html += '</div>';
+
+  return html;
+}
+
+async function switchAuditNetwork(hexChainId, name) {
+  const btn = hexChainId === '0x1'
+    ? document.getElementById('auditSwitchEth')
+    : document.getElementById('auditSwitchLcai');
+  btn.disabled = true;
+  btn.textContent = t('btn_switching');
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: hexChainId }]
+    });
+    // Re-run audit after network switch
+    await connectWalletAudit();
+  } catch(e) {
+    if (e.code === 4902) {
+      // Chain not added yet — add Lightchain Mainnet
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId: '0x23f0',
+            chainName: 'Lightchain Mainnet',
+            nativeCurrency: { name: 'LCAI', symbol: 'LCAI', decimals: 18 },
+            rpcUrls: ['https://rpc.mainnet.lightchain.ai'],
+            blockExplorerUrls: ['https://mainnet.lightscan.app']
+          }]
+        });
+        await connectWalletAudit();
+      } catch(e2) {
+        btn.disabled = false;
+        btn.textContent = hexChainId === '0x1' ? t('audit_switch_eth') : t('audit_switch_lcai');
+      }
+    } else {
+      btn.disabled = false;
+      btn.textContent = hexChainId === '0x1' ? t('audit_switch_eth') : t('audit_switch_lcai');
+    }
+  }
+}
+
+function disconnectAudit() {
+  _auditAddress = '';
+  document.getElementById('auditConnectBox').style.display = 'block';
+  document.getElementById('auditResults').style.display = 'none';
+  document.getElementById('auditConnectBtn').disabled = false;
+  document.getElementById('auditConnectBtn').textContent = t('audit_connect_btn');
+  document.getElementById('auditConnectError').style.display = 'none';
+  document.getElementById('airdropResult').innerHTML = '';
+  document.getElementById('airdropScanBtn').disabled = false;
+  document.getElementById('airdropScanBtn').textContent = t('audit_airdrop_btn');
+  const hold = document.getElementById('auditHoldings');
+  if (hold) hold.innerHTML = 'Connect to load…';
+}
+
+// ── Breach Check ───────────────────────────────────────────────────────
+function checkBreach() {
+  var email = document.getElementById('breachInput').value.trim();
+  var btn = document.getElementById('breachBtn');
+  if (!email) {
+    showResult('breachResult', 'invalid', t('msg_breach_email') || 'Enter an email address first.', []);
+    return;
+  }
+  // Basic email shape — enough to avoid junk opens
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showResult('breachResult', 'invalid', t('msg_breach_invalid') || 'That does not look like a valid email address.', []);
+    return;
+  }
+
+  var guide =
+    (t('msg_breach_guide') ||
+      '✅ Email format looks OK.\n\n' +
+      'OrcaGuard does not store your email and does not call a private database from this server.\n' +
+      'Next: Have I Been Pwned (haveibeenpwned.com) opens in a new tab with this address.\n\n' +
+      'On HIBP:\n' +
+      '• If breaches are listed — change those passwords and enable 2FA\n' +
+      '• Never enter your seed phrase or wallet password on any breach site\n' +
+      '• Prefer a password manager + unique passwords\n\n' +
+      'Opening trusted site now…');
+
+  showResult('breachResult', 'caution', guide, [
+    'https://haveibeenpwned.com/',
+    'https://haveibeenpwned.com/account/' + encodeURIComponent(email)
+  ]);
+
+  if (btn) {
+    btn.disabled = true;
+    setTimeout(function () { btn.disabled = false; }, 1500);
+  }
+  window.open('https://haveibeenpwned.com/account/' + encodeURIComponent(email), '_blank', 'noopener,noreferrer');
+}
+
+
+// ── Language (Binai pattern) ─────────────────────────────────────────────
+const LANGS = [
+  {id:'en',label:'🇺🇸 English'},{id:'es',label:'🇪🇸 Spanish'},{id:'fr',label:'🇫🇷 French'},
+  {id:'pt',label:'🇧🇷 Portuguese'},{id:'de',label:'🇩🇪 German'},{id:'ja',label:'🇯🇵 Japanese'},
+  {id:'zh',label:'🇨🇳 Chinese'}
+];
+function syncLangButtons(langId) {
+  document.querySelectorAll('.lang-btn').forEach(x => x.classList.toggle('active', x.dataset.id === langId));
+}
+function buildLanguageGrid(gridId, onSelect) {
+  const grid = document.getElementById(gridId);
+  if (!grid) return;
+  grid.innerHTML = '';
+  const savedLang = localStorage.getItem('orcaguard_lang') || 'en';
+  LANGS.forEach(l => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'lang-btn' + (l.id === savedLang ? ' active' : '');
+    b.dataset.id = l.id;
+    b.textContent = l.label;
+    b.onclick = () => {
+      localStorage.setItem('orcaguard_lang', l.id);
+      syncLangButtons(l.id);
+      if (onSelect) onSelect(l.id);
+    };
+    grid.appendChild(b);
+  });
+}
+function initLanguagePickers() {
+  const onPick = () => applyI18n();
+  buildLanguageGrid('langGrid', onPick);
+  buildLanguageGrid('mobileLangGrid', onPick);
+}
+initLanguagePickers();
+
+// ── Default landing page ────────────────────────────────────────────────
+showPage('home');
+</script>
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" onclick="showPage('home')" data-page="home"><span class="mnav-icon">🏠</span><span id="mnavHome">Home</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('contract')" data-page="contract"><span class="mnav-icon">🔍</span><span id="mnavContract">Contract</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('url')" data-page="url"><span class="mnav-icon">🔗</span><span id="mnavUrl">Website</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('wallet')" data-page="wallet"><span class="mnav-icon">📬</span><span id="mnavWallet">Wallet</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('audit')" data-page="audit"><span class="mnav-icon">🔐</span><span id="mnavAudit">Audit</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('breach')" data-page="breach"><span class="mnav-icon">🔓</span><span id="mnavBreach">Breach</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('buylcai')" data-page="buylcai"><span class="mnav-icon">💰</span><span id="mnavBuylcai">Buy/Bridge</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('scams')" data-page="scams"><span class="mnav-icon">🚨</span><span id="mnavScams">Scams</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('tips')" data-page="tips"><span class="mnav-icon">💡</span><span id="mnavTips">Tips</span></button>
+    <button class="mobile-nav-btn" onclick="showPage('ask')" data-page="ask"><span class="mnav-icon">🤖</span><span id="mnavAsk">Ask AI</span></button>
+  </div>
+</nav>
+
+<div id="orca-terms-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:16px;" onclick="if(event.target===this)document.getElementById('orca-terms-overlay').style.display='none'">
+  <div style="background:#0d1b2a;border-radius:16px;max-width:600px;width:100%;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgba(0,212,255,0.2);">
+    <div style="padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+      <span style="font-size:18px;font-weight:700;color:#e0eaf5;" id="termsModalTitle">📋 Terms &amp; Disclaimer</span>
+      <button onclick="document.getElementById('orca-terms-overlay').style.display='none'" style="background:#1a2e3f;border:none;color:#8fa8c0;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1;">✕</button>
+    </div>
+    <div style="overflow-y:auto;padding:20px 22px;font-size:18px;color:#8fa8c0;line-height:1.75;display:flex;flex-direction:column;gap:14px;">
+      <p style="font-size:18px;color:#4a6080;" id="termsUpdated">Last updated: May 2025 &nbsp;·&nbsp; OrcaGuard — Built on Lightchain</p>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS1Title">1. What OrcaGuard Is</div>
+      <p id="termsS1Body">OrcaGuard is a free security awareness and research tool for the Lightchain blockchain community. It is operated by an individual developer and provided as-is. It is not a professional cybersecurity firm, law enforcement agency, or licensed security service.</p></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS2Title">2. For Informational Purposes Only</div>
+      <p id="termsS2Body">All analysis results, risk ratings, scam warnings, contract reviews, and security information provided by OrcaGuard are for general informational and educational purposes only. Results do not constitute professional security, legal, or financial advice. Do not make security or investment decisions based solely on this tool.</p></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS3Title">3. AI Responses &amp; Analysis Accuracy</div>
+      <p id="termsS3Body">AI-generated analysis may be inaccurate, incomplete, or outdated. Smart contract analysis may miss vulnerabilities. Website and wallet checks rely on third-party data sources that may be incomplete. The operator makes no representations about the accuracy or completeness of any analysis result.</p></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS4Title">4. No Warranty — Service Provided AS-IS</div>
+      <p id="termsS4Body">THIS SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND. THE OPERATOR DOES NOT WARRANT THAT ANALYSIS RESULTS ARE ACCURATE, COMPLETE, OR FREE FROM ERROR. THIS TOOL DOES NOT GUARANTEE THE SAFETY OF ANY CONTRACT, WALLET, OR WEBSITE.</p></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS5Title">5. Limitation of Liability</div>
+      <p id="termsS5Body">TO THE FULLEST EXTENT PERMITTED BY LAW, THE OPERATOR SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THIS SERVICE OR RELIANCE ON ITS ANALYSIS, INCLUDING BUT NOT LIMITED TO FINANCIAL LOSSES, HACKING, UNAUTHORIZED ACCESS, OR DECISIONS MADE BASED ON TOOL OUTPUT. YOUR USE OF ORCAGUARD IS ENTIRELY AT YOUR OWN RISK.</p></div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);"></div>
+
+      <div><div style="font-size:18px;font-weight:700;color:#e0eaf5;margin-bottom:5px;" id="termsS6Title">6. Service May Change or Stop</div>
+      <p id="termsS6Body">OrcaGuard may be modified, suspended, or permanently discontinued at any time without notice. AI features depend on the availability of the Lightchain AIVM network, which is outside the operator's control.</p></div>
+    </div>
+    <div style="padding:14px 22px;border-top:1px solid rgba(255,255,255,0.08);flex-shrink:0;">
+      <button onclick="document.getElementById('orca-terms-overlay').style.display='none'" id="termsCloseBtn" style="width:100%;padding:13px;background:#00d4ff;color:#0a0f1a;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+applyI18n();
+</script>
+</body>
+</html>
