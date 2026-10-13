@@ -511,8 +511,8 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .account-card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .account-icon{font-size:22px;}
 .account-name{font-size:17px;font-weight:700;}
-.account-input-row{display:flex;gap:10px;align-items:center;}
-.account-url-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:16px;font-family:inherit;}
+.account-input-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.account-url-input{flex:1 1 140px;min-width:140px;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px 14px;border-radius:8px;font-size:16px;font-family:inherit;}
 .account-url-input:focus{outline:none;border-color:var(--cyan);}
 .account-url-input::placeholder{color:var(--muted);}
 .account-save-btn{background:var(--cyan);color:#000;border:none;padding:10px 18px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s;}
@@ -687,6 +687,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 <script src="orca-sentry.js" defer></script>
 <script src="orca-sw-register.js?v=9" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="keiko-pay.js"></script>
 <script type="module">
   try {
@@ -879,6 +880,16 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
         <div class="beginner-banner-title" id="learn-beginner-title">👋 New here? You don't need to read code.</div>
         <div class="beginner-banner-body" id="learn-beginner-body">Start with <strong>Build</strong> to describe your idea, then tap <strong>Walk Me Through Step 1</strong>. This guide is optional — code is hidden until you choose to show it.</div>
       </div>
+
+      <div class="callout success" id="learn-fork-shortcut">
+        <span class="callout-icon">📦</span>
+        <div class="callout-body">
+          <strong>Fastest path: fork a ready-made app</strong>
+          Don't want to build from scratch? Several complete apps are ready to copy. In the <strong>Build</strong> tab, pick any template showing the green <strong>✓ ready to fork</strong> badge, then tap <strong>📦 Download your copy</strong>. You'll be asked for your own details (your wallet, your app's web address) and the app is zipped up in your browser with those filled in — no code to touch. Unzip it, follow the included <span class="inline-code">README</span>, and host it. The steps below still explain how everything works whenever you're ready to understand or customize it.
+          <div style="margin-top:14px;"><button class="btn btn-primary" onclick="showSection('build')">Go to Build &amp; fork a template →</button></div>
+        </div>
+      </div>
+
       <div class="learn-code-toggle">
         <button type="button" class="btn btn-ghost" id="learn-code-toggle-btn" onclick="toggleLearnCode()">👀 Show code sections (advanced)</button>
       </div>
@@ -2004,7 +2015,44 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
       <!-- BUILD STEP 1: What kind? -->
       <div class="wizard-step active" id="bld-1">
-        <div class="card">
+        <!-- LANE PICKER (optional) -->
+        <div class="card" id="bld-lane-card">
+          <div class="card-title" id="bld-lane-title">What are you here to build?</div>
+          <div class="field-sub" id="bld-lane-sub" style="margin-bottom:12px;">Pick a lane and we'll show a few working apps you can remix as a starting point. Totally optional — skip it if you already know your idea.</div>
+          <div class="choice-grid" id="bld-lane-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:0;">
+            <div class="choice-card" onclick="selectLane(this,'money')" style="text-align:center;">
+              <div class="choice-icon">🚀</div>
+              <div class="choice-label" id="bld-lane-money-label">Make money / go viral</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'business')" style="text-align:center;">
+              <div class="choice-icon">💼</div>
+              <div class="choice-label" id="bld-lane-business-label">For my business</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'personal')" style="text-align:center;">
+              <div class="choice-icon">🏠</div>
+              <div class="choice-label" id="bld-lane-personal-label">Just for me</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'fun')" style="text-align:center;">
+              <div class="choice-icon">🎉</div>
+              <div class="choice-label" id="bld-lane-fun-label">Just for fun</div>
+            </div>
+            <div class="choice-card" onclick="selectLane(this,'community')" style="text-align:center;">
+              <div class="choice-icon">🤝</div>
+              <div class="choice-label" id="bld-lane-community-label">For my community</div>
+            </div>
+          </div>
+          <div id="bld-template-wrap" style="display:none;margin-top:16px;">
+            <div class="field-sub" id="bld-template-hint" style="margin-bottom:10px;">Remix one of these — it fills in your idea below so you don't start from a blank page. You can edit it after.</div>
+            <div class="choice-grid" id="bld-template-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-bottom:0;"></div>
+            <div id="bld-fork-wrap" style="display:none;margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,0.02);">
+              <div class="field-sub" style="margin-bottom:10px;">This one's <strong>ready to fork</strong> — download your own copy, already personalized, that you can deploy to any static host. Everything runs in your browser; nothing is uploaded.</div>
+              <button type="button" class="btn" id="bld-fork-btn" onclick="openForkModal()" style="width:auto;">📦 Download your copy</button>
+            </div>
+          </div>
+          <input type="hidden" id="bld-lane" value="">
+          <input type="hidden" id="bld-template" value="">
+        </div>
+        <div class="card" style="margin-top:12px;">
           <div class="card-title" id="bld-s1-title">What's your situation?</div>
           <div class="choice-grid" id="bld-situation-grid">
             <div class="choice-card" onclick="selectChoice(this,'bld-mode','scratch','selected-green')" style="text-align:center;">
@@ -2774,6 +2822,229 @@ function updateBldNextState() {
   nextBtn.disabled = !(mode && audience);
 }
 
+// ─── LANE PICKER: intent-based templates that remix into a build ───────────
+// "ready: true" = a clean, de-identified scaffold exists to fork today.
+// Others pre-fill the idea so the AI builds a plan for that kind of app.
+const BUILD_LANES = {
+  money: { templates: [
+    { id:'lighttube', name:'LightTube', tag:'On-chain video platform', ready:true,
+      seed:'An on-chain video app like LightTube: creators upload videos stored fully on-chain, viewers watch them in a clean feed, and creators earn LCAI/KEIKO tips. Include wallet connect and a creator dashboard.' },
+    { id:'lighttunes', name:'LightTunes', tag:'On-chain music', ready:true,
+      seed:'An on-chain music app like LightTunes: artists upload tracks stored on-chain, listeners stream them, and fans tip artists in LCAI/KEIKO. Include wallet connect and an artist page.' },
+    { id:'orcamint', name:'OrcaMint', tag:'NFT mint + marketplace', ready:true,
+      seed:'An NFT minting and marketplace app like OrcaMint: users mint NFTs, list them for sale, make and accept offers, and browse a gallery. Include wallet connect.' },
+    { id:'lightstudio', name:'LightStudio', tag:'AI media studio', ready:true,
+      seed:'An AI media studio like LightStudio: users generate images, video, or audio from a text prompt using the AIVM, pay per generation in LCAI, and download or publish the result.' },
+  ]},
+  business: { templates: [
+    { id:'orcalearn', name:'OrcaLearn', tag:'AI tutor / courses', ready:true,
+      seed:'An AI learning app like OrcaLearn: users pick a topic and the AIVM teaches it step by step with quizzes and explanations. Good for onboarding or training a business audience.' },
+    { id:'orcavault', name:'OrcaVault', tag:'Encrypted file storage', ready:true,
+      seed:'A secure file app like OrcaVault: users store and share encrypted files on-chain, with a paid one-click relay for larger transfers. Include wallet connect.' },
+    { id:'orcaguard', name:'OrcaGuard', tag:'Community / Discord security', ready:true,
+      seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord or group, run by an admin. Include wallet connect and an admin panel.' },
+    { id:'scexplainer', name:'SC Explainer', tag:'Smart-contract explainer', ready:true,
+      seed:'A smart-contract explainer like SC Explainer: a user pastes a contract address or code and the AIVM returns a plain-English explanation of what it does and any risks.' },
+  ]},
+  personal: { templates: [
+    { id:'myice', name:'MyICE', tag:'In-case-of-emergency card', ready:true,
+      seed:'A personal in-case-of-emergency app like MyICE: the owner stores key emergency info and contacts privately and can share a quick-access card. Data stays private to them.' },
+    { id:'lightweather', name:'LightWeather', tag:'Weather', ready:true,
+      seed:'A clean weather app like LightWeather: the user sees current conditions and a forecast for their location, with a simple, fast interface.' },
+    { id:'orcamail', name:'OrcaMail', tag:'Wallet-to-wallet messaging', ready:true,
+      seed:'A messaging app like OrcaMail: users send messages wallet-to-wallet, keeping their own inbox. Include wallet connect.' },
+  ]},
+  fun: { templates: [
+    { id:'binai', name:'Binai', tag:'Playful AI companion', ready:true,
+      seed:'A fun AI companion app like Binai: users chat with a friendly AIVM personality for entertainment. Include wallet connect for paid interactions.' },
+    { id:'lightjury', name:'LightJury', tag:'AI jury / dispute verdicts', ready:true,
+      seed:'A dispute-resolution app like LightJury: a user submits a question or dispute and a jury of several independent AIs deliberates and returns a verdict with reasoning.' },
+  ]},
+  community: { templates: [
+    { id:'orcaguard', name:'OrcaGuard', tag:'Group security / access', ready:true,
+      seed:'A community-protection app like OrcaGuard: wallet-gated access and anti-scam tooling for a Discord, DAO, or club, run by an admin. Include wallet connect and an admin panel.' },
+    { id:'lightjury', name:'LightJury', tag:'Group dispute verdicts', ready:true,
+      seed:'A group dispute app like LightJury: members submit a dispute and a jury of several independent AIs deliberates and returns a verdict the group can act on.' },
+    { id:'orcamail', name:'OrcaMail', tag:'Group messaging', ready:true,
+      seed:'A group messaging app like OrcaMail: members message wallet-to-wallet within a community, each keeping their own inbox. Include wallet connect.' },
+  ]},
+};
+
+function selectLane(el, lane) {
+  const grid = document.getElementById('bld-lane-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const laneInput = document.getElementById('bld-lane');
+  if (laneInput) laneInput.value = lane;
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = '';
+  renderLaneTemplates(lane);
+}
+
+function renderLaneTemplates(lane) {
+  const data = BUILD_LANES[lane];
+  const wrap = document.getElementById('bld-template-wrap');
+  const grid = document.getElementById('bld-template-grid');
+  if (!wrap || !grid) return;
+  if (!data) { wrap.style.display = 'none'; return; }
+  grid.innerHTML = data.templates.map(tpl => `
+    <div class="choice-card" style="text-align:left;" onclick="selectTemplate(this,'${lane}','${tpl.id}')">
+      <div class="choice-label" style="margin-bottom:4px;">${tpl.name}${tpl.ready ? ' <span style="font-size:11px;font-weight:600;color:var(--green);">✓ ready to fork</span>' : ''}</div>
+      <div class="choice-sub">${tpl.tag}</div>
+    </div>`).join('');
+  wrap.style.display = '';
+}
+
+function selectTemplate(el, lane, id) {
+  const grid = document.getElementById('bld-template-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const tpl = (BUILD_LANES[lane]?.templates || []).find(t => t.id === id);
+  if (!tpl) return;
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = id;
+  // Pre-fill the "Describe your app idea" box with a seed for this app.
+  const desc = document.getElementById('bld-description');
+  if (desc) desc.value = tpl.seed;
+  // Auto-select "Starting from scratch" so the wizard can proceed; audience is still the user's choice.
+  const modeInput = document.getElementById('bld-mode');
+  if (modeInput) modeInput.value = 'scratch';
+  const sitGrid = document.getElementById('bld-situation-grid');
+  if (sitGrid) {
+    sitGrid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+    const scratchCard = sitGrid.querySelector('.choice-card');
+    if (scratchCard) scratchCard.classList.add('selected-green');
+  }
+  if (typeof syncBldExistingUI === 'function') syncBldExistingUI('scratch');
+  // Reveal the "Download your copy" fork panel for templates that are ready to fork.
+  const forkWrap = document.getElementById('bld-fork-wrap');
+  if (forkWrap) {
+    if (tpl.ready) {
+      window.__forkTemplateId = id;
+      window.__forkTemplateName = tpl.name;
+      forkWrap.style.display = '';
+    } else {
+      forkWrap.style.display = 'none';
+    }
+  }
+  updateBldNextState();
+  if (typeof persistBuildDraft === 'function') persistBuildDraft();
+}
+
+// ── FORK A TEMPLATE (browser-only: fetch files, fill placeholders, zip, download) ──
+const FORK_TEMPLATE_BASE = './templates/';
+function _forkIsTextFile(path) {
+  const p = path.toLowerCase();
+  if (p.endsWith('.nojekyll') || p.endsWith('.gitignore') || p.endsWith('_redirects') || p.endsWith('cname')) return true;
+  const ext = (p.split('.').pop() || '');
+  return ['html','htm','js','mjs','json','sol','md','txt','css','svg','xml','toml','service','sh','yml','yaml'].includes(ext);
+}
+function _forkLabel(ph) {
+  if (ph === 'your-domain.example') return { label: 'Your domain', hint: 'e.g. myapp.example (leave blank to decide later)' };
+  if (ph === 'YOUR_HANDLE') return { label: 'Your X / social handle', hint: 'without the @ (or leave blank to remove the link)' };
+  if (ph === 'YOUR_GH_USER') return { label: 'Your GitHub username', hint: 'the user/org that will host the repo' };
+  if (ph === 'YOUR_REPO') return { label: 'Your repo name', hint: 'the repository name on GitHub' };
+  if (ph === 'YOUR_SERVER_URL') return { label: 'Your backend URL (optional)', hint: 'only if you run the optional backend; otherwise leave blank' };
+  if (/CONTRACT$/.test(ph)) return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), hint: 'paste the deployed contract address (fill in after you deploy)' };
+  if (/WALLET$/.test(ph)) return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()), hint: 'a wallet address you control' };
+  return { label: ph.replace(/^YOUR_/, '').replace(/_/g, ' '), hint: '' };
+}
+let _forkCtx = null;
+async function openForkModal() {
+  const id = window.__forkTemplateId;
+  const name = window.__forkTemplateName || id;
+  if (!id) return;
+  const modal = document.getElementById('fork-modal');
+  const body = document.getElementById('fork-modal-body');
+  const titleEl = document.getElementById('fork-modal-title');
+  if (!modal || !body) return;
+  titleEl.textContent = 'Download your ' + name;
+  body.innerHTML = '<div style="padding:18px 0;text-align:center;opacity:0.7;">Loading template…</div>';
+  modal.style.display = 'flex';
+  try {
+    const base = FORK_TEMPLATE_BASE + id + '/';
+    const files = await (await fetch(base + 'files.json', { cache: 'no-store' })).json();
+    const texts = {};
+    const placeholders = new Set();
+    for (const f of files) {
+      if (f === 'files.json') continue;
+      if (_forkIsTextFile(f)) {
+        const t = await (await fetch(base + f, { cache: 'no-store' })).text();
+        texts[f] = t;
+        (t.match(/YOUR_[A-Z0-9_]+/g) || []).forEach(p => placeholders.add(p));
+        if (t.indexOf('your-domain.example') !== -1) placeholders.add('your-domain.example');
+      }
+    }
+    _forkCtx = { id, name, base, files, texts };
+    const order = Array.from(placeholders).sort((a, b) => {
+      const rank = x => x === 'YOUR_HANDLE' ? 0 : x === 'YOUR_GH_USER' ? 1 : x === 'YOUR_REPO' ? 2 : x === 'your-domain.example' ? 3 : /CONTRACT$/.test(x) ? 4 : /WALLET$/.test(x) ? 5 : 6;
+      return rank(a) - rank(b) || a.localeCompare(b);
+    });
+    let html = '<div class="field-sub" style="margin-bottom:14px;">Fill in what you can. Anything you leave blank keeps a placeholder you can edit later — nothing breaks, that feature just won\'t point anywhere yet.</div>';
+    order.forEach(ph => {
+      const info = _forkLabel(ph);
+      html += '<div style="margin-bottom:12px;">'
+        + '<label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">' + info.label + '</label>'
+        + '<input type="text" data-ph="' + ph + '" class="fork-field" placeholder="' + ph + '" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:14px;">'
+        + (info.hint ? '<div style="font-size:11px;opacity:0.6;margin-top:3px;">' + info.hint + '</div>' : '')
+        + '</div>';
+    });
+    html += '<button type="button" class="btn" onclick="generateForkZip()" style="width:100%;margin-top:6px;">📦 Build &amp; download my copy</button>';
+    html += '<div id="fork-status" style="font-size:12px;opacity:0.7;margin-top:10px;text-align:center;"></div>';
+    body.innerHTML = html;
+  } catch (e) {
+    body.innerHTML = '<div style="padding:18px 0;color:var(--red,#e05555);">Could not load this template. Please try again.</div>';
+  }
+}
+function closeForkModal() {
+  const modal = document.getElementById('fork-modal');
+  if (modal) modal.style.display = 'none';
+}
+async function generateForkZip() {
+  if (!_forkCtx) return;
+  const status = document.getElementById('fork-status');
+  const setStatus = m => { if (status) status.textContent = m; };
+  if (typeof JSZip === 'undefined') { setStatus('Zip library still loading — try again in a moment.'); return; }
+  // Collect user values.
+  const vals = {};
+  document.querySelectorAll('#fork-modal-body .fork-field').forEach(inp => {
+    const v = (inp.value || '').trim();
+    if (v) vals[inp.getAttribute('data-ph')] = v.replace(/^@/, '');
+  });
+  const applyVals = s => {
+    Object.keys(vals).forEach(ph => {
+      s = s.split(ph).join(vals[ph]);
+    });
+    return s;
+  };
+  try {
+    setStatus('Building your copy…');
+    const zip = new JSZip();
+    const { base, files, texts } = _forkCtx;
+    // GitHub Pages won't serve dotfiles, so synthesize an empty .nojekyll for the fork.
+    zip.file('.nojekyll', '');
+    for (const f of files) {
+      if (f === 'files.json') continue;
+      if (texts[f] !== undefined) {
+        zip.file(f, applyVals(texts[f]));
+      } else {
+        const buf = await (await fetch(base + f, { cache: 'no-store' })).arrayBuffer();
+        zip.file(f, buf);
+      }
+    }
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = _forkCtx.id + '-app.zip';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    setStatus('Done — check your Downloads for ' + _forkCtx.id + '-app.zip');
+  } catch (e) {
+    setStatus('Something went wrong building the zip. Please try again.');
+  }
+}
+
 // ── BRAINSTORM WIZARD ──
 let bwizCurrentStep = 1;
 
@@ -3447,6 +3718,18 @@ function resetBuildWizard() {
   document.querySelectorAll('#bld-1 .choice-card').forEach(c => {
     c.classList.remove('selected', 'selected-green', 'selected-purple');
   });
+  // Clear lane-picker state too
+  const laneInput = document.getElementById('bld-lane');
+  if (laneInput) laneInput.value = '';
+  const tplInput = document.getElementById('bld-template');
+  if (tplInput) tplInput.value = '';
+  const tplWrap = document.getElementById('bld-template-wrap');
+  if (tplWrap) tplWrap.style.display = 'none';
+  const tplGrid = document.getElementById('bld-template-grid');
+  if (tplGrid) tplGrid.innerHTML = '';
+  const forkWrap = document.getElementById('bld-fork-wrap');
+  if (forkWrap) forkWrap.style.display = 'none';
+  window.__forkTemplateId = null;
   const desc = document.getElementById('bld-description');
   const users = document.getElementById('bld-users');
   const code = document.getElementById('bld-exist-code');
@@ -4907,11 +5190,15 @@ async function doSendKeikoTip(amount) {
 <!-- dev contact footer -->
 <div style="text-align:center;padding:8px 16px 16px;font-size:13px;opacity:0.5;">Questions or ideas? <a href="#" onclick="(function(){navigator.clipboard.writeText('0xA3a653a8cBA0710ff57Ac34E2278C603B4259FD3').catch(function(){});window.open('https://orcamail.ai','_blank');var t=document.getElementById('_dctoast');if(t){t.style.display='block';setTimeout(function(){t.style.display='none'},3000);}})();return false;" style="color:#6c47ff;font-weight:600;text-decoration:none;">Contact Developer via OrcaMail &#x1F42C;</a></div>
 <div id="_dctoast" style="display:none;position:fixed;bottom:24px;right:24px;background:#6c47ff;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 2px 16px rgba(0,0,0,.4);">Wallet copied! Opening OrcaMail&#x2026;</div>
-<!-- Get LCAI with ETH — on-ramp (self-hosted, isolated ethers; non-custodial). -->
-<script>window.__glwPrevEthers = window.ethers;</script>
-<script src="./getlcai/ethers-6.13.2.umd.min.js"></script>
-<script>window.__getlcaiEthers = window.ethers; window.ethers = window.__glwPrevEthers; try{delete window.__glwPrevEthers;}catch(e){}</script>
-<script src="./getlcai/eth-pay.js"></script>
-<script src="./getlcai/getlcai-widget.js"></script>
+<!-- Fork-a-template modal -->
+<div id="fork-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeForkModal()">
+  <div style="background:var(--card,#161b22);border:1px solid var(--border,#30363d);border-radius:16px;max-width:460px;width:100%;max-height:85vh;overflow:auto;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div id="fork-modal-title" style="font-size:18px;font-weight:700;">Download your copy</div>
+      <button type="button" onclick="closeForkModal()" style="background:none;border:none;color:var(--text,#e6edf3);font-size:22px;cursor:pointer;line-height:1;opacity:.7;">&times;</button>
+    </div>
+    <div id="fork-modal-body"></div>
+  </div>
+</div>
 </body>
 </html>
