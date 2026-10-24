@@ -169,7 +169,7 @@ window.ORCAAPP_I18N = {
     build_title: "Build Your App",
     build_sub: "Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_audience_title: "Who is this app for?",
     bld_audience_sub: "This helps the AI tailor your plan. Hub listing is never required.",
     bld_aud_personal_label: "Just for me",
@@ -936,7 +936,7 @@ window.ORCAAPP_I18N = {
     build_title: "Construire votre app",
     build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -1281,7 +1281,7 @@ window.ORCAAPP_I18N = {
     build_title: "Construa seu app",
     build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -1626,7 +1626,7 @@ window.ORCAAPP_I18N = {
     build_title: "Baue deine App",
     build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -1971,7 +1971,7 @@ window.ORCAAPP_I18N = {
     build_title: "アプリを構築",
     build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -2316,7 +2316,7 @@ window.ORCAAPP_I18N = {
     build_title: "构建你的应用",
     build_sub: "Describe your idea or your existing project and get a complete, step-by-step build plan from the AI — including what to create, what tools to use, and sample code.",
     build_pc_warn_title: "PC Required to Build",
-    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.",
+    build_pc_warn_body: "Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap Email it to myself under your plan and pick up on your PC. No momentum lost.",
     bld_s1_title: "What's your situation?",
     bld_scratch_label: "Starting from scratch",
     bld_scratch_sub: "I have an idea and want a full plan",
@@ -2989,7 +2989,6 @@ window.applyI18n = function() {
   set('mode-build-title', 'mode_build_title'); set('mode-build-desc', 'mode_build_desc');
   set('mode-launch-title', 'mode_launch_title'); set('mode-launch-desc', 'mode_launch_desc');
   set('mode-troubleshoot-title', 'mode_troubleshoot_title'); set('mode-troubleshoot-desc', 'mode_troubleshoot_desc');
-  set('pod-title', 'pod_title'); set('pod-hub-link', 'pod_hub_link');
   set('tip-jar-title', 'tip_jar_title'); set('tip-jar-sub', 'tip_jar_sub');
   setPh('tip-custom-amount', 'tip_custom_ph');
   set('tip-send-btn', 'tip_send_btn');

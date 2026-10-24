@@ -239,6 +239,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .learn-code-toggle{margin-bottom:12px;flex-shrink:0;}
 .learn-code-toggle .btn{font-size:12px;padding:8px 14px;}
 #section-learn.learn-simple .code-block{display:none;}
+#section-learn.learn-simple .advanced-only{display:none;}
 .start-here-card{border:2px solid rgba(0,230,118,.35);border-radius:14px;padding:16px 18px;margin-top:12px;background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,212,255,.06));flex-shrink:0;}
 .start-here-title{font-size:16px;font-weight:900;color:var(--green);margin-bottom:10px;line-height:1.35;}
 .start-here-steps{list-style:none;padding:0;margin:0 0 4px;}
@@ -324,7 +325,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .free-stack{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
 .free-stack-item{background:rgba(0,200,100,.12);border:1px solid rgba(0,200,100,.35);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:#00c864;}
 .free-stack-item span{color:var(--muted);font-weight:400;}
-.home-bottom{display:flex;gap:12px;margin-top:4px;align-items:flex-start;}
+.home-bottom{display:flex;gap:12px;margin-top:4px;align-items:flex-start;justify-content:center;}
 .tip-jar-compact{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;width:200px;flex-shrink:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
 .tip-jar-compact-title{font-size:13px;font-weight:800;margin-bottom:4px;}
 .tip-jar-compact-sub{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.3;}
@@ -469,16 +470,17 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .pick-option-btn:active{transform:translateY(0);}
 .ai-response-header{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;font-weight:700;color:var(--cyan);}
 .ai-response-body{font-size:17px;line-height:1.8;white-space:pre-wrap;color:var(--text);}
-.ai-thinking{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:16px;padding:14px 0;}
-.ai-thinking-dots{display:flex;gap:4px;}
-.ai-thinking-dots span{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bounce .8s infinite;}
-.ai-thinking-dots span:nth-child(2){animation-delay:.15s;}
-.ai-thinking-dots span:nth-child(3){animation-delay:.3s;}
-@keyframes bounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+.ai-thinking{display:flex;flex-direction:column;gap:9px;color:var(--muted);font-size:15px;padding:14px 0;}
+.ai-wait-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;color:var(--text);font-weight:600;}
+.ai-wait-label{font-size:15px;}
+.ai-wait-time{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted);font-weight:600;}
+.ai-wait-track{height:6px;background:var(--bg3);border-radius:4px;overflow:hidden;}
+.ai-wait-fill{height:100%;width:0;background:var(--cyan);border-radius:4px;transition:width 1s linear;}
+.ai-wait-note{font-size:13px;color:var(--muted);line-height:1.45;}
 
 /* ── PROJECTS ── */
 .proj-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .25s;position:relative;}
-.proj-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,212,255,.1);}
+.proj-card:hover{border-color:var(--cyan);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.3);}
 .proj-status-badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;margin-bottom:12px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);color:var(--cyan);}
 .proj-card-name{font-size:18px;font-weight:800;margin-bottom:8px;line-height:1.3;}
 .proj-card-desc{font-size:18px;color:var(--muted);line-height:1.6;margin-bottom:16px;}
@@ -502,7 +504,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .links-section-title::after{content:'';flex:1;height:1px;background:var(--border);}
 .resource-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px;}
 .resource-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:flex-start;gap:12px;text-decoration:none;transition:all .2s;cursor:pointer;}
-.resource-card:hover{border-color:var(--cyan);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,212,255,.1);}
+.resource-card:hover{border-color:var(--cyan);transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.3);}
 .resource-icon{font-size:28px;flex-shrink:0;line-height:1;}
 .resource-name{font-size:18px;font-weight:700;color:var(--text);margin-bottom:5px;}
 .resource-desc{font-size:18px;color:var(--muted);line-height:1.4;}
@@ -539,8 +541,8 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 .issue-desc{font-size:18px;color:var(--muted);line-height:1.5;}
 
 /* ── AI CHAT PANEL ── */
-.ai-fab{position:fixed;bottom:24px;right:24px;height:54px;padding:0 22px 0 14px;border-radius:30px;background:linear-gradient(135deg,var(--cyan2),var(--cyan));border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 24px rgba(0,212,255,.45);transition:all .2s;z-index:200;font-family:inherit;}
-.ai-fab:hover{transform:scale(1.05);box-shadow:0 6px 32px rgba(0,212,255,.6);}
+.ai-fab{position:fixed;bottom:24px;right:24px;height:54px;padding:0 22px 0 14px;border-radius:30px;background:linear-gradient(135deg,var(--cyan2),var(--cyan));border:none;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,.28);transition:all .2s;z-index:200;font-family:inherit;}
+.ai-fab:hover{transform:scale(1.05);box-shadow:0 6px 22px rgba(0,0,0,.35);}
 .ai-fab-text{font-size:15px;font-weight:800;color:#000;}
 .ai-panel{position:fixed;bottom:90px;right:24px;width:500px;height:580px;min-width:320px;min-height:360px;max-width:820px;max-height:90vh;background:var(--bg2);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.5);z-index:200;display:none;flex-direction:column;overflow:hidden;}
 .ai-panel.open{display:flex;}
@@ -573,6 +575,11 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
 /* ── TERMS MODAL ── */
 #orca-terms-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
 #orca-terms-overlay.open{display:flex;}
+#orca-terms-banner{position:fixed;left:0;right:0;bottom:0;z-index:450;display:none;flex-wrap:wrap;gap:12px;align-items:center;background:var(--bg2);border-top:1px solid var(--border);padding:10px 16px;box-shadow:0 -2px 12px rgba(0,0,0,.25);}
+#orca-terms-banner.open{display:flex;}
+#orca-terms-banner .tb-text{flex:1;min-width:200px;font-size:13px;color:var(--muted);line-height:1.4;}
+#orca-terms-banner .tb-link{color:var(--cyan);}
+#orca-terms-banner .tb-actions{display:flex;gap:8px;flex-shrink:0;align-items:center;}
 .terms-modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;}
 .terms-modal h2{font-size:22px;font-weight:800;margin-bottom:6px;}
 .terms-modal .terms-sub{font-size:14px;color:var(--muted);margin-bottom:22px;}
@@ -666,6 +673,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
   .ai-resize-handle{display:none;}
   .choice-grid{grid-template-columns:1fr 1fr;}
   .issue-grid{grid-template-columns:1fr 1fr;}
+  #orca-terms-banner.open{bottom:52px;}
 }
 @media(max-width:480px){
   .choice-grid{grid-template-columns:1fr;}
@@ -818,25 +826,6 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
         </div>
 
       <div class="home-bottom">
-        <div class="pod-strip">
-          <div class="pod-title" id="pod-title">🐬 Example apps you can build too</div>
-          <div class="pod-apps">
-            <a href="https://orcamail.ai" target="_blank" rel="noopener" class="pod-app">OrcaMail 📧</a>
-            <a href="https://orcafiles.ai" target="_blank" rel="noopener" class="pod-app">OrcaFiles 📁</a>
-            <a href="https://keiko-dev-lcai.github.io/orcalearn-app" target="_blank" rel="noopener" class="pod-app">OrcaLearn 📖</a>
-            <a href="https://keiko-dev-lcai.github.io/orcaguard/" target="_blank" rel="noopener" class="pod-app">OrcaGuard 🛡️</a>
-            <a href="https://orcamint.xyz" target="_blank" rel="noopener" class="pod-app">OrcaMint 🎨</a>
-            <a href="https://smartcontractexplainer.xyz" target="_blank" rel="noopener" class="pod-app">Contract Explainer 🔍</a>
-            <a href="https://keiko-dev-lcai.github.io/orcanode" target="_blank" rel="noopener" class="pod-app">Node Builder ⚡</a>
-            <a href="https://keiko-dev-lcai.github.io/myice" target="_blank" rel="noopener" class="pod-app">MyICE 🆘</a>
-            <a href="https://keiko-dev-lcai.github.io/lightchat-app/" target="_blank" rel="noopener" class="pod-app">LightChat 💬</a>
-            <a href="https://chat.lightchain.ai" target="_blank" rel="noopener" class="pod-app">Lightchain Chat ⚡</a>
-            <a href="https://lightdex.app/" target="_blank" rel="noopener" class="pod-app">LightDex 💱</a>
-            <a href="https://keiko-dev-lcai.github.io/orcavault" target="_blank" rel="noopener" class="pod-app">OrcaVault 🗄️</a>
-          </div>
-          <a href="https://hub.lightchain.ai" target="_blank" rel="noopener" class="pod-hub-link" id="pod-hub-link">See all apps on the dApp Hub →</a>
-        </div>
-
         <div class="tip-jar-compact">
           <div class="tip-jar-compact-title" id="tip-jar-title">☕ Support OrcaAppBuilder</div>
           <div class="tip-jar-compact-sub" id="tip-jar-sub">Free to use. Tips keep it running.</div>
@@ -1154,7 +1143,7 @@ contract PaymentGate {
         <div class="card">
           <div class="card-title">🚀 How to Deploy This Contract — Two Options</div>
           <p><strong>Option A (Recommended for beginners):</strong> Remix IDE — runs entirely in your browser, nothing to install, works on Windows, Mac, and Linux equally.</p>
-          <p><strong>Option B (Advanced):</strong> Foundry command-line tool — faster once set up, but requires a terminal and OS-specific installation.</p>
+          <p class="advanced-only"><strong>Option B (Advanced):</strong> Foundry command-line tool — faster once set up, but requires a terminal and OS-specific installation. Hidden by default — tap "Show code sections (advanced)" up top if you want it.</p>
         </div>
 
         <!-- OPTION A: REMIX IDE - shown always -->
@@ -1180,13 +1169,13 @@ contract PaymentGate {
         </div>
 
         <!-- OPTION B: FOUNDRY - OS specific -->
-        <div class="card" style="margin-top:8px;">
+        <div class="card advanced-only" style="margin-top:8px;">
           <div class="card-title">⚙️ Option B — Foundry (Advanced, Command Line)</div>
           <p>Foundry is faster for repeat deployments and is what the Orca Pod apps use. Installation differs by operating system:</p>
         </div>
 
         <!-- Windows Foundry -->
-        <div class="os-block win">
+        <div class="os-block win advanced-only">
           <div class="callout warn">
             <span class="callout-icon">🪟</span>
             <div class="callout-body">
@@ -1215,7 +1204,7 @@ foundryup</pre></div>
         </div>
 
         <!-- Mac/Linux Foundry -->
-        <div class="os-block mac">
+        <div class="os-block mac advanced-only">
           <div class="code-block">
             <div class="code-header"><span class="code-label"><span class="os-tag mac">🍎 MAC</span> Install Foundry (run in Terminal)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
             <div class="code-content"><pre>curl -L https://foundry.paradigm.xyz | bash
@@ -1232,7 +1221,7 @@ foundryup</pre></div>
           </div>
         </div>
 
-        <div class="os-block linux">
+        <div class="os-block linux advanced-only">
           <div class="code-block">
             <div class="code-header"><span class="code-label"><span class="os-tag linux">🐧 LINUX</span> Install Foundry</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
             <div class="code-content"><pre>curl -L https://foundry.paradigm.xyz | bash
@@ -1331,7 +1320,7 @@ requests</pre></div>
           <p style="margin-top:10px;">To run: <span class="inline-code">python3 server.py</span></p>
         </div>
 
-        <div class="callout danger">
+        <div class="callout danger advanced-only">
           <span class="callout-icon">🚨</span>
           <div class="callout-body">
             <strong>Version Warning — Confirmed From Real Experience</strong>
@@ -1375,7 +1364,7 @@ requests</pre></div>
           </ul>
         </div>
 
-        <div class="callout info" style="border-color:rgba(0,212,255,0.35);background:rgba(0,212,255,0.06)">
+        <div class="callout info advanced-only" style="border-color:rgba(0,212,255,0.35);background:rgba(0,212,255,0.06)">
           <span class="callout-icon">💬</span>
           <div class="callout-body">
             <strong>Official reference: lcai-chat-v2</strong><br>
@@ -1976,8 +1965,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         </div>
         <div id="bwiz-result">
           <div class="ai-thinking">
-            <div class="ai-thinking-dots"><span></span><span></span><span></span></div>
-            Thinking up ideas for you...
+            <span class="ai-wait-label">Thinking up ideas for you…</span>
           </div>
         </div>
         <div id="bwiz-actions" style="display:none;">
@@ -2004,7 +1992,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
       </div>
       <div class="callout warn callout-compact">
         <div class="callout-icon">💻</div>
-        <div class="callout-body"><strong id="build-pc-warn-title">PC Required to Build</strong><span id="build-pc-warn-body">Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer to follow these steps. Feel free to browse and plan on mobile — just come back on your PC when you're ready to build.</span></div>
+        <div class="callout-body"><strong id="build-pc-warn-title">PC Required to Build</strong><span id="build-pc-warn-body">Setting up GitHub, writing code, and deploying to Railway can't be done from a phone. You'll need a Windows, Mac, or Linux computer for those steps. On a phone now? Plan it right here — then tap <strong>Email it to myself</strong> under your plan and pick up on your PC. No momentum lost.</span></div>
       </div>
 
       <div class="wizard-body">
@@ -2018,7 +2006,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
         <!-- LANE PICKER (optional) -->
         <div class="card" id="bld-lane-card">
           <div class="card-title" id="bld-lane-title">What are you here to build?</div>
-          <div class="field-sub" id="bld-lane-sub" style="margin-bottom:12px;">Pick a lane and we'll show a few working apps you can remix as a starting point. Totally optional — skip it if you already know your idea.</div>
+          <div class="field-sub" id="bld-lane-sub" style="margin-bottom:12px;">Pick a lane and start from a working app you can fork and make your own in minutes — the fastest way to ship something real. Optional: skip it if you already know your idea.</div>
           <div class="choice-grid" id="bld-lane-grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:0;">
             <div class="choice-card" onclick="selectLane(this,'money')" style="text-align:center;">
               <div class="choice-icon">🚀</div>
@@ -2176,6 +2164,7 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
               <button class="btn btn-primary" style="background:var(--orange);color:#000;" id="bld-save-btn" onclick="saveToProject('buildPlan', getBuildPlanText())">📂 Save to Project</button>
             </div>
             <div class="bld-actions-secondary">
+              <button class="btn btn-ghost" id="bld-email-btn" onclick="emailBuildPlan()">📧 Email it to myself (build on PC)</button>
               <button class="btn btn-ghost" id="bld-try-again" onclick="bldBack(2)">← Try Again</button>
               <button class="btn btn-ghost" id="bld-learn-btn" onclick="showSection('learn')">📚 Advanced guide (has code)</button>
               <button class="btn btn-ghost" id="bld-launch-btn" onclick="showSection('launchcheck')">🚀 Launch Check (when live)</button>
@@ -2613,6 +2602,15 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
   </div>
 </div>
 
+<!-- ═══ TERMS BANNER (slim, non-blocking — browse first) ═══ -->
+<div id="orca-terms-banner">
+  <div class="tb-text">By building or tipping here, you agree to our <a href="#" class="tb-link" onclick="openTerms();return false;">Terms &amp; Disclaimer</a>. AI features run on the third-party Lightchain AIVM network.</div>
+  <div class="tb-actions">
+    <button type="button" class="btn btn-ghost" onclick="openTerms()" style="padding:8px 14px;font-size:13px;">Read</button>
+    <button type="button" class="btn btn-primary" onclick="acceptTerms()" style="padding:8px 16px;font-size:13px;">Got it</button>
+  </div>
+</div>
+
 <!-- ═══ TERMS MODAL ═══ -->
 <div id="orca-terms-overlay" onclick="if(event.target===this)closeTerms()">
   <div class="terms-modal">
@@ -2652,7 +2650,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
       <p id="terms-s8-body">OrcaAppBuilder reserves the right to introduce, change, or remove any fees, suggested tip amounts, or pricing structures at any time without prior notice. Continued use of the platform after any pricing change constitutes acceptance of the updated terms.</p>
     </div>
     <p id="terms-ack" style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px;">You must acknowledge these terms before using OrcaAppBuilder.</p>
-    <button class="terms-close" id="terms-close-btn" onclick="closeTerms()" style="background:var(--cyan);color:#000;border-color:var(--cyan);font-size:15px;padding:14px;margin-top:8px;">✅ I Understand &amp; Agree — Enter OrcaAppBuilder</button>
+    <button class="terms-close" id="terms-close-btn" onclick="acceptTerms()" style="background:var(--cyan);color:#000;border-color:var(--cyan);font-size:15px;padding:14px;margin-top:8px;">✅ I Understand &amp; Agree — Enter OrcaAppBuilder</button>
   </div>
 </div>
 
@@ -2662,6 +2660,51 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
 <script>
 // ── CONFIG ──
 const API_BASE = 'https://web-production-aaaba.up.railway.app';
+
+// ── AI WAIT (calm progress: elapsed timer + rotating reassurance, no bouncing dots) ──
+let _aiWaitSeq = 0;
+function aiWait(label){
+  const id = 'aiw-' + (++_aiWaitSeq);
+  const msg = (label || 'Working on it').replace(/"/g,'&quot;');
+  setTimeout(function(){ _aiWaitStart(id); }, 0);
+  return '<div class="ai-thinking" id="' + id + '">'
+    + '<div class="ai-wait-head"><span class="ai-wait-label">' + msg + '…</span><span class="ai-wait-time">0:00</span></div>'
+    + '<div class="ai-wait-track"><div class="ai-wait-fill"></div></div>'
+    + '<div class="ai-wait-note">Real AI running on Lightchain\'s decentralized network — this usually takes 30–90 seconds. Hang tight.</div>'
+    + '</div>';
+}
+function _aiWaitStart(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const start = Date.now();
+  const notes = [
+    'Real AI on Lightchain\'s decentralized network — worth the short wait.',
+    'Still working — a network worker is generating your answer.',
+    'Almost there — pulling the finishing touches together.',
+    'Hang tight — real output takes a little longer than an instant chatbot.'
+  ];
+  let n = 0;
+  const timeEl = el.querySelector('.ai-wait-time');
+  const noteEl = el.querySelector('.ai-wait-note');
+  const fillEl = el.querySelector('.ai-wait-fill');
+  const iv = setInterval(function(){
+    if(!document.body.contains(el)){ clearInterval(iv); return; }
+    const s = Math.floor((Date.now() - start) / 1000);
+    if(timeEl) timeEl.textContent = Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+    if(fillEl) fillEl.style.width = Math.min(95, 100*(1 - Math.exp(-s/40))).toFixed(1) + '%';
+    if(s > 0 && s % 8 === 0 && noteEl){ n = (n+1) % notes.length; noteEl.textContent = notes[n]; }
+  }, 1000);
+}
+
+// ── EMAIL THE PLAN TO YOURSELF (mobile→PC bridge; user's own mail client sends it) ──
+function emailBuildPlan(){
+  const txt = (typeof getBuildPlanText === 'function') ? getBuildPlanText() : '';
+  if(!txt){ alert('Build your plan first, then you can email it to yourself.'); return; }
+  const body = 'Here is my app build plan from OrcaAppBuilder. Open this on your PC to build it:\n\n' + txt;
+  try { if(navigator.clipboard){ navigator.clipboard.writeText(body); } } catch(e){}
+  const capped = body.length > 1500 ? body.slice(0,1500) + '\n\n…(full plan copied to your clipboard — paste it here if it was cut off)' : body;
+  window.location.href = 'mailto:?subject=' + encodeURIComponent('My OrcaAppBuilder plan') + '&body=' + encodeURIComponent(capped);
+}
 
 // ── LANGUAGE (Binai / OrcaGuard pattern) ──
 const LANGS = [
@@ -2887,6 +2930,12 @@ function renderLaneTemplates(lane) {
   const grid = document.getElementById('bld-template-grid');
   if (!wrap || !grid) return;
   if (!data) { wrap.style.display = 'none'; return; }
+  const hint = document.getElementById('bld-template-hint');
+  if (hint) {
+    hint.innerHTML = (lane === 'personal' || lane === 'fun')
+      ? 'These are <strong>ready to fork</strong> — pick one, download your own working copy, and deploy it anywhere. No git, no build steps. The fastest way to have something real today.'
+      : 'Remix one of these — it fills in your idea below so you don\'t start from a blank page. You can edit it after.';
+  }
   grid.innerHTML = data.templates.map(tpl => `
     <div class="choice-card" style="text-align:left;" onclick="selectTemplate(this,'${lane}','${tpl.id}')">
       <div class="choice-label" style="margin-bottom:4px;">${tpl.name}${tpl.ready ? ' <span style="font-size:11px;font-weight:600;color:var(--green);">✓ ready to fork</span>' : ''}</div>
@@ -3105,7 +3154,7 @@ function pickBrainstormOption(n) {
   const actionsEl = document.getElementById('bld-actions');
   const startCard = document.getElementById('bld-start-here');
   if (startCard) startCard.style.display = 'none';
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan for Option ' + n + '... this may take 1-2 minutes.</div>';
+  resultEl.innerHTML = aiWait('Building your plan for Option ' + n);
   if (actionsEl) actionsEl.style.display = 'none';
   scrollBuildPlanToTop();
 
@@ -3149,7 +3198,7 @@ function runBrainstorm() {
   const resultEl = document.getElementById('bwiz-result');
   const actionsEl = document.getElementById('bwiz-actions');
 
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Coming up with app ideas just for you... this may take 1-2 minutes.</div>';
+  resultEl.innerHTML = aiWait('Coming up with app ideas just for you');
   actionsEl.style.display = 'none';
 
   const prompt = seed
@@ -3801,7 +3850,7 @@ function bldGenerate() {
 
   setBuildResultsMode(true);
   document.getElementById('bld-start-here').style.display = 'none';
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Building your plan... this may take 1-2 minutes.</div>';
+  resultEl.innerHTML = aiWait('Building your plan');
   actionsEl.style.display = 'none';
   scrollBuildPlanToTop();
   persistBuildDraft({ generating: true, hasResults: true, step: 2 });
@@ -4128,7 +4177,7 @@ async function runLaunchCheck() {
 
   resetFixStepProgress();
   resultsArea.style.display = 'flex';
-  verdictEl.innerHTML = '<div class="ai-thinking" style="padding:8px;"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Scanning...</div>';
+  verdictEl.innerHTML = '<div class="ai-thinking" style="padding:8px;"><span class="ai-wait-label">Scanning…</span></div>';
   fixEl.innerHTML = '';
   scanEl.innerHTML = '';
   aiEl.innerHTML = '';
@@ -4158,7 +4207,7 @@ async function runLaunchCheck() {
   scanEl.innerHTML = renderLaunchFindings(scan);
   if (rerunBtn) rerunBtn.style.display = 'inline-block';
 
-  aiEl.innerHTML = '<details class="lc-ai-details"><summary>🐬 AI coach loading...</summary><div class="ai-thinking" style="padding:12px;"><div class="ai-thinking-dots"><span></span><span></span><span></span></div></div></details>';
+  aiEl.innerHTML = '<details class="lc-ai-details"><summary>🐬 AI coach loading…</summary><div class="ai-thinking" style="padding:12px;"><span class="ai-wait-label">Working…</span></div></details>';
   try {
     const reply = await callAI(buildLaunchCheckPrompt(scan), 'launchcheck');
     aiEl.innerHTML = `<details class="lc-ai-details"><summary>🐬 AI coach — tap to read full walkthrough</summary><div class="ai-response-box"><div class="ai-response-body">${escapeHtml(reply)}</div></div></details>`;
@@ -4179,7 +4228,7 @@ function troubleshoot() {
 
   if (!input) { alert(t('msg_describe_problem')); return; }
 
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Diagnosing your problem... this may take 1-2 minutes.</div>';
+  resultEl.innerHTML = aiWait('Diagnosing your problem');
 
   const prompt = `An app builder (may or may not use blockchain) has the following problem:
 
@@ -4401,14 +4450,17 @@ function escapeHtml(str) {
 
 // ── TERMS ──
 function openTerms()  { document.getElementById('orca-terms-overlay').classList.add('open'); }
-function closeTerms() {
-  document.getElementById('orca-terms-overlay').classList.remove('open');
+function closeTerms() { document.getElementById('orca-terms-overlay').classList.remove('open'); }
+function acceptTerms() {
   try { localStorage.setItem('orcaappbuilder_terms_accepted','1'); } catch(e){}
+  var b = document.getElementById('orca-terms-banner'); if (b) b.classList.remove('open');
+  closeTerms();
 }
 function checkTermsOnLoad() {
+  var b = document.getElementById('orca-terms-banner');
   try {
-    if (!localStorage.getItem('orcaappbuilder_terms_accepted')) openTerms();
-  } catch(e) { openTerms(); }
+    if (!localStorage.getItem('orcaappbuilder_terms_accepted') && b) b.classList.add('open');
+  } catch(e) { if (b) b.classList.add('open'); }
 }
 
 // ── HEALTH CHECK ──
@@ -4766,7 +4818,7 @@ function runAiReview(id) {
   const btn = document.getElementById('ai-review-btn-' + id);
   const resultEl = document.getElementById('ai-review-result-' + id);
   if (btn) btn.disabled = true;
-  resultEl.innerHTML = '<div class="ai-thinking"><div class="ai-thinking-dots"><span></span><span></span><span></span></div> Analyzing your project… this may take 1-2 minutes.</div>';
+  resultEl.innerHTML = aiWait('Analyzing your project');
 
   const helpLabel = {finish:'finish building', fix:'find and fix the bugs in', review:'review and audit'}[p.helpType] || 'help with';
   let prompt = `Please ${helpLabel} the following app project.\n\n`;
