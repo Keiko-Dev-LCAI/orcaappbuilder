@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOUR_AGENT_NAME</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d1a2e">
+<style>
+  :root{
+    --bg:#0a1424; --bg2:#0d1a2e; --card:#122238;
+    --border:#1e3a5f; --text:#eaf2ff; --muted:#8aa6c8;
+    --cyan:#22d3ee; --cyan2:#0891b2; --navy:#0d1a2e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:radial-gradient(1200px 600px at 50% -10%,#10263f 0%,var(--bg) 60%);
+    color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex; flex-direction:column; align-items:center; padding:32px 18px 48px;
+  }
+  .wrap{width:100%; max-width:720px;}
+  .brand{display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:6px;}
+  .brand .dot{font-size:30px;}
+  h1{font-size:30px; font-weight:900; color:var(--cyan); margin:0; text-align:center; line-height:1.15;}
+  .tagline{color:var(--muted); text-align:center; margin:8px 0 26px; font-size:16px;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px;}
+  textarea{
+    width:100%; min-height:96px; resize:vertical; background:var(--bg2); color:var(--text);
+    border:1px solid var(--border); border-radius:12px; padding:14px; font-size:16px; font-family:inherit;
+  }
+  textarea:focus{outline:none; border-color:var(--cyan);}
+  .ask-btn{
+    margin-top:12px; width:100%; padding:14px 18px; border:none; border-radius:12px; cursor:pointer;
+    background:linear-gradient(135deg,var(--cyan),var(--cyan2)); color:#06202b; font-size:17px; font-weight:800;
+  }
+  .ask-btn:disabled{opacity:.55; cursor:default;}
+  .answer{
+    margin-top:18px; background:var(--bg2); border:1px solid var(--border); border-left:4px solid var(--cyan);
+    border-radius:12px; padding:16px 18px; white-space:pre-wrap; line-height:1.55; font-size:16px; display:none;
+  }
+  .answer.show{display:block;}
+  .hint{color:var(--muted); font-size:13px; text-align:center; margin-top:10px;}
+  .err{color:#ff9a9a;}
+  footer{color:var(--muted); font-size:13px; margin-top:28px; text-align:center;}
+  footer a{color:var(--cyan); text-decoration:none;}
+  .spin{display:inline-block; width:15px; height:15px; border:2px solid rgba(255,255,255,.3);
+    border-top-color:#06202b; border-radius:50%; animation:sp .7s linear infinite; vertical-align:-2px; margin-right:7px;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><span class="dot">🐬</span></div>
+    <h1>YOUR_AGENT_NAME</h1>
+    <p class="tagline">YOUR_AGENT_TAGLINE</p>
+
+    <div class="card">
+      <textarea id="q" placeholder="Ask me anything…"></textarea>
+      <button class="ask-btn" id="askBtn" onclick="ask()">Ask</button>
+      <div class="answer" id="answer"></div>
+      <div class="hint" id="hint">One question, one answer.</div>
+    </div>
+
+    <footer>
+      Powered by <strong>Lightchain AIVM</strong> · built with OrcaAppBuilder
+      <span id="social"> · <a href="https://x.com/YOUR_HANDLE" target="_blank" rel="noopener">@YOUR_HANDLE</a></span>
+    </footer>
+  </div>
+
+<script>
+  // If the social handle wasn't filled in, hide the link instead of showing a placeholder.
+  (function(){
+    var s = document.getElementById('social');
+    if (s && s.innerHTML.indexOf('YOUR_HANDLE') !== -1) s.style.display = 'none';
+  })();
+
+  var busy = false;
+  async function ask(){
+    if (busy) return;
+    var q = document.getElementById('q').value.trim();
+    var ansEl = document.getElementById('answer');
+    var hintEl = document.getElementById('hint');
+    var btn = document.getElementById('askBtn');
+    if (!q){ hintEl.textContent = 'Type a question first.'; return; }
+    busy = true;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span>Thinking…';
+    ansEl.className = 'answer'; ansEl.textContent = '';
+    hintEl.textContent = '';
+    try{
+      var r = await fetch('/ask', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ question: q })
+      });
+      var data = await r.json();
+      if (r.ok && data.answer){
+        ansEl.textContent = data.answer;
+        ansEl.className = 'answer show';
+      } else {
+        ansEl.innerHTML = '<span class="err">' + (data.error || 'Something went wrong. Try again.') + '</span>';
+        ansEl.className = 'answer show';
+      }
+    } catch(e){
+      ansEl.innerHTML = '<span class="err">Could not reach the agent. Try again in a moment.</span>';
+      ansEl.className = 'answer show';
+    } finally {
+      busy = false;
+      btn.disabled = false;
+      btn.textContent = 'Ask';
+      hintEl.textContent = 'One question, one answer.';
+    }
+  }
+  document.getElementById('q').addEventListener('keydown', function(e){
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') ask();
+  });
+</script>
+</body>
+</html>

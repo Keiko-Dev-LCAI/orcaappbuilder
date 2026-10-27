@@ -733,7 +733,7 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
       <div><span class="nav-label" id="nav-home-label">Home</span><span class="nav-sub" id="nav-home-sub">Pick your starting point</span></div>
     </div>
 
-    <div class="nav-section" id="nav-section-build">Build Your App</div>
+    <div class="nav-section" id="nav-section-build">Build Your App or Agent</div>
     <div class="nav-item" onclick="showSection('learn')" id="nav-learn">
       <span class="nav-icon">📚</span>
       <div><span class="nav-label" id="nav-learn-label">Learn</span><span class="nav-sub" id="nav-learn-sub">Step-by-step guide, copy &amp; paste</span></div>
@@ -782,8 +782,8 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
       <div class="home-dashboard">
       <div class="hero">
         <div class="hero-orca">🐬</div>
-        <h1 class="hero-title" id="hero-title">Build Your App — No Coding Needed</h1>
-        <p class="hero-sub" id="hero-sub">Describe what you need, get a step-by-step plan, and walk through it right here. No extra websites to visit first.</p>
+        <h1 class="hero-title" id="hero-title">Build Your App or Agent — No Coding Needed</h1>
+        <p class="hero-sub" id="hero-sub">Describe what you need, get a step-by-step plan, and walk through it right here. An app or an AI agent — no extra websites to visit first.</p>
 
         <div class="free-banner">
           <div class="free-banner-headline" id="free-banner-headline">💚 Free to build &amp; launch — you keep 100% of what you charge</div>
@@ -810,8 +810,8 @@ body.bld-sticky-open.build-results-open .main{padding-bottom:160px!important;}
           </div>
           <div class="mode-card build" onclick="showSection('build')">
             <div class="mode-card-icon">🔨</div>
-            <div class="mode-card-title" id="mode-build-title">Build Your App</div>
-            <div class="mode-card-desc" id="mode-build-desc">Describe your idea and get a complete step-by-step build plan.</div>
+            <div class="mode-card-title" id="mode-build-title">Build App or Agent</div>
+            <div class="mode-card-desc" id="mode-build-desc">Describe your idea and get a complete step-by-step build plan — for an app or an AI agent.</div>
           </div>
           <div class="mode-card launch" onclick="showSection('launchcheck')">
             <div class="mode-card-icon">🚀</div>
@@ -1981,8 +1981,8 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
     <section id="section-build" class="section">
       <div class="page-header compact-head">
         <div class="page-badge green" id="build-badge">🔨 Build wizard</div>
-        <h1 class="page-title" id="build-title">Build Your App</h1>
-        <p class="page-sub" id="build-sub">Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first.</p>
+        <h1 class="page-title" id="build-title">Build Your App or Agent</h1>
+        <p class="page-sub" id="build-sub">Describe your idea in plain English. The AI gives you a simple step-by-step plan using tools you already have — no extra websites to visit first. Building an app or an AI agent both start right here.</p>
         <div id="bld-escape-bar" class="bld-escape-bar">
           <button type="button" class="btn btn-ghost" id="bld-start-over-btn" onclick="resetBuildWizard()">← Scratch or Already started</button>
           <span class="bld-escape-hint" id="bld-escape-hint">Always available — leaves the upload/plan screen and shows both options again.</span>
@@ -2001,6 +2001,53 @@ git push https://yourusername:YOUR_GITHUB_TOKEN@github.com/yourusername/yourrepo
 
       <!-- BUILD STEP 1: What kind? -->
       <div class="wizard-step active" id="bld-1">
+        <!-- APP vs AGENT fork -->
+        <div class="card" id="bld-kind-card">
+          <div class="card-title" id="bld-kind-title">What are you making?</div>
+          <div class="field-sub" id="bld-kind-sub" style="margin-bottom:12px;">An <strong>app</strong> is a page people open and use. An <strong>agent</strong> is a page with a question box plus a small server that answers using AI and pays per answer. Not sure? Start with an app.</div>
+          <div class="choice-grid" style="grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:0;">
+            <div class="choice-card selected-green" onclick="selectKind(this,'app')" style="text-align:center;">
+              <div class="choice-icon">📱</div>
+              <div class="choice-label" id="bld-kind-app-label">An app</div>
+              <div class="choice-sub" id="bld-kind-app-sub">A page people open and use</div>
+            </div>
+            <div class="choice-card" onclick="selectKind(this,'agent')" style="text-align:center;">
+              <div class="choice-icon">🤖</div>
+              <div class="choice-label" id="bld-kind-agent-label">An AI agent</div>
+              <div class="choice-sub" id="bld-kind-agent-sub">Answers people using AI, pays per answer</div>
+            </div>
+          </div>
+          <input type="hidden" id="bld-kind" value="app">
+        </div>
+
+        <!-- AGENT SHAPE (only shown when agent) -->
+        <div class="card" id="bld-agent-card" style="display:none;margin-top:12px;">
+          <div class="card-title" id="bld-agent-title">What should your agent do?</div>
+          <div class="field-sub" id="bld-agent-sub" style="margin-bottom:12px;">Pick the shape that fits — you can change it later. The first one is the cheapest to run: it only costs when someone actually asks.</div>
+          <div class="choice-grid" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:0;">
+            <div class="choice-card selected-green" onclick="selectAgentShape(this,'answer')" style="text-align:left;">
+              <div class="choice-icon">💬</div>
+              <div class="choice-label">Answer agent</div>
+              <div class="choice-sub">A question box. Someone asks, it answers. You pay only per answer (~0.02 LCAI each) — no idle cost. Best place to start.</div>
+            </div>
+            <div class="choice-card" onclick="selectAgentShape(this,'idea')" style="text-align:left;">
+              <div class="choice-icon">🔁</div>
+              <div class="choice-label">Idea agent</div>
+              <div class="choice-sub">Runs on its own — generating ideas or chatting with itself. Costs ~0.02 LCAI every turn, even when nobody is watching.</div>
+            </div>
+            <div class="choice-card" onclick="selectAgentShape(this,'watcher')" style="text-align:left;">
+              <div class="choice-icon">👁️</div>
+              <div class="choice-label">Watcher agent</div>
+              <div class="choice-sub">Checks something on a schedule — a page, a price, a feed. Free while it just watches; pays AIVM only when it asks the AI to judge or summarize.</div>
+            </div>
+          </div>
+          <input type="hidden" id="bld-agent-shape" value="answer">
+          <div id="bld-agent-fork-wrap" style="margin-top:14px;padding:14px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,0.02);">
+            <div class="field-sub" style="margin-bottom:10px;">The <strong>Answer agent</strong> is <strong>ready to fork</strong> — download your own copy (a question-box page plus a small server that pays per answer), then deploy it to Railway. The included README walks you through it. Everything runs in your browser; nothing is uploaded.</div>
+            <button type="button" class="btn" id="bld-agent-fork-btn" onclick="window.__forkTemplateId='answeragent';window.__forkTemplateName='Answer agent';openForkModal();" style="width:auto;">📦 Download your copy</button>
+          </div>
+        </div>
+
         <!-- LANE PICKER (optional) -->
         <div class="card" id="bld-lane-card">
           <div class="card-title" id="bld-lane-title">What are you here to build?</div>
@@ -2861,6 +2908,94 @@ function updateBldNextState() {
   const mode = document.getElementById('bld-mode')?.value;
   const audience = document.getElementById('bld-audience')?.value;
   nextBtn.disabled = !(mode && audience);
+}
+
+// ─── APP vs AGENT fork ───────────────────────────────────────────────
+// An agent = one page with a question box + a small server that calls the
+// AIVM and pays per answer. Plan-only: same plan the app lane gives, with
+// an agent-shaped fork. Default shape = "answer" (one question, one paid answer).
+function selectKind(el, kind) {
+  const grid = el.closest('.choice-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const input = document.getElementById('bld-kind');
+  if (input) input.value = kind;
+  const isAgent = kind === 'agent';
+
+  const agentCard = document.getElementById('bld-agent-card');
+  if (agentCard) agentCard.style.display = isAgent ? '' : 'none';
+  const laneCard = document.getElementById('bld-lane-card');
+  if (laneCard) laneCard.style.display = isAgent ? 'none' : '';
+
+  // The Answer agent is the only forkable shape — match the fork panel to the
+  // current shape whenever we enter agent mode.
+  if (isAgent) {
+    const shape = document.getElementById('bld-agent-shape')?.value || 'answer';
+    const forkWrap = document.getElementById('bld-agent-fork-wrap');
+    if (forkWrap) forkWrap.style.display = (shape === 'answer') ? '' : 'none';
+    if (shape === 'answer') { window.__forkTemplateId = 'answeragent'; window.__forkTemplateName = 'Answer agent'; }
+  }
+
+  const audTitle = document.getElementById('bld-audience-title');
+  if (audTitle) audTitle.textContent = isAgent ? 'Who is this agent for?' : 'Who is this app for?';
+  const descTitle = document.getElementById('bld-desc-title');
+  if (descTitle) descTitle.textContent = isAgent ? 'Describe your agent idea' : 'Describe your app idea';
+  const descLabel = document.getElementById('bld-desc-label');
+  if (descLabel) descLabel.textContent = isAgent ? 'What is your agent? What should it answer or do?' : 'What is your app? What does it do?';
+
+  if (typeof persistBuildDraft === 'function') persistBuildDraft();
+}
+
+function selectAgentShape(el, shape) {
+  const grid = el.closest('.choice-grid');
+  if (grid) grid.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected','selected-purple','selected-green'));
+  el.classList.add('selected-green');
+  const input = document.getElementById('bld-agent-shape');
+  if (input) input.value = shape;
+  // Only the Answer agent ships a forkable download; Idea and Watcher are plan-only.
+  const forkWrap = document.getElementById('bld-agent-fork-wrap');
+  if (forkWrap) forkWrap.style.display = (shape === 'answer') ? '' : 'none';
+  if (shape === 'answer') { window.__forkTemplateId = 'answeragent'; window.__forkTemplateName = 'Answer agent'; }
+  if (typeof persistBuildDraft === 'function') persistBuildDraft();
+}
+
+const AGENT_SHAPES = {
+  answer: { name: 'Answer agent',
+    spec: `This is an ANSWER AGENT — the default, cheapest shape. It is ONE web page with a question box, plus a small server. When a person types a question and sends it, the server calls the Lightchain AIVM once, pays for that single answer (~0.02 LCAI), and shows the reply. It does NOTHING when nobody is asking — no background loop, no idle cost. One question, one paid answer.` },
+  idea: { name: 'Idea agent',
+    spec: `This is an IDEA AGENT. It runs on its own in the background — generating ideas, or two AI voices talking to each other — without waiting for a person. IMPORTANT: it calls the AIVM on every turn, so it costs roughly 0.02 LCAI PER TURN whether or not anyone is watching. The plan must state this running cost plainly, and show how to start/stop the loop and cap how often it runs.` },
+  watcher: { name: 'Watcher agent',
+    spec: `This is a WATCHER AGENT. It checks something on a schedule — a web page, a price, a feed — and reports changes. Plain watching (fetching and comparing) is FREE. It only calls the AIVM (and pays ~0.02 LCAI) when it needs the AI to judge, summarize, or decide something about what it found. The plan must make clear which steps are free vs paid.` }
+};
+
+function buildAgentPrompt(shapeKey, description, users, audiencePrompt, isExisting, material) {
+  const shape = AGENT_SHAPES[shapeKey] || AGENT_SHAPES.answer;
+  const matBlock = (isExisting && material && material.hasMaterial)
+    ? `\n\n=== MY EXISTING MATERIALS (starting point — use these; do not ignore) ===\n${material.fileBlocks ? material.fileBlocks + '\n\n' : ''}${material.pasted ? '--- PASTED CODE ---\n' + material.pasted + '\n\n' : ''}${material.errors ? '--- ERRORS / LOGS ---\n' + material.errors + '\n\n' : ''}=== END MATERIALS ===\n`
+    : '';
+  return `I want to build an AI AGENT (not a plain app) on Lightchain. Build me a complete, beginner-friendly plan.
+
+${shape.spec}
+
+What my agent should do:
+${description || '(see materials below)'}
+${users ? 'Who it is for: ' + users : ''}
+
+${audiencePrompt}
+
+An agent here = one web page with a question box + a small server that calls the Lightchain AIVM and pays per answer in LCAI. The AIVM wiring is the SAME as the "connect the AI" lesson in Learn — reuse that, do not invent a new signup or service.${matBlock}
+
+Please create the plan. Include:
+1. Agent name suggestion (if I did not give one)
+2. One-paragraph plain-English description of what the agent does
+3. The one page the person sees — keep it to a question box and the answer area; hide any worker/verification/receipt plumbing from the user
+4. The small server — what it does when someone asks, and how it calls the AIVM and pays per answer
+5. Running cost in plain English — when it costs LCAI and when it is free (be honest about this for THIS shape)
+6. Step-by-step build order (numbered list, 5-8 steps maximum, simplest path first; step 1 must be a concrete build action for THIS agent). Deploy the server to Railway and the page to GitHub Pages, same as an app.
+7. Estimated time to build (in hours, for a complete beginner)
+8. Biggest challenge I should be aware of upfront
+
+Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
 }
 
 // ─── LANE PICKER: intent-based templates that remix into a build ───────────
@@ -3856,7 +3991,14 @@ function bldGenerate() {
   const audience = getBuildAudience();
   const audiencePrompt = getBuildAudiencePrompt(audience);
   const helpLabel = { finish: 'finish / complete what I started', fix: 'fix what is broken', review: 'review for issues' }[(material && material.help) || 'finish'];
-  const prompt = isExisting
+  const kind = document.getElementById('bld-kind')?.value || 'app';
+  const isAgent = kind === 'agent';
+  let prompt;
+  if (isAgent) {
+    const shapeKey = document.getElementById('bld-agent-shape')?.value || 'answer';
+    prompt = buildAgentPrompt(shapeKey, description, users, audiencePrompt, isExisting, material);
+  } else {
+  prompt = isExisting
     ? `I have already started building an app. I uploaded and/or pasted my existing work as the starting point. Help type: ${helpLabel}.
 
 What the app is supposed to do:
@@ -3894,6 +4036,7 @@ Please create a complete build plan. Include:
 8. Biggest challenge I should be aware of upfront
 
 Write this for someone who has never coded before.${BUILD_PLAN_RULES}`;
+  }
 
   callAI(prompt, 'build').then(reply => {
     resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🔨 Your Build Plan</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
