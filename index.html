@@ -4551,15 +4551,40 @@ function toggleAiPanelExpand() {
 }
 
 // ── API CALL (polling pattern — avoids Railway 60s timeout) ──
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(function (b) {
+    return b.toString(16).padStart(2, '0');
+  }).join('');
+}
+
+async function signBuilder(mode, message) {
+  if (!walletSigner || !walletAddress) await connectWallet();
+  if (!walletSigner || !walletAddress) throw new Error('Connect your wallet to use the AI.');
+  const wallet = walletAddress.toLowerCase();
+  const extra = await sha256Hex(message);
+  const authMessage = 'OrcaApp|' + mode + '|' + wallet + '|' + Math.floor(Date.now() / 1000) + '|' + extra;
+  const signature = await walletSigner.signMessage(authMessage);
+  return { address: wallet, auth_message: authMessage, signature: signature };
+}
+
 async function callAI(message, mode = 'chat') {
   // Step 1: submit job — server returns immediately with a job_id
+  const auth = await signBuilder(mode, message);
   const res = await fetch(API_BASE + '/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message, mode, session_id: SESSION_ID, lang: currentLang() }),
+    body: JSON.stringify(Object.assign({ message, mode, session_id: SESSION_ID, lang: currentLang() }, auth)),
     signal: AbortSignal.timeout(15000)
   });
-  if (!res.ok) throw new Error('Server error ' + res.status);
+  if (!res.ok) {
+    let detail = 'Server error ' + res.status;
+    try {
+      const err = await res.json();
+      if (err && err.error) detail = err.error;
+    } catch (e) {}
+    throw new Error(detail);
+  }
   const start = await res.json();
   const jobId = start.job_id;
   if (!jobId) throw new Error('No job ID returned from server');
