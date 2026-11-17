@@ -2562,7 +2562,7 @@ wpk = load_der_public_key(oid + worker_pub_bytes, backend=default_backend())</pr
             <button class="btn btn-primary" id="proj-import-btn" style="background:var(--purple);color:var(--on-accent);" onclick="saveImportedProject()">📥 Import &amp; Analyze with AI</button>
             <button class="btn btn-ghost" id="proj-import-cancel" onclick="document.getElementById('proj-import-form').style.display='none'">Cancel</button>
           </div>
-          <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">⚠️ If AI is busy, your project still saves — you can run analysis again in a moment from the project page.</p>
+          <p id="proj-import-note" style="font-size:12px;color:var(--muted);margin-top:10px;">Paste the whole app. You do not need to find the broken parts. The browser checks the scripts, then the review reads the whole file. A long file is read in parts, in order. The project stays in this browser.</p>
         </div>
       </div>
 
@@ -4975,35 +4975,143 @@ function saveImportedProject() {
   document.getElementById('proj-import-form').style.display = 'none';
   renderProjects();
   openProject(proj.id);
+  if (code || errors) runAiReview(proj.id);
 }
 
-function runAiReview(id) {
+// The author pastes the whole app. These checks find broken scripts without asking them where to look.
+function scriptBlocks(code) {
+  const blocks = [];
+  const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+  let m;
+  while ((m = re.exec(code))) {
+    const attrs = m[1] || '';
+    const srcMatch = /\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(attrs);
+    const typeMatch = /\btype\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(attrs);
+    blocks.push({
+      src: srcMatch ? (srcMatch[1] || srcMatch[2] || srcMatch[3] || '') : '',
+      type: (typeMatch ? (typeMatch[1] || typeMatch[2] || typeMatch[3] || '') : '').toLowerCase(),
+      body: m[2] || ''
+    });
+  }
+  return blocks;
+}
+
+function findScriptProblems(code) {
+  const problems = [];
+  if (!code || !String(code).trim()) return problems;
+  if (/<script\b/i.test(code) && !scriptBlocks(code).length) {
+    problems.push({ where: 'Script', detail: 'A script tag was started and never closed, so the page stops reading there.' });
+    return problems;
+  }
+  scriptBlocks(code).forEach(function (block, n) {
+    const where = 'Script ' + (n + 1);
+    if (block.src) {
+      try {
+        const url = new URL(block.src, 'https://example.com');
+        if (!url.pathname || url.pathname === '/') {
+          problems.push({ where: where, detail: 'This script points at ' + block.src + ', which is a homepage, not a JavaScript file.' });
+        }
+      } catch (e) {
+        problems.push({ where: where, detail: 'This script address could not be read: ' + block.src });
+      }
+    }
+    const body = (block.body || '').trim();
+    if (!body) return;
+    if (block.type === 'module' || block.type === 'application/json' || block.type === 'importmap') return;
+    if (/^\s*(import|export)\s/m.test(body)) return;
+    try {
+      new Function(body);
+    } catch (e) {
+      problems.push({ where: where, detail: (e && e.message) ? e.message : 'This script has a syntax error.' });
+    }
+  });
+  return problems;
+}
+
+function scriptProblemHtml(code) {
+  if (!code || !String(code).trim()) return '';
+  const problems = findScriptProblems(code);
+  if (!problems.length) {
+    return '<div class="ai-response-box"><div class="ai-response-header">Browser check</div><div class="ai-response-body">The scripts in this page parse. The review reads the whole app and lists anything else that is broken.</div></div>';
+  }
+  const lines = problems.map(function (item, i) {
+    return '<div>' + (i + 1) + '. ' + escapeHtml(item.where) + ': ' + escapeHtml(item.detail) + '</div>';
+  }).join('');
+  return '<div class="ai-response-box"><div class="ai-response-header">Browser check</div><div class="ai-response-body">' + lines + '</div></div>';
+}
+
+// Stay under the server message cap of 12,000 characters. A longer file is split in order.
+function buildReviewPrompts(code, desc, errors) {
+  const REVIEW_MAX = 11500;
+  const about = String(desc || '').trim().slice(0, 600);
+  const noticed = String(errors || '').trim().slice(0, 1200);
+  const intro = 'The author pasted a whole app and does not know where it is broken. Find the problems in the code below.\n\n'
+    + (about ? 'What it is supposed to do:\n' + about + '\n\n' : '')
+    + (noticed ? 'What they already noticed:\n' + noticed + '\n\n' : '');
+  const ending = '\n\nReply as a numbered list. For each problem, say where it is, what is wrong, and the exact small fix. Do not reprint the whole file. If nothing in this part is broken, say: Nothing broken in this part.';
+  const source = String(code || '');
+  if (!source.trim()) return [ (intro + 'No code was pasted.\n' + ending).slice(0, REVIEW_MAX) ];
+  const budget = Math.max(2000, REVIEW_MAX - intro.length - ending.length - 90);
+  const pieces = [];
+  let rest = source;
+  while (rest.length) {
+    let take = Math.min(rest.length, budget);
+    if (take < rest.length) {
+      const nl = rest.lastIndexOf('\n', take);
+      if (nl > Math.floor(take * 0.5)) take = nl + 1;
+    }
+    if (take < 1) take = Math.min(rest.length, budget);
+    pieces.push(rest.slice(0, take));
+    rest = rest.slice(take);
+  }
+  return pieces.map(function (piece, i) {
+    const banner = pieces.length > 1
+      ? ('This is part ' + (i + 1) + ' of ' + pieces.length + ' of one file. Report problems in this part only.\n\n')
+      : '';
+    let prompt = intro + banner + 'CODE:\n' + piece + ending;
+    if (prompt.length > REVIEW_MAX) {
+      const over = prompt.length - REVIEW_MAX;
+      prompt = intro + banner + 'CODE:\n' + piece.slice(0, Math.max(0, piece.length - over)) + ending;
+    }
+    return prompt;
+  });
+}
+
+async function runAiReview(id) {
   const list = getProjects();
   const p = list.find(x => x.id === id);
   if (!p) return;
   const btn = document.getElementById('ai-review-btn-' + id);
   const resultEl = document.getElementById('ai-review-result-' + id);
+  const syntaxEl = document.getElementById('script-check-' + id);
+  if (!resultEl) return;
   if (btn) btn.disabled = true;
-  resultEl.innerHTML = aiWait('Analyzing your project');
-
-  const helpLabel = {finish:'finish building', fix:'find and fix the bugs in', review:'review and audit'}[p.helpType] || 'help with';
-  let prompt = `Please ${helpLabel} the following app project.\n\n`;
-  if (p.desc)            prompt += `What it's supposed to do: ${p.desc}\n\n`;
-  if (p.importedCode)    prompt += `CODE:\n${p.importedCode.slice(0, 6000)}\n\n`;
-  if (p.importedErrors)  prompt += `ERRORS / PROBLEMS:\n${p.importedErrors}\n\n`;
-  prompt += `Please:\n1. Identify what is complete and what is missing\n2. List specific problems you see\n3. Give me exact fixes or next steps in plain English\n4. If there is code to fix, show the corrected version`;
-
-  callAI(prompt, 'troubleshoot').then(reply => {
-    resultEl.innerHTML = `<div class="ai-response-box"><div class="ai-response-header">🐬 AI Review</div><div class="ai-response-body">${escapeHtml(reply)}</div></div>`;
-    if (btn) btn.disabled = false;
-    // Auto-save review to project
+  if (syntaxEl) syntaxEl.innerHTML = scriptProblemHtml(p.importedCode || '');
+  const prompts = buildReviewPrompts(p.importedCode || '', p.desc || '', p.importedErrors || '');
+  const replies = [];
+  try {
+    for (let i = 0; i < prompts.length; i++) {
+      const label = prompts.length > 1
+        ? ('Reading part ' + (i + 1) + ' of ' + prompts.length)
+        : 'Reading the whole app';
+      resultEl.innerHTML = aiWait(label);
+      const reply = await callAI(prompts[i], 'troubleshoot');
+      replies.push(prompts.length > 1 ? ('Part ' + (i + 1) + ' of ' + prompts.length + '\n' + reply) : reply);
+    }
+    const combined = replies.join('\n\n');
+    resultEl.innerHTML = '<div class="ai-response-box"><div class="ai-response-header">Problems found</div><div class="ai-response-body" style="white-space:pre-wrap;">' + escapeHtml(combined) + '</div></div>';
     const list2 = getProjects();
     const p2 = list2.find(x => x.id === id);
-    if (p2) { p2.aiReview = reply; p2.updatedAt = Date.now(); saveProjects(list2); }
-  }).catch(() => {
-    resultEl.innerHTML = `<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI Unavailable</strong>The server isn't running right now. Deploy it to Railway and try again.</div></div>`;
+    if (p2) { p2.aiReview = combined; p2.updatedAt = Date.now(); saveProjects(list2); }
+  } catch (err) {
+    const soFar = replies.length
+      ? '<div class="ai-response-box"><div class="ai-response-header">Problems found so far</div><div class="ai-response-body" style="white-space:pre-wrap;">' + escapeHtml(replies.join('\n\n')) + '</div></div>'
+      : '';
+    const msg = (err && err.message) ? err.message : 'The AI review did not finish.';
+    resultEl.innerHTML = soFar + '<div class="callout danger"><span class="callout-icon">⚠️</span><div class="callout-body"><strong>AI review stopped</strong> ' + escapeHtml(msg) + '</div></div>';
+  } finally {
     if (btn) btn.disabled = false;
-  });
+  }
 }
 
 // Patch openProject to handle imported projects
@@ -5029,6 +5137,7 @@ function openProject(id) {
       ${p.desc ? `<p style="font-size:14px;margin-bottom:12px;">${escHtml(p.desc)}</p>` : ''}
       ${p.importedCode ? `<details style="margin-bottom:10px;"><summary style="cursor:pointer;font-size:13px;color:var(--muted);font-weight:700;">📄 View Pasted Code</summary><pre style="font-family:'Fira Code',monospace;font-size:12px;line-height:1.6;color:#c8d4f0;white-space:pre-wrap;margin-top:10px;padding:12px;background:var(--code-bg);border-radius:8px;overflow-x:auto;">${escHtml(p.importedCode)}</pre></details>` : ''}
       ${p.importedErrors ? `<details><summary style="cursor:pointer;font-size:13px;color:var(--muted);font-weight:700;">⚠️ View Error Messages</summary><pre style="font-size:12px;color:var(--red);white-space:pre-wrap;margin-top:10px;padding:12px;background:rgba(255,82,82,.05);border-radius:8px;">${escHtml(p.importedErrors)}</pre></details>` : ''}
+      <div id="script-check-${id}" style="margin-top:14px;">${scriptProblemHtml(p.importedCode || '')}</div>
       <div id="ai-review-result-${id}" style="margin-top:14px;">
         ${p.aiReview ? `<div class="ai-response-box"><div class="ai-response-header">🐬 AI Review (saved)</div><div class="ai-response-body">${escapeHtml(p.aiReview)}</div></div>` : ''}
       </div>
@@ -5228,8 +5337,6 @@ const LIGHTCHAIN_PARAMS = {
   rpcUrls: ['https://rpc.mainnet.lightchain.ai'],
   blockExplorerUrls: ['https://mainnet.lightscan.app']
 };
-const TIP_ADDRESS = '0x6518fD26a7aD2Fe1bA80De5f279Ee59F55C0A9bA';
-
 let walletProvider = null;
 let walletSigner   = null;
 let walletAddress  = null;
@@ -5318,35 +5425,8 @@ async function sendCustomTip() {
 
 async function doSendTip(amountStr) {
   const status = document.getElementById('tip-status');
-  status.style.color = 'var(--muted)';
-  if (!walletSigner) {
-    status.textContent = 'Connecting wallet first…';
-    await connectWallet();
-    if (!walletSigner) {
-      status.textContent = 'Wallet not connected. Connect above and try again.';
-      status.style.color = 'var(--yellow)';
-      return;
-    }
-  }
-  try {
-    status.textContent = '⏳ Confirm the transaction in your wallet…';
-    const tx = await walletSigner.sendTransaction({
-      to: TIP_ADDRESS,
-      value: ethers.parseEther(amountStr)
-    });
-    status.textContent = '📡 Broadcasting… ' + tx.hash.slice(0,14) + '…';
-    await tx.wait(1);
-    status.textContent = '🎉 Thank you! ' + amountStr + ' LCAI sent — you’re amazing!';
-    status.style.color = 'var(--green)';
-    document.getElementById('tip-custom-amount').value = '';
-  } catch(e) {
-    if (e.code === 4001) {
-      status.textContent = 'Tip cancelled.';
-    } else {
-      status.textContent = 'Transaction failed: ' + (e.shortMessage || e.message || 'unknown error');
-      status.style.color = 'var(--red)';
-    }
-  }
+  status.textContent = 'Tips are not available from this page.';
+  status.style.color = 'var(--yellow)';
 }
 
 async function sendKeikoTip(amount) {
@@ -5365,40 +5445,8 @@ async function sendCustomKeikoTip() {
 
 async function doSendKeikoTip(amount) {
   const status = document.getElementById('tip-status');
-  status.style.color = 'var(--muted)';
-  if (typeof KeikoPay === 'undefined') {
-    status.textContent = 'KEIKO pay helper not loaded.';
-    status.style.color = 'var(--yellow)';
-    return;
-  }
-  if (!walletSigner) {
-    status.textContent = 'Connecting wallet first…';
-    await connectWallet();
-    if (!walletSigner) {
-      status.textContent = 'Wallet not connected. Connect above and try again.';
-      status.style.color = 'var(--yellow)';
-      return;
-    }
-  }
-  try {
-    status.textContent = '⏳ Confirm KEIKO transfer in your wallet…';
-    const r = await KeikoPay.pay({
-      to: TIP_ADDRESS,
-      amount: amount,
-      // tip-only — no backend verify
-    });
-    if (!r.ok) throw new Error(r.error || 'KEIKO tip failed');
-    const txUrl = 'https://mainnet.lightscan.app/tx/' + r.txHash;
-    status.innerHTML = '🎉 Thank you! ' + amount + ' KEIKO sent — <a href="' + txUrl + '" target="_blank" rel="noopener" style="color:var(--cyan)">view tx</a>';
-    status.style.color = 'var(--green)';
-  } catch (e) {
-    if (e && (e.code === 4001 || /reject|denied/i.test(String(e.message || '')))) {
-      status.textContent = 'Tip cancelled.';
-    } else {
-      status.textContent = 'KEIKO tip failed: ' + ((e && (e.shortMessage || e.message)) || 'unknown error');
-      status.style.color = 'var(--red)';
-    }
-  }
+  status.textContent = 'Tips are not available from this page.';
+  status.style.color = 'var(--yellow)';
 }
 
 </script>
@@ -5406,8 +5454,7 @@ async function doSendKeikoTip(amount) {
 <div style="text-align:center;padding:6px 16px 12px;font-size:13px;opacity:0.65;"><a href="https://x.com/KeikoDevLCAI" target="_blank" rel="noopener" style="color:#9b7fe8;text-decoration:none;font-weight:600;">𝕏 @KeikoDevLCAI</a></div>
 <div style="text-align:center;padding:4px 16px 12px;font-size:13px;opacity:0.75;"><a href="https://lightdex.app/" target="_blank" rel="noopener" style="color:#7ec8e3;text-decoration:none;font-weight:600;">Get LCAI · LCAI Swap ↗</a></div>
 <!-- dev contact footer -->
-<div style="text-align:center;padding:8px 16px 16px;font-size:13px;opacity:0.5;">Questions or ideas? <a href="#" onclick="(function(){navigator.clipboard.writeText('0xA3a653a8cBA0710ff57Ac34E2278C603B4259FD3').catch(function(){});window.open('https://orcamail.ai','_blank');var t=document.getElementById('_dctoast');if(t){t.style.display='block';setTimeout(function(){t.style.display='none'},3000);}})();return false;" style="color:#6c47ff;font-weight:600;text-decoration:none;">Contact Developer via OrcaMail &#x1F42C;</a></div>
-<div id="_dctoast" style="display:none;position:fixed;bottom:24px;right:24px;background:#6c47ff;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;box-shadow:0 2px 16px rgba(0,0,0,.4);">Wallet copied! Opening OrcaMail&#x2026;</div>
+<div style="text-align:center;padding:8px 16px 16px;font-size:13px;opacity:0.5;"><a href="https://orcamail.ai" target="_blank" rel="noopener" style="color:#6c47ff;font-weight:600;text-decoration:none;">Contact Developer via OrcaMail</a></div>
 <!-- Fork-a-template modal -->
 <div id="fork-modal" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeForkModal()">
   <div style="background:var(--card,#161b22);border:1px solid var(--border,#30363d);border-radius:16px;max-width:460px;width:100%;max-height:85vh;overflow:auto;padding:22px;box-shadow:0 8px 40px rgba(0,0,0,.5);">
